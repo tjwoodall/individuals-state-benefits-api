@@ -1,13 +1,10 @@
-This suite of endpoints allows software packages to:
+This API allows developers to:
+* list and retrieve state benefits
+* create, amend or delete customer added state benefits
+* create or amend benefits financial data
+* mark a state benefit as ignored
 
-- list and retrieve state benefits
-- create or amend customer added state benefits
-- delete customer added state benefits
-- create or amend benefits financial data
-- mark a state benefit as ignored
+Amendments to customer added state benefit or HMRC held state benefit must be made after the tax year has ended.
 
-For certain scenarios a request may not be made for a tax year which has not yet ended. This includes:
-
-- creating, or amending a customer added state benefit
-- ignoring a HMRC held state benefit
-- amending state benefit amounts for benefit types which are not Job Seekers Allowance (JSA) or Employment Support Allowance (ESA) 
+Amendments to Job Seekers Allowance (JSA) or Employment Support Allowance (ESA) may be made at any time.
+For information on how to connect to this API [see the Income Tax MTD end-to-end service guide] (https://developer.service.hmrc.gov.uk/guides/income-tax-mtd-end-to-end-service-guide/).
