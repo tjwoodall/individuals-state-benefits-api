@@ -16,6 +16,6 @@
 
 package v1.models.request.AmendBenefit
 
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 
 case class AmendBenefitRequest(nino: Nino, taxYear: String, benefitId: String, body: AmendBenefitRequestBody)

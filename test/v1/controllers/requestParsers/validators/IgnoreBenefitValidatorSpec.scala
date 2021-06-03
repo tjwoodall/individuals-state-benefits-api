@@ -48,10 +48,10 @@ class IgnoreBenefitValidatorSpec extends UnitSpec {
       .anyNumberOfTimes()
 
     //noinspection ScalaStyle
-    MockedAppConfig.minimumPermittedTaxYear
+    MockAppConfig.minimumPermittedTaxYear
       .returns(2021)
 
-    MockedAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
+    MockAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
       s"""
          |taxYearNotEndedRule.enabled = $errorFeatureSwitch
       """.stripMargin))))

@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AmendBenefitConnector @Inject()(val http: HttpClient,
-                                      val appConfig: AppConfig) extends BaseDesConnector {
+                                      val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def amendBenefit(request: AmendBenefitRequest)(
     implicit hc: HeaderCarrier,
@@ -38,7 +38,7 @@ class AmendBenefitConnector @Inject()(val http: HttpClient,
     import v1.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.CREATED)
 
-    val nino = request.nino
+    val nino = request.nino.nino
     val taxYear = request.taxYear
     val benefitId = request.benefitId
 

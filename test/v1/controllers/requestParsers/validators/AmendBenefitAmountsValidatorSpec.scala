@@ -86,7 +86,7 @@ class AmendBenefitAmountsValidatorSpec extends UnitSpec with ValueFormatErrorMes
 
     val validator = new AmendBenefitAmountsValidator()
 
-    MockedAppConfig.minimumPermittedTaxYear
+    MockAppConfig.minimumPermittedTaxYear
       .returns(2021)
   }
 

@@ -19,7 +19,7 @@ package v1.controllers
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockAmendBenefitRequestParser
@@ -91,7 +91,7 @@ class AmendBenefitControllerSpec
 
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
-    MockedAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
+    MockAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
     MockIdGenerator.getCorrelationId.returns(correlationId)
   }
 

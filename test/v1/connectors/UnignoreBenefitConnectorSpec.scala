@@ -17,7 +17,8 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
+import v1.models.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
@@ -37,9 +38,10 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockedAppConfig.ifsBaseUrl returns baseUrl
-    MockedAppConfig.ifsToken returns "ifs-token"
-    MockedAppConfig.ifsEnvironment returns "ifs-environment"
+    MockAppConfig.ifsBaseUrl returns baseUrl
+    MockAppConfig.ifsToken returns "ifs-token"
+    MockAppConfig.ifsEnvironment returns "ifs-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedDesHeaders)
   }
 
   "UnignoreBenefitConnector" when {
@@ -47,9 +49,14 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
       "return a successful response" in new Test {
         private val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        MockedHttpClient.delete(
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        val requiredIfsHeadersDelete: Seq[(String, String)] = requiredIfsHeaders ++ Seq("Content-Type" -> "application/json")
+
+        MockHttpClient.delete(
           url = s"$baseUrl/income-tax/state-benefits/$nino/$taxYear/ignore/$benefitId",
-          requiredHeaders = "Environment" -> "ifs-environment", "Authorization" -> s"Bearer ifs-token"
+          config = dummyIfsHeaderCarrierConfig,
+          requiredHeaders = requiredIfsHeadersDelete,
+          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
         ).returns(Future.successful(outcome))
 
         await(connector.unignoreBenefit(request)) shouldBe outcome
