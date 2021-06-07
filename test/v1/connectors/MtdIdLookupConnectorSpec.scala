@@ -56,31 +56,6 @@ class MtdIdLookupConnectorSpec extends ConnectorSpec {
         val result: MtdIdLookupOutcome = await(connector.getMtdId(nino))
         result shouldBe Left(DownstreamError)
       }
-      "getMtdId" should {
-        "return an MtdId" when {
-          "the http client returns a mtd id" in new Test {
-            MockHttpClient.get[MtdIdLookupOutcome](
-              url = s"$baseUrl/mtd-identifier-lookup/nino/$nino",
-              config = dummyIfsHeaderCarrierConfig
-            ).returns(Future.successful(Right(mtdId)))
-
-            val result: MtdIdLookupOutcome = await(connector.getMtdId(nino))
-            result shouldBe Right(mtdId)
-          }
-        }
-
-        "return a DownstreamError" when {
-          "the http client returns a DownstreamError" in new Test {
-            MockHttpClient.get[MtdIdLookupOutcome](
-              url = s"$baseUrl/mtd-identifier-lookup/nino/$nino",
-              config = dummyIfsHeaderCarrierConfig
-            ).returns(Future.successful(Left(DownstreamError)))
-
-            val result: MtdIdLookupOutcome = await(connector.getMtdId(nino))
-            result shouldBe Left(DownstreamError)
-          }
-        }
-      }
     }
   }
 }

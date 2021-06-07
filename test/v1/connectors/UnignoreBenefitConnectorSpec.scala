@@ -17,7 +17,6 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import uk.gov.hmrc.http.HeaderCarrier
 import v1.models.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
@@ -49,13 +48,10 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
       "return a successful response" in new Test {
         private val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredIfsHeadersDelete: Seq[(String, String)] = requiredIfsHeaders ++ Seq("Content-Type" -> "application/json")
-
         MockHttpClient.delete(
           url = s"$baseUrl/income-tax/state-benefits/$nino/$taxYear/ignore/$benefitId",
           config = dummyIfsHeaderCarrierConfig,
-          requiredHeaders = requiredIfsHeadersDelete,
+          requiredHeaders = requiredIfsHeaders,
           excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
         ).returns(Future.successful(outcome))
 
