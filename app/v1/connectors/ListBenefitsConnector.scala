@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ListBenefitsConnector @Inject()(val http: HttpClient,
-                                      val appConfig: AppConfig) extends BaseDesConnector {
+                                      val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def listBenefits(request: ListBenefitsRequest)(
     implicit hc: HeaderCarrier,
@@ -42,7 +42,7 @@ class ListBenefitsConnector @Inject()(val http: HttpClient,
     val nino = request.nino.nino
     val taxYear = request.taxYear
 
-    val queryParams = Map("benefitId" -> request.benefitId).collect {
+    val queryParams = Seq("benefitId" -> request.benefitId).collect {
         case (key, Some(value)) => key -> value
       }
 

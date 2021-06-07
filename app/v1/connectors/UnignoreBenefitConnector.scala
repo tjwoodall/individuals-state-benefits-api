@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UnignoreBenefitConnector @Inject()(val http: HttpClient,
-                                         val appConfig: AppConfig) extends BaseDesConnector {
+                                         val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def unignoreBenefit(request: IgnoreBenefitRequest)(
     implicit hc: HeaderCarrier,
@@ -39,7 +39,7 @@ class UnignoreBenefitConnector @Inject()(val http: HttpClient,
 
     implicit val successCode: SuccessCode = SuccessCode(Status.NO_CONTENT)
 
-    val nino = request.nino
+    val nino = request.nino.nino
     val taxYear = request.taxYear
     val benefitId = request.benefitId
 

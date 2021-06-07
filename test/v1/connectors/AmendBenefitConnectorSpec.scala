@@ -17,7 +17,8 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import uk.gov.hmrc.domain.Nino
+import uk.gov.hmrc.http.HeaderCarrier
+import v1.models.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.AmendBenefit.{AmendBenefitRequest, AmendBenefitRequestBody}
@@ -54,9 +55,10 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer des-token"
     )
 
-    MockedAppConfig.desBaseUrl returns baseUrl
-    MockedAppConfig.desToken returns "des-token"
-    MockedAppConfig.desEnvironment returns "des-environment"
+    MockAppConfig.desBaseUrl returns baseUrl
+    MockAppConfig.desToken returns "des-token"
+    MockAppConfig.desEnvironment returns "des-environment"
+    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
   }
 
   "UpdateBenefitConnector" when {
@@ -64,11 +66,16 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
       "return a 201 status for a success scenario" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        MockedHttpClient
+        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        val requiredDesHeadersPut: Seq[(String, String)] = requiredDesHeaders ++ Seq("Content-Type" -> "application/json")
+
+        MockHttpClient
           .put(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
+            config = dummyDesHeaderCarrierConfig,
             body = request.body,
-            requiredHeaders = desRequestHeaders: _*
+            requiredHeaders = requiredDesHeadersPut,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           ).returns(Future.successful(outcome))
 
         await(connector.amendBenefit(request)) shouldBe outcome

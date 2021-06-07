@@ -16,6 +16,6 @@
 
 package v1.models.request.deleteBenefit
 
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 
 case class DeleteBenefitRequest(nino: Nino, taxYear: String, benefitId: String)

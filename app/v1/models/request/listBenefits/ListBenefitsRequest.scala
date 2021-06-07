@@ -16,6 +16,6 @@
 
 package v1.models.request.listBenefits
 
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 
 case class ListBenefitsRequest(nino: Nino, taxYear: String, benefitId: Option[String])

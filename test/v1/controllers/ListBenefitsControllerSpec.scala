@@ -62,7 +62,7 @@ class ListBenefitsControllerSpec
 
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
-    MockedAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
+    MockAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
     MockIdGenerator.getCorrelationId.returns(correlationId)
 
     val links: List[Link] = List(

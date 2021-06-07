@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CreateBenefitConnector @Inject()(val http: HttpClient,
-                                       val appConfig: AppConfig) extends BaseDesConnector {
+                                       val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def addBenefit(request: CreateBenefitRequest)(
     implicit hc: HeaderCarrier,
@@ -39,7 +39,7 @@ class CreateBenefitConnector @Inject()(val http: HttpClient,
     import v1.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    val nino = request.nino
+    val nino = request.nino.nino
     val taxYear = request.taxYear
 
     post(request.body, DesUri[AddBenefitResponse](s"income-tax/income/state-benefits/$nino/$taxYear/custom"))

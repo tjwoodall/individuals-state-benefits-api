@@ -16,6 +16,6 @@
 
 package v1.models.request.createBenefit
 
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 
 case class CreateBenefitRequest(nino: Nino, taxYear: String, body: CreateBenefitRequestBody)

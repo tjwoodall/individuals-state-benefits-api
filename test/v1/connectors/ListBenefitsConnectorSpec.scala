@@ -17,7 +17,7 @@
 package v1.connectors
 
 import mocks.MockAppConfig
-import uk.gov.hmrc.domain.Nino
+import v1.models.domain.Nino
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
@@ -83,9 +83,10 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer des-token"
     )
 
-    MockedAppConfig.desBaseUrl returns baseUrl
-    MockedAppConfig.desToken returns "des-token"
-    MockedAppConfig.desEnvironment returns "des-environment"
+    MockAppConfig.desBaseUrl returns baseUrl
+    MockAppConfig.desToken returns "des-token"
+    MockAppConfig.desEnvironment returns "des-environment"
+    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
   }
 
   "ListBenefitsConnector" when {
@@ -94,11 +95,13 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
 
         val outcome = Right(ResponseWrapper(correlationId, validResponse))
 
-        MockedHttpClient
+        MockHttpClient
           .parameterGet(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
             queryParams,
-            requiredHeaders = desRequestHeaders: _*
+            config = dummyDesHeaderCarrierConfig,
+            requiredHeaders = desRequestHeaders,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           )
           .returns(Future.successful(outcome))
 
