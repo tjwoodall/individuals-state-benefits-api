@@ -49,6 +49,7 @@ class AmendBenefitAmountsService @Inject()(connector: AmendBenefitAmountsConnect
   private def desErrorMap: Map[String, MtdError] = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR" -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID " -> NotFoundError,
       "INVALID_BENEFIT_ID" -> NotFoundError,
       "INVALID_CORRELATIONID" -> DownstreamError,
       "INVALID_PAYLOAD" -> DownstreamError,
