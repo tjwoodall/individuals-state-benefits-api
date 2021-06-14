@@ -27,24 +27,6 @@ case class FeatureSwitch(value: Option[Configuration]) {
       case Some(config) => config.getOptional[Boolean]("taxYearNotEndedRule.enabled").getOrElse(true)
       case _ => true
     }
-
-  }
-
-  def isAllowListingEnabled: Boolean = {
-    value match {
-      case Some(config) => config.getOptional[Boolean]("white-list.enabled").getOrElse(false)
-      case None         => false
-    }
-  }
-
-  def allowListedApplicationIds: Seq[String] = {
-    value match {
-      case Some(config) =>
-        config
-          .getOptional[Seq[String]]("white-list.applicationIds")
-          .getOrElse(throw new RuntimeException(s"feature-switch.white-list.applicationIds is not configured"))
-      case None => Seq()
-    }
   }
 
   def isVersionEnabled(version: String): Boolean = {
