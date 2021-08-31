@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.routing
+package routing
 
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
@@ -25,11 +25,10 @@ import play.api.Configuration
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.{HttpConfiguration, HttpErrorHandler, HttpFilters}
 import play.api.libs.json.Json
-import play.api.mvc.{EssentialAction, _}
+import play.api.mvc._
 import play.api.routing.Router
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import routing.{VersionRoutingMap, VersionRoutingRequestHandler}
 import support.UnitSpec
 import v1.models.errors.{InvalidAcceptHeaderError, UnsupportedVersionError}
 
