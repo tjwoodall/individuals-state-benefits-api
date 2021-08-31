@@ -15,10 +15,10 @@
  */
 
 package v1r6.controllers
+
 import cats.data.EitherT
 import cats.implicits._
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -27,10 +27,11 @@ import v1r6.controllers.requestParsers.ListBenefitsRequestParser
 import v1r6.hateoas.HateoasFactory
 import v1r6.models.errors._
 import v1r6.models.request.listBenefits.ListBenefitsRawData
-import v1r6.models.response.listBenefits.{ListBenefitsHateoasData, ListBenefitsResponse, StateBenefit}
 import v1r6.models.response.listBenefits.ListBenefitsResponse.ListBenefitsLinksFactory
+import v1r6.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData, ListBenefitsResponse}
 import v1r6.services.{EnrolmentsAuthService, ListBenefitsService, MtdIdLookupService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -69,8 +70,8 @@ class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
           hateoasResponse <- EitherT.fromEither[Future](
             hateoasFactory
               .wrapList(
-                findAndUpdateCommonBenefits(serviceResponse.responseData, benefitId),
-                ListBenefitsHateoasData(nino, taxYear, benefitId)
+                serviceResponse.responseData,
+                ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(serviceResponse.responseData))
               )
               .asRight[ErrorWrapper])
         } yield {
@@ -104,18 +105,6 @@ class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
     }
   }
 
-  private def findAndUpdateCommonBenefits(response: ListBenefitsResponse[StateBenefit], benefitId: Option[String]): ListBenefitsResponse[StateBenefit] = {
-
-    benefitId match {
-      case None => response
-      case _ => (response.stateBenefits, response.customerAddedStateBenefits) match {
-        case (Some(hmrc), Some(custom)) if hasCommon(hmrc, custom) =>
-          response.copy(Some(hmrc.map(_.copy(isCommon = true))), Some(custom.map(_.copy(isCommon = true))))
-        case (_, _) => response
-      }
-    }
-  }
-
-  private def hasCommon(hmrcB: Seq[StateBenefit], customB: Seq[StateBenefit]): Boolean =
-    (hmrcB ++ customB).toList.groupBy(_.benefitId).values.exists(_.length > 1)
+  private def hmrcBenefitIds(response: ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]): Seq[String] =
+    response.stateBenefits.getOrElse(Nil).map(_.benefitId)
 }

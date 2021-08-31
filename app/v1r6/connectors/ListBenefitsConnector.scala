@@ -21,7 +21,7 @@ import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1r6.connectors.DownstreamUri.IfsUri
 import v1r6.models.request.listBenefits.ListBenefitsRequest
-import v1r6.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1r6.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,7 +33,7 @@ class ListBenefitsConnector @Inject()(val http: HttpClient,
   def listBenefits(request: ListBenefitsRequest)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
-    correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[StateBenefit]]] = {
+    correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
     import v1r6.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
@@ -42,7 +42,7 @@ class ListBenefitsConnector @Inject()(val http: HttpClient,
     val taxYear = request.taxYear
 
     getWithQueryParams(
-      IfsUri[ListBenefitsResponse[StateBenefit]](s"income-tax/income/state-benefits/$nino/$taxYear"),
+      IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/$nino/$taxYear"),
       request.benefitId.map("benefitId" -> _).toSeq
     )
   }

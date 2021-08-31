@@ -16,50 +16,38 @@
 
 package v1r6.models.response.listBenefits
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsPath, Json, OWrites, Reads}
+import play.api.libs.json.{Json, OFormat}
 import utils.JsonUtils
 
-case class StateBenefit(benefitType: String,
-                        dateIgnored: Option[String] = None,
-                        submittedOn: Option[String],
-                        benefitId: String,
-                        startDate: String,
-                        endDate: Option[String],
-                        amount: Option[BigDecimal],
-                        taxPaid: Option[BigDecimal],
-                        createdBy: String,
-                        isCommon: Boolean = false){
+sealed trait StateBenefit {
+  def benefitId: String
+}
+
+case class HMRCStateBenefit(benefitType: String,
+                            dateIgnored: Option[String] = None,
+                            submittedOn: Option[String],
+                            benefitId: String,
+                            startDate: String,
+                            endDate: Option[String],
+                            amount: Option[BigDecimal],
+                            taxPaid: Option[BigDecimal]) extends StateBenefit
+
+
+object HMRCStateBenefit extends JsonUtils {
+  implicit val format: OFormat[HMRCStateBenefit] = Json.format[HMRCStateBenefit]
+}
+
+case class CustomerStateBenefit(benefitType: String,
+                                submittedOn: Option[String],
+                                benefitId: String,
+                                startDate: String,
+                                endDate: Option[String],
+                                amount: Option[BigDecimal],
+                                taxPaid: Option[BigDecimal]) extends StateBenefit {
 
   val hasAmounts: Boolean = amount.isDefined || taxPaid.isDefined
 }
 
-object StateBenefit extends JsonUtils {
-
-  implicit val writes: OWrites[StateBenefit] = (
-    (JsPath \ "benefitType").write[String] and
-      (JsPath \ "dateIgnored").writeNullable[String] and
-      (JsPath \ "submittedOn").writeNullable[String] and
-      (JsPath \ "benefitId").write[String] and
-      (JsPath \ "startDate").write[String] and
-      (JsPath \ "endDate").writeNullable[String] and
-      (JsPath \ "amount").writeNullable[BigDecimal] and
-      (JsPath \ "taxPaid").writeNullable[BigDecimal] and
-      OWrites[Any](_ => Json.obj()) and
-      OWrites[Any](_ => Json.obj())
-    )(unlift(StateBenefit.unapply))
-
-  implicit val reads: Reads[StateBenefit] =  (
-    (JsPath \ "benefitType").read[String] and
-      (JsPath \ "dateIgnored").readNullable[String] and
-      (JsPath \ "submittedOn").readNullable[String] and
-      (JsPath \ "benefitId").read[String] and
-      (JsPath \ "startDate").read[String] and
-      (JsPath \ "endDate").readNullable[String] and
-      (JsPath \ "amount").readNullable[BigDecimal] and
-      (JsPath \ "taxPaid").readNullable[BigDecimal] and
-      (JsPath \ "createdBy").read[String] and
-      Reads.pure(false)
-    )(StateBenefit.apply _)
-
+object CustomerStateBenefit extends JsonUtils {
+  implicit val format: OFormat[CustomerStateBenefit] = Json.format[CustomerStateBenefit]
 }

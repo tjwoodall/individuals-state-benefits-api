@@ -16,82 +16,27 @@
 
 package v1r6.hateoas
 
-import cats.Functor
+import cats._
 import config.AppConfig
 import mocks.MockAppConfig
 import support.UnitSpec
-import v1r6.models.hateoas.Method.{DELETE, GET, POST, PUT}
+import v1r6.models.hateoas.Method.GET
 import v1r6.models.hateoas.{HateoasData, HateoasWrapper, Link}
-import v1r6.models.response.listBenefits.{ListBenefitsHateoasData, ListBenefitsResponse, StateBenefit}
-import v1r6.models.response.{AddBenefitHateoasData, AddBenefitResponse}
 
 class HateoasFactorySpec extends UnitSpec with MockAppConfig {
-
   val hateoasFactory = new HateoasFactory(mockAppConfig)
 
-  case class Response(foo: String)
-  case class ListResponse[A](items: Seq[A])
-
   case class Data1(id: String) extends HateoasData
+
   case class Data2(id: String) extends HateoasData
-
-  val response: Response = Response("X")
-
-  val nino: String = "AA123456A"
-  val taxYear: String = "2020-21"
-  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-
-  val createStateBenefitResponse: AddBenefitResponse = AddBenefitResponse(benefitId)
-  val createStateBenefitsHateoasData: AddBenefitHateoasData = AddBenefitHateoasData(nino, taxYear, benefitId)
-
-  val listBenefitsHateoasData: ListBenefitsHateoasData = ListBenefitsHateoasData(nino, taxYear, None)
-
-  val stateBenefits: StateBenefit = StateBenefit(
-    benefitType = "incapacityBenefit",
-    dateIgnored = Some("2019-04-04T01:01:01Z"),
-    benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
-    startDate = "2020-01-01",
-    endDate = Some("2020-04-01"),
-    amount = Some(2000.00),
-    taxPaid = Some(2132.22),
-    submittedOn = None,
-    createdBy = "HMRC"
-  )
-
-  val customerAddedStateBenefits: StateBenefit = StateBenefit(
-    benefitType = "incapacityBenefit",
-    benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
-    startDate = "2020-01-01",
-    endDate = Some("2020-04-01"),
-    amount = Some(2000.00),
-    taxPaid = Some(2132.22),
-    submittedOn = Some("2019-04-04T01:01:01Z"),
-    createdBy = "CUSTOM"
-  )
-
-  val stateBenefitsLinks: Seq[Link] = List(Link("/context/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779f",GET,"self"))
-
-  val customerStateBenefitsLinks: Seq[Link] = List(Link("/context/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779f",GET,"self"))
-
-  val listBenefitsLink: Seq[Link] = List(Link("/context/AA123456A/2020-21",POST,"create-state-benefit"), Link("/context/AA123456A/2020-21",GET,"self"))
-
-  val listBenefitsResponse: ListBenefitsResponse[StateBenefit] = ListBenefitsResponse(
-    stateBenefits = Some(Seq(stateBenefits)),
-    customerAddedStateBenefits = Some(Seq(customerAddedStateBenefits)
-    )
-  )
-
-  val hateoasResponse: HateoasWrapper[ListBenefitsResponse[HateoasWrapper[StateBenefit]]] = HateoasWrapper(
-    ListBenefitsResponse(
-      Some(List(HateoasWrapper(stateBenefits, stateBenefitsLinks))),
-      Some(List(HateoasWrapper(customerAddedStateBenefits, customerStateBenefitsLinks)))),
-    listBenefitsLink)
 
   class Test {
     MockAppConfig.apiGatewayContext.returns("context").anyNumberOfTimes
   }
 
   "wrap" should {
+    case class Response(foo: String)
+    val response: Response = Response("X")
 
     implicit object LinksFactory1 extends HateoasLinksFactory[Response, Data1] {
       override def links(appConfig: AppConfig, data: Data1): Seq[Link] = Seq(Link(s"${appConfig.apiGatewayContext}/${data.id}", GET, "rel1"))
@@ -108,40 +53,57 @@ class HateoasFactorySpec extends UnitSpec with MockAppConfig {
     "use the endpoint HateoasData specific links" in new Test {
       hateoasFactory.wrap(response, Data2("id")) shouldBe HateoasWrapper(response, Seq(Link("context/id", GET, "rel2")))
     }
-
-    "use the add state benefits HateoasData specific links" in new Test {
-      hateoasFactory.wrap(createStateBenefitResponse, createStateBenefitsHateoasData) shouldBe
-        HateoasWrapper(
-          AddBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253"),
-          List(
-            Link("/context/AA123456A/2020-21?benefitId=b1e8057e-fbbc-47a8-a8b4-78d9f015c253",GET,"self"),
-            Link("/context/AA123456A/2020-21/b1e8057e-fbbc-47a8-a8b4-78d9f015c253",PUT,"amend-state-benefit"),
-            Link("/context/AA123456A/2020-21/b1e8057e-fbbc-47a8-a8b4-78d9f015c253",DELETE,"delete-state-benefit")
-          )
-        )
-    }
   }
 
   "wrapList" should {
+    case class ListResponse[A](items: Seq[A])
+    case class Item(foo: String)
+    val item = Item("theItem")
 
     implicit object ListResponseFunctor extends Functor[ListResponse] {
       override def map[A, B](fa: ListResponse[A])(f: A => B): ListResponse[B] = ListResponse(fa.items.map(f))
     }
 
-    implicit object LinksFactory extends HateoasListLinksFactory[ListResponse, Response, Data1] {
-      override def itemLinks(appConfig: AppConfig, data: Data1, item: Response): Seq[Link] =
+    implicit object LinksFactory extends HateoasListLinksFactory[ListResponse, Item, Data1] {
+      override def itemLinks(appConfig: AppConfig, data: Data1, item: Item): Seq[Link] =
         Seq(Link(s"${appConfig.apiGatewayContext}/${data.id}/${item.foo}", GET, "item"))
 
       override def links(appConfig: AppConfig, data: Data1): Seq[Link] = Seq(Link(s"${appConfig.apiGatewayContext}/${data.id}", GET, "rel"))
     }
 
     "work" in new Test {
-      hateoasFactory.wrapList(ListResponse(Seq(response)), Data1("id")) shouldBe
-        HateoasWrapper(ListResponse(Seq(HateoasWrapper(response, Seq(Link("context/id/X", GET, "item"))))), Seq(Link("context/id", GET, "rel")))
+      hateoasFactory.wrapList(ListResponse(Seq(item)), Data1("id")) shouldBe
+        HateoasWrapper(ListResponse(Seq(HateoasWrapper(item, Seq(Link("context/id/theItem", GET, "item"))))), Seq(Link("context/id", GET, "rel")))
+    }
+  }
+
+  "wrapList for bifunctor case" should {
+    case class ListResponse[A, B](items1: Seq[A], items2: Seq[B])
+    case class Item1(foo: String)
+    case class Item2(foo: String)
+    val item1 = Item1("theItem1")
+    val item2 = Item2("theItem2")
+    implicit object ListResponseFunctor extends Bifunctor[ListResponse] {
+      override def bimap[A, B, C, D](fab: ListResponse[A, B])(f: A => C, g: B => D): ListResponse[C, D] =
+        ListResponse(fab.items1.map(f), fab.items2.map(g))
     }
 
-    "use the list state benefits HateoasData specific links" in new Test {
-      hateoasFactory.wrapList(listBenefitsResponse, listBenefitsHateoasData) shouldBe hateoasResponse
+    implicit object LinksFactory extends HateoasListLinksFactory2[ListResponse, Item1, Item2, Data1] {
+      override def itemLinks1(appConfig: AppConfig, data1: Data1, item: Item1): Seq[Link] =
+        Seq(Link(s"${appConfig.apiGatewayContext}/${data1.id}/${item.foo}", GET, "item1"))
+
+      override def itemLinks2(appConfig: AppConfig, data1: Data1, item: Item2): Seq[Link] =
+        Seq(Link(s"${appConfig.apiGatewayContext}/${data1.id}/${item.foo}", GET, "item2"))
+
+      override def links(appConfig: AppConfig, data: Data1): Seq[Link] = Seq(Link(s"${appConfig.apiGatewayContext}/${data.id}", GET, "rel"))
+    }
+
+    "work" in new Test {
+      hateoasFactory.wrapList(ListResponse(Seq(item1), Seq(item2)), Data1("id")) shouldBe
+        HateoasWrapper(ListResponse(
+          items1 = Seq(HateoasWrapper(item1, Seq(Link("context/id/theItem1", GET, "item1")))),
+          items2 = Seq(HateoasWrapper(item2, Seq(Link("context/id/theItem2", GET, "item2"))))),
+          Seq(Link("context/id", GET, "rel")))
     }
   }
 }

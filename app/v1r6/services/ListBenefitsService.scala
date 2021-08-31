@@ -18,7 +18,6 @@ package v1r6.services
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1r6.connectors.ListBenefitsConnector
@@ -26,9 +25,10 @@ import v1r6.controllers.EndpointLogContext
 import v1r6.models.errors._
 import v1r6.models.outcomes.ResponseWrapper
 import v1r6.models.request.listBenefits.ListBenefitsRequest
-import v1r6.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1r6.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 import v1r6.support.DesResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -37,7 +37,7 @@ class ListBenefitsService @Inject()(connector: ListBenefitsConnector) extends De
   def listBenefits(request: ListBenefitsRequest)
                   (implicit hc: HeaderCarrier, ec: ExecutionContext, logContext: EndpointLogContext,
                    correlationId: String):
-  Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[StateBenefit]]]] = {
+  Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDesErrors(mappingDesToMtdError))

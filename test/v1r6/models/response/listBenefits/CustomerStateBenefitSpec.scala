@@ -14,49 +14,42 @@
  * limitations under the License.
  */
 
-package v1r6.models.response
+package v1r6.models.response.listBenefits
 
 import play.api.libs.json.{JsObject, JsValue, Json}
 import support.UnitSpec
-import v1r6.models.response.listBenefits.StateBenefit
 import v1r6.models.utils.JsonErrorValidators
 
-class StateBenefitSpec extends UnitSpec with JsonErrorValidators {
+class CustomerStateBenefitSpec extends UnitSpec with JsonErrorValidators {
 
   val json: JsValue = Json.parse(
     """{
       |     "benefitType": "incapacityBenefit",
-      |			"dateIgnored": "2019-04-04T01:01:01Z",
       |     "submittedOn": "9d51a3eb-e374-5349-aa02-96db92561138",
       |			"benefitId": "9d51a3eb-e374-5349-aa02-96db92561138",
       |			"startDate": "2020-01-01",
       |			"endDate": "2020-04-01",
       |			"amount": 34345.55,
-      |			"taxPaid": 345.55,
-      |     "createdBy": "HMRC"
+      |			"taxPaid": 345.55
       |}""".stripMargin)
 
-  val model: StateBenefit = StateBenefit(
+  val model: CustomerStateBenefit = CustomerStateBenefit(
     benefitType = "incapacityBenefit",
-    dateIgnored = Some("2019-04-04T01:01:01Z"),
     submittedOn = Some("9d51a3eb-e374-5349-aa02-96db92561138"),
     benefitId = "9d51a3eb-e374-5349-aa02-96db92561138",
     startDate = "2020-01-01",
     endDate = Some("2020-04-01"),
     amount = Some(34345.55),
-    taxPaid = Some(345.55),
-    createdBy = "HMRC"
+    taxPaid = Some(345.55)
   )
 
-  testJsonProperties[StateBenefit](json)(
+  testJsonProperties[CustomerStateBenefit](json)(
     mandatoryProperties = Seq(
       "benefitType",
       "benefitId",
-      "startDate",
-      "createdBy"
+      "startDate"
     ),
     optionalProperties = Seq(
-      "dateIgnored",
       "submittedOn",
       "endDate",
       "amount",
@@ -66,14 +59,14 @@ class StateBenefitSpec extends UnitSpec with JsonErrorValidators {
 
   "StateBenefits" when {
     "read from valid JSON" should {
-      "produce the expected StateBenefit object" in {
-        json.as[StateBenefit] shouldBe model
+      "produce the expected CustomerStateBenefit object" in {
+        json.as[CustomerStateBenefit] shouldBe model
       }
     }
 
     "writes from valid object" should {
       "produce the expected json" in {
-        Json.toJson(model) shouldBe json.as[JsObject] - "createdBy"
+        Json.toJson(model) shouldBe json.as[JsObject]
       }
     }
   }

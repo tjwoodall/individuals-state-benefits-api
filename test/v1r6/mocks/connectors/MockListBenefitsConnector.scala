@@ -21,7 +21,7 @@ import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
 import v1r6.connectors.{DownstreamOutcome, ListBenefitsConnector}
 import v1r6.models.request.listBenefits.ListBenefitsRequest
-import v1r6.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1r6.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,7 +31,7 @@ trait MockListBenefitsConnector extends MockFactory {
 
   object MockListBenefitsConnector {
 
-    def listBenefits(requestData: ListBenefitsRequest): CallHandler[Future[DownstreamOutcome[ListBenefitsResponse[StateBenefit]]]] = {
+    def listBenefits(requestData: ListBenefitsRequest): CallHandler[Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
       (mockListBenefitsConnector
         .listBenefits(_: ListBenefitsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)

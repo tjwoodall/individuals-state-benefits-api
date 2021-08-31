@@ -21,7 +21,7 @@ import v1r6.mocks.MockHttpClient
 import v1r6.models.domain.Nino
 import v1r6.models.outcomes.ResponseWrapper
 import v1r6.models.request.listBenefits.ListBenefitsRequest
-import v1r6.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1r6.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import scala.concurrent.Future
 
@@ -34,7 +34,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
   private val validResponse = ListBenefitsResponse(
     stateBenefits = Some(
       Seq(
-        StateBenefit(
+        HMRCStateBenefit(
           benefitType = "incapacityBenefit",
           dateIgnored = Some("2019-04-04T01:01:01Z"),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
@@ -42,22 +42,20 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = None,
-          createdBy = "HMRC"
+          submittedOn = None
         )
       )
     ),
     customerAddedStateBenefits = Some(
       Seq(
-        StateBenefit(
+        CustomerStateBenefit(
           benefitType = "incapacityBenefit",
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z"),
-          createdBy = "CUSTOM"
+          submittedOn = Some("2019-04-04T01:01:01Z")
         )
       )
     )
@@ -76,7 +74,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     )
 
 
-    def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[StateBenefit]], queryParams: Seq[(String, String)]): Unit = {
+    def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]], queryParams: Seq[(String, String)]): Unit = {
       MockHttpClient
         .parameterGet(
           url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
