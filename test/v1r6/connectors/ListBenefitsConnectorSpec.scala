@@ -17,8 +17,8 @@
 package v1r6.connectors
 
 import mocks.MockAppConfig
-import v1r6.models.domain.Nino
 import v1r6.mocks.MockHttpClient
+import v1r6.models.domain.Nino
 import v1r6.models.outcomes.ResponseWrapper
 import v1r6.models.request.listBenefits.ListBenefitsRequest
 import v1r6.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
@@ -29,15 +29,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
 
   val nino: String = "AA111111A"
   val taxYear: String = "2019"
-  private val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
-
-  def queryParams: Seq[(String, String)] =
-    Seq("benefitId" -> benefitId)
-      .collect {
-        case (k, Some(v)) => (k, v)
-      }
-
-  val request: ListBenefitsRequest = ListBenefitsRequest(Nino(nino), taxYear, benefitId)
+  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
 
   private val validResponse = ListBenefitsResponse(
     stateBenefits = Some(
@@ -78,34 +70,48 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    val desRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
-      "Authorization" -> s"Bearer des-token"
+    val ifsRequestHeaders: Seq[(String, String)] = Seq(
+      "Environment" -> "ifs-environment",
+      "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+
+    def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[StateBenefit]], queryParams: Seq[(String, String)]): Unit = {
+      MockHttpClient
+        .parameterGet(
+          url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
+          queryParams,
+          config = dummyIfsHeaderCarrierConfig,
+          requiredHeaders = ifsRequestHeaders,
+          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+        )
+        .returns(Future.successful(response))
+    }
+
+    MockAppConfig.ifsBaseUrl returns baseUrl
+    MockAppConfig.ifsToken returns "ifs-token"
+    MockAppConfig.ifsEnvironment returns "ifs-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "ListBenefitsConnector" when {
-    "listBenefits" must {
-      "return a 200 status for a success scenario" in new Test {
+    "listBenefits" when {
+      "no benefitId query param is provided" must {
+        "return a 200 status for a success scenario" in new Test {
+          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+          stubHttp(outcome, Seq("benefitId" -> benefitId))
 
-        val outcome = Right(ResponseWrapper(correlationId, validResponse))
+          await(connector.listBenefits(ListBenefitsRequest(Nino(nino), taxYear, Some(benefitId)))) shouldBe outcome
+        }
+      }
 
-        MockHttpClient
-          .parameterGet(
-            url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
-            queryParams,
-            config = dummyDesHeaderCarrierConfig,
-            requiredHeaders = desRequestHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          )
-          .returns(Future.successful(outcome))
+      "a benefitId query param is provided" must {
+        "return a 200 status for a success scenario" in new Test {
+          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+          stubHttp(outcome, queryParams = Nil)
 
-        await(connector.listBenefits(request)) shouldBe outcome
+          await(connector.listBenefits(ListBenefitsRequest(Nino(nino), taxYear, None))) shouldBe outcome
+        }
       }
     }
   }

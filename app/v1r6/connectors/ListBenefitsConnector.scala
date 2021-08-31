@@ -17,14 +17,13 @@
 package v1r6.connectors
 
 import config.AppConfig
-
-import javax.inject.{Inject, Singleton}
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1r6.connectors.DownstreamUri.DesUri
+import v1r6.connectors.DownstreamUri.IfsUri
 import v1r6.models.request.listBenefits.ListBenefitsRequest
 import v1r6.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -42,13 +41,9 @@ class ListBenefitsConnector @Inject()(val http: HttpClient,
     val nino = request.nino.nino
     val taxYear = request.taxYear
 
-    val queryParams = Seq("benefitId" -> request.benefitId).collect {
-        case (key, Some(value)) => key -> value
-      }
-
     getWithQueryParams(
-      DesUri[ListBenefitsResponse[StateBenefit]](s"income-tax/income/state-benefits/$nino/$taxYear"),
-      queryParams
+      IfsUri[ListBenefitsResponse[StateBenefit]](s"income-tax/income/state-benefits/$nino/$taxYear"),
+      request.benefitId.map("benefitId" -> _).toSeq
     )
   }
 }
