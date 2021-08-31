@@ -26,7 +26,7 @@ import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
-import v1r6.connectors.DownstreamUri.DesUri
+import v1r6.connectors.DownstreamUri.IfsUri
 import v1r6.controllers.requestParsers.DeleteBenefitRequestParser
 import v1r6.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import v1r6.models.errors._
@@ -62,13 +62,13 @@ class DeleteBenefitController @Inject()(val authService: EnrolmentsAuthService,
         taxYear = taxYear,
         benefitId = benefitId
       )
-      implicit val desUri: DesUri[Unit] = DesUri[Unit](
+      implicit val desUri: IfsUri[Unit] = IfsUri[Unit](
         s"income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
       )
       val result =
         for {
           _ <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.delete(desErrorMap))
+          serviceResponse <- EitherT(service.delete(ifsErrorMap))
         } yield {
           logger.info(
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
@@ -112,7 +112,7 @@ class DeleteBenefitController @Inject()(val authService: EnrolmentsAuthService,
     }
   }
 
-  private def desErrorMap: Map[String, MtdError] =
+  private def ifsErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR" -> TaxYearFormatError,
