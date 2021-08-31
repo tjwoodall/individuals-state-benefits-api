@@ -75,9 +75,10 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         }
 
       val input = Seq(
+        ("INCOME_SOURCE_NOT_FOUND", NotFoundError),
         ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
         ("INVALID_TAX_YEAR", TaxYearFormatError),
-        ("INVALID_BENEFIT_ID", NotFoundError),
+        ("INVALID_BENEFIT_ID", BenefitIdFormatError),
         ("INVALID_CORRELATIONID", DownstreamError),
         ("INVALID_PAYLOAD", DownstreamError),
         ("INVALID_REQUEST_BEFORE_TAX_YEAR", RuleTaxYearNotEndedError),
@@ -87,11 +88,11 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
 
       input.foreach(args => (serviceError _).tupled(args))
 
-      def serviceErrorSpaced(desErrorCode: String, error: MtdError): Unit =
-        s"a $desErrorCode error with empty spaces is returned from the service" in new Test {
+      def serviceErrorSpaced(ifsErrorCode: String, error: MtdError): Unit =
+        s"a $ifsErrorCode error with empty spaces is returned from the service" in new Test {
 
           MockUpdateBenefitAmountsConnector.updateBenefitAmounts(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(ifsErrorCode))))))
 
           await(service.updateBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
@@ -99,7 +100,7 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
       val inputSpaced = Seq(
         ("INVALID_TAXABLE_ENTITY_ID ", NinoFormatError),
         (" INVALID_TAX_YEAR ", TaxYearFormatError),
-        ("INVALID_BENEFIT_ID ", NotFoundError),
+        ("INVALID_BENEFIT_ID ", BenefitIdFormatError),
         (" INVALID_CORRELATIONID", DownstreamError),
         ("INVALID_PAYLOAD     ", DownstreamError),
         ("   INVALID_REQUEST_BEFORE_TAX_YEAR       ", RuleTaxYearNotEndedError),
