@@ -70,6 +70,8 @@ object RuleIgnoreForbiddenError extends MtdError("RULE_IGNORE_FORBIDDEN", "A cus
 
 object RuleUnignoreForbiddenError extends MtdError("RULE_UNIGNORE_FORBIDDEN", "A customer added state benefit cannot be unignored")
 
+object RuleBenefitTypeExists extends MtdError("RULE_BENEFIT_TYPE_EXISTS", "A benefit of this type has already been created")
+
 //Standard Errors
 object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
 

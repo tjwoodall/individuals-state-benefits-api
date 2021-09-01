@@ -245,6 +245,7 @@ class CreateBenefitControllerSpec
           (NinoFormatError, BAD_REQUEST),
           (TaxYearFormatError, BAD_REQUEST),
           (RuleTaxYearNotEndedError, BAD_REQUEST),
+          (RuleBenefitTypeExists, FORBIDDEN),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 

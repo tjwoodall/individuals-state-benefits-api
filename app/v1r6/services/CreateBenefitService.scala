@@ -54,7 +54,7 @@ class CreateBenefitService @Inject()(connector: CreateBenefitConnector)
       "INVALID_TAX_YEAR" -> TaxYearFormatError,
       "INVALID_CORRELATIONID" -> DownstreamError,
       "INVALID_PAYLOAD" -> DownstreamError,
-      "INVALID_REQUEST_TAX_YEAR" -> RuleTaxYearNotSupportedError,
+      "BENEFIT_TYPE_ALREADY_EXISTS" -> RuleBenefitTypeExists,
       "NOT_SUPPORTED_TAX_YEAR" -> RuleTaxYearNotEndedError,
       "INVALID_START_DATE" -> RuleStartDateAfterTaxYearEndError,
       "INVALID_CESSATION_DATE" -> RuleEndDateBeforeTaxYearStartError,

@@ -24,7 +24,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1r6.fixtures.ListBenefitsFixture._
 import v1r6.models.errors._
-import v1r6.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1r6.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
@@ -61,7 +61,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, OK, desJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, desJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -78,7 +78,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, OK, singleStateBenefitDesJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, singleStateBenefitDesJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -95,7 +95,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, singleStateBenefitDesJsonWithDuplicateId)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, singleStateBenefitDesJsonWithDuplicateId)
         }
 
         val response: WSResponse = await(request(benefitId).get())
@@ -112,7 +112,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, singleCustomerStateBenefitDesJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, singleCustomerStateBenefitDesJson)
         }
 
         val response: WSResponse = await(request(benefitId).get())
@@ -129,7 +129,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, desJsonWithNoAmounts)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, desJsonWithNoAmounts)
         }
 
         val response: WSResponse = await(request(benefitId).get())
@@ -146,7 +146,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, desJsonWithNoDateIgnored)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, desJsonWithNoDateIgnored)
         }
 
         val response: WSResponse = await(request(benefitId).get())
@@ -198,7 +198,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.GET, desUri, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.GET, desUri, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(request(None).get())

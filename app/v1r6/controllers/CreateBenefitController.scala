@@ -115,6 +115,7 @@ class CreateBenefitController @Inject()(val authService: EnrolmentsAuthService,
            RuleStartDateAfterTaxYearEndError | RuleEndDateBeforeTaxYearStartError |
            CustomMtdError(RuleIncorrectOrEmptyBodyError.code)
       => BadRequest(Json.toJson(errorWrapper))
+      case RuleBenefitTypeExists => Forbidden(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }

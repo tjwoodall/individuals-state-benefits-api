@@ -25,7 +25,7 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import support.IntegrationBaseSpec
 import v1r6.models.errors._
-import v1r6.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1r6.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class CreateBenefitControllerISpec extends IntegrationBaseSpec {
 
@@ -81,7 +81,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear"
 
-    def desUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom"
+    def ifsUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom"
 
     def setupStubs(): StubMapping
 
@@ -100,7 +100,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.POST, desUri, OK, responseJson)
+          DownstreamStub.onSuccess(DownstreamStub.POST, ifsUri, OK, responseJson)
         }
 
         val response: WSResponse = await(request().post(requestBodyJson))
@@ -227,11 +227,11 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           DateTimeFormat.forPattern("yyyy-MM-dd")
         )
 
-        def fromDesIntToString(taxYear: Int): String =
+        def fromIfsIntToString(taxYear: Int): String =
           (taxYear - 1) + "-" + taxYear.toString.drop(2)
 
-        if (currentDate.isBefore(taxYearStartDate)) fromDesIntToString(currentDate.getYear)
-        else fromDesIntToString(currentDate.getYear + 1)
+        if (currentDate.isBefore(taxYearStartDate)) fromIfsIntToString(currentDate.getYear)
+        else fromIfsIntToString(currentDate.getYear + 1)
       }
 
       "validation error" when {
@@ -275,15 +275,15 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
-      "des service error" when {
-        def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"des returns an $desCode error and status $desStatus" in new Test {
+      "ifs service error" when {
+        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.POST, desUri, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.POST, ifsUri, ifsStatus, errorBody(ifsCode))
             }
 
             val response: WSResponse = await(request().post(requestBodyJson))
@@ -296,7 +296,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           s"""
              |{
              |   "code": "$code",
-             |   "reason": "des message"
+             |   "reason": "ifs message"
              |}
             """.stripMargin
 
@@ -304,7 +304,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
           (FORBIDDEN, "NOT_SUPPORTED_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotEndedError),
-          (BAD_REQUEST, "INVALID_REQUEST_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotSupportedError),
+          (CONFLICT, "BENEFIT_TYPE_ALREADY_EXISTS", FORBIDDEN, RuleBenefitTypeExists),
           (BAD_REQUEST, "INVALID_START_DATE", BAD_REQUEST, RuleStartDateAfterTaxYearEndError),
           (BAD_REQUEST,  "INVALID_CESSATION_DATE" , BAD_REQUEST, RuleEndDateBeforeTaxYearStartError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, DownstreamError),

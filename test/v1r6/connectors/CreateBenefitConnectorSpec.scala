@@ -52,10 +52,10 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockAppConfig.ifsBaseUrl returns baseUrl
+    MockAppConfig.ifsToken returns "ifs-token"
+    MockAppConfig.ifsEnvironment returns "ifs-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "CreateBenefitConnector" when {
@@ -66,9 +66,9 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
         MockHttpClient
           .post(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
-            config = dummyDesHeaderCarrierConfig,
+            config = dummyIfsHeaderCarrierConfig,
             body = addBenefitRequestBody,
-            requiredHeaders = requiredDesHeaders,
+            requiredHeaders = requiredIfsHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           ).returns(Future.successful(outcome))
 
