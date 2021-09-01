@@ -82,7 +82,6 @@ class AmendBenefitServiceSpec extends ServiceSpec {
         ("INVALID_PAYLOAD", DownstreamError),
         ("UPDATE_FORBIDDEN", RuleUpdateForbiddenError),
         ("NO_DATA_FOUND", NotFoundError),
-        ("INVALID_REQUEST_TAX_YEAR", RuleTaxYearNotEndedError),
         ("INVALID_START_DATE", RuleStartDateAfterTaxYearEndError),
         ("INVALID_CESSATION_DATE", RuleEndDateBeforeTaxYearStartError),
         ("SERVER_ERROR", DownstreamError),
