@@ -48,7 +48,7 @@ class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extend
     result.value
   }
 
-  def retrieve[Resp: Format](desErrorMap: Map[String, MtdError] = defaultDesErrorMap)(
+  def retrieve[Resp: Format](ifsErrorMap: Map[String, MtdError] = defaultDesErrorMap)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
     logContext: EndpointLogContext,
@@ -56,7 +56,7 @@ class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extend
     correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDesErrors(desErrorMap))
+      desResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDesErrors(ifsErrorMap))
       mtdResponseWrapper <- EitherT.fromEither[Future](validateRetrieveResponse(desResponseWrapper))
     } yield mtdResponseWrapper
 
