@@ -224,3 +224,14 @@ traits:
                 description: 'A customer added state benefit cannot be unignored.'
                 value:
                   code: RULE_UNIGNORE_FORBIDDEN
+  ruleBenefitTypeExists:
+    responses:
+      403:
+        body:
+          application/json:
+            type: types.errorResponse
+            examples:
+              ruleBenefitTypeExists:
+                description: 'The request cannot be made as there is an existing benefit of this type.'
+                value:
+                  code: RULE_BENEFIT_TYPE_EXISTS
