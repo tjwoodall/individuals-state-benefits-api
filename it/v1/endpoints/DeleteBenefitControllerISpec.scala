@@ -21,13 +21,12 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
-import support.IntegrationBaseSpec
+import support.V1IntegrationBaseSpec
 import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
-class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
+class DeleteBenefitControllerISpec extends V1IntegrationBaseSpec {
 
-  override lazy val release6Enabled = false
 
   private trait Test {
 

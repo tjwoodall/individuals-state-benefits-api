@@ -20,10 +20,10 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.ws.{WSRequest, WSResponse}
-import support.IntegrationBaseSpec
+import support.V1IntegrationBaseSpec
 import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
-class AuthISpec extends IntegrationBaseSpec {
+class AuthISpec extends V1IntegrationBaseSpec {
 
   private trait Test {
     val nino: String = "AA123456A"
