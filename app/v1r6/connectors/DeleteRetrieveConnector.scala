@@ -22,7 +22,6 @@ import javax.inject.{Inject, Singleton}
 import play.api.http.Status
 import play.api.libs.json.Reads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1r6.connectors.DownstreamUri.IfsUri
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,23 +32,23 @@ class DeleteRetrieveConnector @Inject()(val http: HttpClient,
   def delete()(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
-    ifsUri: IfsUri[Unit],
+    downstreamUri: DownstreamUri[Unit],
     correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import v1r6.connectors.httpparsers.StandardDesHttpParser._
 
-    delete(uri = ifsUri)
+    delete(uri = downstreamUri)
   }
 
   def retrieve[Resp: Reads]()(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
-    ifsUri: IfsUri[Resp],
+    downstreamUri: DownstreamUri[Resp],
     correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     import v1r6.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    get(uri = ifsUri)
+    get(uri = downstreamUri)
   }
 }

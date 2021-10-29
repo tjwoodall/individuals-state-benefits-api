@@ -21,8 +21,7 @@ import cats.implicits._
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
-import v1r6.connectors.DeleteRetrieveConnector
-import v1r6.connectors.DownstreamUri.IfsUri
+import v1r6.connectors.{DeleteRetrieveConnector, DownstreamUri}
 import v1r6.controllers.EndpointLogContext
 import v1r6.models.errors._
 import v1r6.models.outcomes.ResponseWrapper
@@ -34,36 +33,36 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extends DesResponseMappingSupport with Logging {
 
-  def delete(ifsErrorMap: Map[String, MtdError] = defaultDesErrorMap)(
+  def delete(downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
     logContext: EndpointLogContext,
-    ifsUri: IfsUri[Unit],
+    downstreamUri: DownstreamUri[Unit],
     correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.delete()).leftMap(mapDesErrors(ifsErrorMap))
-    } yield desResponseWrapper
+      downstreamResponseWrapper <- EitherT(connector.delete()).leftMap(mapDesErrors(downstreamErrorMap))
+    } yield downstreamResponseWrapper
 
     result.value
   }
 
-  def retrieve[Resp: Format](ifsErrorMap: Map[String, MtdError] = defaultDesErrorMap)(
+  def retrieve[Resp: Format](downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(
     implicit hc: HeaderCarrier,
     ec: ExecutionContext,
     logContext: EndpointLogContext,
-    ifsUri: IfsUri[Resp],
+    downstreamUri: DownstreamUri[Resp],
     correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDesErrors(ifsErrorMap))
-      mtdResponseWrapper <- EitherT.fromEither[Future](validateRetrieveResponse(desResponseWrapper))
+      downstreamResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDesErrors(downstreamErrorMap))
+      mtdResponseWrapper <- EitherT.fromEither[Future](validateRetrieveResponse(downstreamResponseWrapper))
     } yield mtdResponseWrapper
 
     result.value
   }
 
-  private def defaultDesErrorMap: Map[String, MtdError] = Map(
+  private def defaultDownstreamErrorMap: Map[String, MtdError] = Map(
     "INVALID_NINO" -> NinoFormatError,
     "INVALID_TAX_YEAR" -> TaxYearFormatError,
     "NOT_FOUND" -> NotFoundError,

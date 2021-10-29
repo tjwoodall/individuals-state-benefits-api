@@ -36,7 +36,7 @@ class DeleteBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear/$benefitId/amounts"
 
-    def ifsUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
+    def desUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
 
     def setupStubs(): StubMapping
 
@@ -55,7 +55,7 @@ class DeleteBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, ifsUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.DELETE, desUri, NO_CONTENT)
         }
 
         val response: WSResponse = await(request().delete)
@@ -98,15 +98,15 @@ class DeleteBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
-      "ifs service error" when {
-        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
+      "des service error" when {
+        def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"des returns an $desCode error and status $desStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.DELETE, ifsUri, ifsStatus, errorBody(ifsCode))
+              DownstreamStub.onError(DownstreamStub.DELETE, desUri, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(request().delete)
@@ -120,7 +120,7 @@ class DeleteBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
           s"""
              |{
              |   "code": "$code",
-             |   "reason": "ifs message"
+             |   "reason": "des message"
              |}
             """.stripMargin
 
