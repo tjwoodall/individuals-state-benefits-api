@@ -45,7 +45,7 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear/$benefitId/amounts"
 
-    def IfsUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
+    def Api1651Uri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
 
     def setupStubs(): StubMapping
 
@@ -64,7 +64,7 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.PUT, IfsUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, Api1651Uri, NO_CONTENT)
         }
 
         val hateoasResponse: JsValue = Json.parse(
@@ -204,7 +204,7 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.PUT, IfsUri, ifsStatus, errorBody(ifsCode))
+              DownstreamStub.onError(DownstreamStub.PUT, Api1651Uri, ifsStatus, errorBody(ifsCode))
             }
 
             val response: WSResponse = await(request().put(requestBodyJson))

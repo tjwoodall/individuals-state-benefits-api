@@ -69,8 +69,8 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     )
 
     val ifsRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "ifs-environment",
-      "Authorization" -> s"Bearer ifs-token"
+      "Environment" -> "release6-environment",
+      "Authorization" -> s"Bearer release6-token"
     )
 
 
@@ -86,10 +86,10 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
         .returns(Future.successful(response))
     }
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockAppConfig.release6BaseUrl returns baseUrl
+    MockAppConfig.release6Token returns "release6-token"
+    MockAppConfig.release6Environment returns "release6-environment"
+    MockAppConfig.release6EnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "ListBenefitsConnector" when {

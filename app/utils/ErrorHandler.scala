@@ -18,7 +18,6 @@ package utils
 
 import definition.Versions
 import play.api.Configuration
-import play.api._
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.mvc.Results._

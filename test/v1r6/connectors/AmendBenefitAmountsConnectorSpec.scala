@@ -55,26 +55,26 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockAppConfig.api1651BaseUrl returns baseUrl
+    MockAppConfig.api1651Token returns "api1651-token"
+    MockAppConfig.api1651Environment returns "api1651-environment"
+    MockAppConfig.api1651EnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
-  "UpdateBenefitAmountsConnector" when {
-    "updateBenefitAmounts" must {
+  "AmendBenefitAmountsConnector" when {
+    "amendBenefitAmounts" must {
       "return a 204 status for a success scenario" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
         implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredIfsHeadersPut: Seq[(String, String)] = requiredIfsHeaders ++ Seq("Content-Type" -> "application/json")
+        val requiredApi1651HeadersPut: Seq[(String, String)] = requiredApi1651Headers ++ Seq("Content-Type" -> "application/json")
 
         MockHttpClient
           .put(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/$benefitId",
             config = dummyIfsHeaderCarrierConfig,
             body = request.body,
-            requiredHeaders = requiredIfsHeadersPut,
+            requiredHeaders = requiredApi1651HeadersPut,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           ).returns(Future.successful(outcome))
 

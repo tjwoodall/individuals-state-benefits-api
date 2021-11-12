@@ -35,6 +35,16 @@ trait AppConfig {
   def ifsToken: String
   def ifsEnvironmentHeaders: Option[Seq[String]]
 
+  def api1651BaseUrl: String
+  def api1651Env: String
+  def api1651Token: String
+  def api1651EnvironmentHeaders: Option[Seq[String]]
+
+  def release6BaseUrl: String
+  def release6Env: String
+  def release6Token: String
+  def release6EnvironmentHeaders: Option[Seq[String]]
+
   def apiGatewayContext: String
   def minimumPermittedTaxYear: Int
 
@@ -61,6 +71,19 @@ class AppConfigImpl @Inject()(config: ServicesConfig, configuration: Configurati
   val ifsEnv: String = config.getString("microservice.services.ifs.env")
   val ifsToken: String = config.getString("microservice.services.ifs.token")
   val ifsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.ifs.environmentHeaders")
+
+  //API1651 config
+  val api1651BaseUrl: String = config.baseUrl("api1651")
+  val api1651Env: String = config.getString("microservice.services.api1651.env")
+  val api1651Token: String = config.getString("microservice.services.api1651.token")
+  val api1651EnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.api1651.environmentHeaders")
+
+  //Release7 config
+  val release6BaseUrl: String = config.baseUrl("release6")
+  val release6Env: String = config.getString("microservice.services.release6.env")
+  val release6Token: String = config.getString("microservice.services.release6.token")
+  val release6EnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.release6.environmentHeaders")
+
 
   val minimumPermittedTaxYear: Int = config.getInt("minimumPermittedTaxYear")
 

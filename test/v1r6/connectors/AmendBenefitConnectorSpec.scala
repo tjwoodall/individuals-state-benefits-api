@@ -55,10 +55,10 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockAppConfig.release6BaseUrl returns baseUrl
+    MockAppConfig.release6Token returns "release6-token"
+    MockAppConfig.release6Environment returns "release6-environment"
+    MockAppConfig.release6EnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "UpdateBenefitConnector" when {
@@ -67,14 +67,14 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
         implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredIfsHeadersPut: Seq[(String, String)] = requiredIfsHeaders ++ Seq("Content-Type" -> "application/json")
+        val requiredRelease6HeadersPut: Seq[(String, String)] = requiredRelease6Headers ++ Seq("Content-Type" -> "application/json")
 
         MockHttpClient
           .put(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
             config = dummyIfsHeaderCarrierConfig,
             body = request.body,
-            requiredHeaders = requiredIfsHeadersPut,
+            requiredHeaders = requiredRelease6HeadersPut,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           ).returns(Future.successful(outcome))
 
