@@ -141,7 +141,7 @@ class AmendBenefitAmountsValidatorSpec extends UnitSpec with ValueFormatErrorMes
 
       "return RuleIncorrectOrEmptyBodyError error for an incorrect request body" in new Test {
         validator.validate(AmendBenefitAmountsRawData(validNino, validTaxYear, validBenefitId, incorrectFormatRawBody)) shouldBe
-          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/taxPaid", "/amount"))))
+          List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/amount", "/taxPaid"))))
       }
 
       // body value error scenarios

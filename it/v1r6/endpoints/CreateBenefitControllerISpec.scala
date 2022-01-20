@@ -206,16 +206,16 @@ class CreateBenefitControllerISpec extends V1R6IntegrationBaseSpec {
 
       val invalidFieldType: MtdError = RuleIncorrectOrEmptyBodyError.copy(
         paths = Some(List(
-          "/endDate",
+          "/benefitType",
           "/startDate",
-          "/benefitType"
+          "/endDate"
         ))
       )
 
       val missingMandatoryFieldErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(
         paths = Some(List(
-          "/startDate",
-          "/benefitType"
+          "/benefitType",
+          "/startDate"
         ))
       )
 

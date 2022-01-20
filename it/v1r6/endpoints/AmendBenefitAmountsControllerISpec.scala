@@ -141,7 +141,7 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
         """.stripMargin
       )
 
-      val invalidFieldTypeErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/taxPaid", "/amount")))
+      val invalidFieldTypeErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/amount", "/taxPaid")))
 
       val missingMandatoryFieldError: MtdError = RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/amount")))
 
@@ -154,6 +154,7 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
           message = "The field should be between -99999999999.99 and 99999999999.99",
           paths = Some(List("/taxPaid"))
         )
+
       )
 
       "validation error" when {

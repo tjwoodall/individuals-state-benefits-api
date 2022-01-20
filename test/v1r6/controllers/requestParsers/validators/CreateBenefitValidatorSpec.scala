@@ -163,7 +163,7 @@ class CreateBenefitValidatorSpec extends UnitSpec {
       }
 
       "return RuleIncorrectOrEmptyBodyError error for an incorrect request body" in new Test {
-        private val paths: Seq[String] = List("/endDate", "/startDate", "/benefitType")
+        private val paths: Seq[String] = List("/benefitType", "/startDate", "/endDate")
 
         validator.validate(CreateBenefitRawData(validNino, validTaxYear, AnyContentAsJson(invalidParameterTypeJson))) shouldBe
           List(RuleIncorrectOrEmptyBodyError.copy(paths = Some(paths)))
