@@ -142,7 +142,7 @@ class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
         """.stripMargin
       )
 
-      val invalidFieldTypeErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/taxPaid", "/amount")))
+      val invalidFieldTypeErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/amount", "/taxPaid")))
 
       val missingMandatoryFieldError: MtdError = RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/amount")))
 
