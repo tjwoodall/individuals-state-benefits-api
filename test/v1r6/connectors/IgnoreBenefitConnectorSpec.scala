@@ -38,10 +38,10 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockAppConfig.release6BaseUrl returns baseUrl
+    MockAppConfig.release6Token returns "release6-token"
+    MockAppConfig.release6Environment returns "release6-environment"
+    MockAppConfig.release6EnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "IgnoreBenefitConnector" when {
@@ -51,9 +51,9 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
 
         MockHttpClient.put(
           url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/ignore/$benefitId",
-          config = dummyDesHeaderCarrierConfig,
+          config = dummyIfsHeaderCarrierConfig,
           body = EmptyBody,
-          requiredHeaders = requiredDesHeaders,
+          requiredHeaders = requiredRelease6Headers,
           excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
         ).returns(Future.successful(outcome))
 
