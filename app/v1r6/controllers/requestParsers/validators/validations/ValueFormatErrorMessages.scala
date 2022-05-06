@@ -17,6 +17,6 @@
 package v1r6.controllers.requestParsers.validators.validations
 
 protected[validators] trait ValueFormatErrorMessages {
-  val ZERO_MINIMUM_INCLUSIVE = "The field should be between 0 and 99999999999.99"
+  val ZERO_MINIMUM_INCLUSIVE        = "The field should be between 0 and 99999999999.99"
   val BIG_DECIMAL_MINIMUM_INCLUSIVE = "The field should be between -99999999999.99 and 99999999999.99"
 }

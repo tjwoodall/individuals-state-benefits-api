@@ -22,8 +22,7 @@ import v1.controllers.requestParsers.validators.validations.{NinoValidation, Tax
 import v1.models.errors.MtdError
 import v1.models.request.DeleteRetrieveRawData
 
-class DeleteRetrieveValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[DeleteRetrieveRawData] {
+class DeleteRetrieveValidator @Inject() (implicit appConfig: AppConfig) extends Validator[DeleteRetrieveRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
@@ -43,4 +42,5 @@ class DeleteRetrieveValidator @Inject()(implicit appConfig: AppConfig)
       TaxYearNotSupportedValidation.validate(data.taxYear)
     )
   }
+
 }

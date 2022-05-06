@@ -30,8 +30,8 @@ case class HMRCStateBenefit(benefitType: String,
                             startDate: String,
                             endDate: Option[String],
                             amount: Option[BigDecimal],
-                            taxPaid: Option[BigDecimal]) extends StateBenefit
-
+                            taxPaid: Option[BigDecimal])
+    extends StateBenefit
 
 object HMRCStateBenefit extends JsonUtils {
   implicit val format: OFormat[HMRCStateBenefit] = Json.format[HMRCStateBenefit]
@@ -43,7 +43,8 @@ case class CustomerStateBenefit(benefitType: String,
                                 startDate: String,
                                 endDate: Option[String],
                                 amount: Option[BigDecimal],
-                                taxPaid: Option[BigDecimal]) extends StateBenefit {
+                                taxPaid: Option[BigDecimal])
+    extends StateBenefit {
 
   val hasAmounts: Boolean = amount.isDefined || taxPaid.isDefined
 }

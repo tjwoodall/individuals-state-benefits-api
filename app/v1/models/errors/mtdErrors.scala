@@ -25,6 +25,7 @@ object MtdError {
 
   implicit def genericWrites[T <: MtdError]: OWrites[T] =
     writes.contramap[T](c => c: MtdError)
+
 }
 
 object CustomMtdError {
@@ -46,17 +47,20 @@ object BenefitTypeFormatError extends MtdError("FORMAT_BENEFIT_TYPE", "The provi
 object ValueFormatError extends MtdError("FORMAT_VALUE", "")
 
 // Rule Errors
-object RuleTaxYearNotSupportedError extends
-  MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "The specified tax year is not supported. That is, the tax year specified is before the minimum tax year value")
+object RuleTaxYearNotSupportedError
+    extends MtdError(
+      "RULE_TAX_YEAR_NOT_SUPPORTED",
+      "The specified tax year is not supported. That is, the tax year specified is before the minimum tax year value")
 
-object RuleTaxYearRangeInvalidError extends
-  MtdError(code = "RULE_TAX_YEAR_RANGE_INVALID", message = "Tax year range invalid. A tax year range of one year is required")
+object RuleTaxYearRangeInvalidError
+    extends MtdError(code = "RULE_TAX_YEAR_RANGE_INVALID", message = "Tax year range invalid. A tax year range of one year is required")
 
 object RuleTaxYearNotEndedError extends MtdError(code = "RULE_TAX_YEAR_NOT_ENDED", "Tax year not ended")
 
 object RuleEndDateBeforeStartDateError extends MtdError("RULE_END_DATE_BEFORE_START_DATE", "The end date cannot be earlier than the start date")
 
-object RuleStartDateAfterTaxYearEndError extends MtdError("RULE_START_DATE_AFTER_TAX_YEAR_END", "The start date cannot be later than the tax year end")
+object RuleStartDateAfterTaxYearEndError
+    extends MtdError("RULE_START_DATE_AFTER_TAX_YEAR_END", "The start date cannot be later than the tax year end")
 
 object RuleEndDateBeforeTaxYearStartError extends MtdError("RULE_END_DATE_BEFORE_TAX_YEAR_START", "The end date cannot be before the tax year starts")
 

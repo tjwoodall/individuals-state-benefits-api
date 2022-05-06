@@ -24,7 +24,7 @@ import v1r6.models.hateoas._
 
 import scala.language.higherKinds
 
-class HateoasFactory @Inject()(appConfig: AppConfig) {
+class HateoasFactory @Inject() (appConfig: AppConfig) {
 
   def wrap[A, D <: HateoasData](payload: A, data: D)(implicit lf: HateoasLinksFactory[A, D]): HateoasWrapper[A] = {
     val links = lf.links(appConfig, data)
@@ -32,22 +32,22 @@ class HateoasFactory @Inject()(appConfig: AppConfig) {
     HateoasWrapper(payload, links)
   }
 
-  def wrapList[A[_] : Functor, I, D](payload: A[I], data: D)(implicit lf: HateoasListLinksFactory[A, I, D]): HateoasWrapper[A[HateoasWrapper[I]]] = {
+  def wrapList[A[_]: Functor, I, D](payload: A[I], data: D)(implicit lf: HateoasListLinksFactory[A, I, D]): HateoasWrapper[A[HateoasWrapper[I]]] = {
     val hateoasList = payload.map(i => HateoasWrapper(i, lf.itemLinks(appConfig, data, i)))
 
     HateoasWrapper(hateoasList, lf.links(appConfig, data))
   }
 
-  def wrapList[A[_, _] : Bifunctor, I1, I2, D](
-                                                payload: A[I1, I2], data: D)
-                                              (implicit lf: HateoasListLinksFactory2[A, I1, I2, D]): HateoasWrapper[A[HateoasWrapper[I1], HateoasWrapper[I2]]] = {
+  def wrapList[A[_, _]: Bifunctor, I1, I2, D](payload: A[I1, I2], data: D)(implicit
+      lf: HateoasListLinksFactory2[A, I1, I2, D]): HateoasWrapper[A[HateoasWrapper[I1], HateoasWrapper[I2]]] = {
     val hateoasList = payload.bimap(
       i1 => HateoasWrapper(i1, lf.itemLinks1(appConfig, data, i1)),
-      i2 => HateoasWrapper(i2, lf.itemLinks2(appConfig, data, i2)),
+      i2 => HateoasWrapper(i2, lf.itemLinks2(appConfig, data, i2))
     )
 
     HateoasWrapper(hateoasList, lf.links(appConfig, data))
   }
+
 }
 
 trait HateoasLinksFactory[A, D] {

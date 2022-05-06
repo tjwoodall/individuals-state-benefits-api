@@ -34,7 +34,7 @@ class AmendBenefitAmountsRequestBodySpec extends UnitSpec with JsonErrorValidato
   "reads" when {
     "passed valid JSON" should {
       "return a valid model" in {
-        inputJson.as[AmendBenefitAmountsRequestBody] shouldBe AmendBenefitAmountsRequestBody(amount= 999.99, taxPaid = Some(123.13))
+        inputJson.as[AmendBenefitAmountsRequestBody] shouldBe AmendBenefitAmountsRequestBody(amount = 999.99, taxPaid = Some(123.13))
       }
 
       testMandatoryProperty[AmendBenefitAmountsRequestBody](inputJson)("/amount")
@@ -56,8 +56,9 @@ class AmendBenefitAmountsRequestBodySpec extends UnitSpec with JsonErrorValidato
   "writes" should {
     "return a json" when {
       "a valid object is supplied" in {
-        Json.toJson(AmendBenefitAmountsRequestBody(amount= 999.99, taxPaid = Some(123.13))) shouldBe inputJson
+        Json.toJson(AmendBenefitAmountsRequestBody(amount = 999.99, taxPaid = Some(123.13))) shouldBe inputJson
       }
     }
   }
+
 }

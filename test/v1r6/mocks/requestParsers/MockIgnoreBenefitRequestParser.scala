@@ -27,9 +27,11 @@ trait MockIgnoreBenefitRequestParser extends MockFactory {
   val mockIgnoreBenefitRequestParser: IgnoreBenefitRequestParser = mock[IgnoreBenefitRequestParser]
 
   object MockIgnoreBenefitRequestParser {
+
     def parse(data: IgnoreBenefitRawData): CallHandler[Either[ErrorWrapper, IgnoreBenefitRequest]] = {
       (mockIgnoreBenefitRequestParser.parseRequest(_: IgnoreBenefitRawData)(_: String)).expects(data, *)
     }
+
   }
 
 }

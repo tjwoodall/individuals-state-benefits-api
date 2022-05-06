@@ -40,4 +40,5 @@ trait IgnoreHateoasBody extends HateoasLinks {
 
     Json.obj("links" -> links)
   }
+
 }

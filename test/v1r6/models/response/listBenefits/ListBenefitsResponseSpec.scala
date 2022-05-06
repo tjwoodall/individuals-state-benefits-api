@@ -205,8 +205,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
     )
   )
 
-  val mtdJson: JsValue = Json.parse(
-    """
+  val mtdJson: JsValue = Json.parse("""
       |  {
       |    "stateBenefits": [
       |      {
@@ -364,7 +363,6 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |    ]
       |  }""".stripMargin)
 
-
   "ListBenefitsResponse" when {
     "read from valid JSON" should {
 
@@ -382,18 +380,12 @@ class ListBenefitsResponseSpec extends UnitSpec {
         amount = None,
         taxPaid = None)
 
-      def customerBenefit(benefitType: String, benefitId: String): CustomerStateBenefit = CustomerStateBenefit(
-        benefitType,
-        submittedOn = None,
-        benefitId,
-        startDate = "2020-01-01",
-        endDate = None,
-        amount = None,
-        taxPaid = None)
+      def customerBenefit(benefitType: String, benefitId: String): CustomerStateBenefit =
+        CustomerStateBenefit(benefitType, submittedOn = None, benefitId, startDate = "2020-01-01", endDate = None, amount = None, taxPaid = None)
 
       "read any HMRCStateBenefits from nested arrays" in {
-        Json.parse(
-          """
+        Json
+          .parse("""
             |{
             |  "stateBenefits": {
             |    "benefit1": [
@@ -406,38 +398,44 @@ class ListBenefitsResponseSpec extends UnitSpec {
             |    ]
             |  }
             |}
-            |""".stripMargin).as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
+            |""".stripMargin)
+          .as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
           ListBenefitsResponse(
-            stateBenefits = Some(Seq(
-              hmrcBenefit(benefitType = "benefit1", benefitId = "benefit1Id1"),
-              hmrcBenefit(benefitType = "benefit1", benefitId = "benefit1Id2"),
-              hmrcBenefit(benefitType = "benefit2", benefitId = "benefit2Id1"),
-              hmrcBenefit(benefitType = "benefit2", benefitId = "benefit2Id2"),
-            )),
-            customerAddedStateBenefits = None)
+            stateBenefits = Some(
+              Seq(
+                hmrcBenefit(benefitType = "benefit1", benefitId = "benefit1Id1"),
+                hmrcBenefit(benefitType = "benefit1", benefitId = "benefit1Id2"),
+                hmrcBenefit(benefitType = "benefit2", benefitId = "benefit2Id1"),
+                hmrcBenefit(benefitType = "benefit2", benefitId = "benefit2Id2")
+              )),
+            customerAddedStateBenefits = None
+          )
       }
 
       "read any HMRCStateBenefits from nested objects" in {
-        Json.parse(
-          """
+        Json
+          .parse("""
             |{
             |  "stateBenefits": {
             |    "benefit1": {"benefitId": "benefit1Id", "startDate": "2020-01-01"},
             |    "benefit2": {"benefitId": "benefit2Id", "startDate": "2020-01-01"}
             |  }
             |}
-            |""".stripMargin).as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
+            |""".stripMargin)
+          .as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
           ListBenefitsResponse(
-            stateBenefits = Some(Seq(
-              hmrcBenefit(benefitType = "benefit1", benefitId = "benefit1Id"),
-              hmrcBenefit(benefitType = "benefit2", benefitId = "benefit2Id"),
-            )),
-            customerAddedStateBenefits = None)
+            stateBenefits = Some(
+              Seq(
+                hmrcBenefit(benefitType = "benefit1", benefitId = "benefit1Id"),
+                hmrcBenefit(benefitType = "benefit2", benefitId = "benefit2Id")
+              )),
+            customerAddedStateBenefits = None
+          )
       }
 
       "read any CustomerStateBenefits from nested arrays" in {
-        Json.parse(
-          """
+        Json
+          .parse("""
             |{
             |  "customerAddedStateBenefits": {
             |    "benefit1": [
@@ -450,33 +448,39 @@ class ListBenefitsResponseSpec extends UnitSpec {
             |    ]
             |  }
             |}
-            |""".stripMargin).as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
+            |""".stripMargin)
+          .as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
           ListBenefitsResponse(
             stateBenefits = None,
-            customerAddedStateBenefits = Some(Seq(
-              customerBenefit(benefitType = "benefit1", benefitId = "benefit1Id1"),
-              customerBenefit(benefitType = "benefit1", benefitId = "benefit1Id2"),
-              customerBenefit(benefitType = "benefit2", benefitId = "benefit2Id1"),
-              customerBenefit(benefitType = "benefit2", benefitId = "benefit2Id2"),
-            )))
+            customerAddedStateBenefits = Some(
+              Seq(
+                customerBenefit(benefitType = "benefit1", benefitId = "benefit1Id1"),
+                customerBenefit(benefitType = "benefit1", benefitId = "benefit1Id2"),
+                customerBenefit(benefitType = "benefit2", benefitId = "benefit2Id1"),
+                customerBenefit(benefitType = "benefit2", benefitId = "benefit2Id2")
+              ))
+          )
       }
 
       "read any CustomerStateBenefits from nested objects" in {
-        Json.parse(
-          """
+        Json
+          .parse("""
             |{
             |  "customerAddedStateBenefits": {
             |    "benefit1": {"benefitId": "benefit1Id", "startDate": "2020-01-01"},
             |    "benefit2": {"benefitId": "benefit2Id", "startDate": "2020-01-01"}
             |  }
             |}
-            |""".stripMargin).as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
+            |""".stripMargin)
+          .as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe
           ListBenefitsResponse(
             stateBenefits = None,
-            customerAddedStateBenefits = Some(Seq(
-              customerBenefit(benefitType = "benefit1", benefitId = "benefit1Id"),
-              customerBenefit(benefitType = "benefit2", benefitId = "benefit2Id"),
-            )))
+            customerAddedStateBenefits = Some(
+              Seq(
+                customerBenefit(benefitType = "benefit1", benefitId = "benefit1Id"),
+                customerBenefit(benefitType = "benefit2", benefitId = "benefit2Id")
+              ))
+          )
       }
     }
 
@@ -487,4 +491,5 @@ class ListBenefitsResponseSpec extends UnitSpec {
       }
     }
   }
+
 }

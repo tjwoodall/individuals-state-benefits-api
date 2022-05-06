@@ -33,6 +33,7 @@ trait MockIgnoreBenefitValidator extends MockFactory {
         .validate(_: IgnoreBenefitRawData))
         .expects(data)
     }
+
   }
 
 }

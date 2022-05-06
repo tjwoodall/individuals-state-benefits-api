@@ -36,6 +36,7 @@ trait MockCreateBenefitConnector extends MockFactory {
         .addBenefit(_: CreateBenefitRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(request, *, *, *)
     }
+
   }
 
 }

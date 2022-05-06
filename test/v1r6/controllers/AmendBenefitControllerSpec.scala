@@ -25,7 +25,22 @@ import v1r6.mocks.MockIdGenerator
 import v1r6.mocks.requestParsers.MockAmendBenefitRequestParser
 import v1r6.mocks.services.{MockAmendBenefitService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
 import v1r6.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
-import v1r6.models.errors.{BadRequestError, BenefitIdFormatError, EndDateFormatError, NinoFormatError, RuleEndDateBeforeStartDateError, RuleEndDateBeforeTaxYearStartError, RuleIncorrectOrEmptyBodyError, RuleStartDateAfterTaxYearEndError, RuleTaxYearNotEndedError, RuleTaxYearNotSupportedError, RuleTaxYearRangeInvalidError, StartDateFormatError, TaxYearFormatError, _}
+import v1r6.models.errors.{
+  BadRequestError,
+  BenefitIdFormatError,
+  EndDateFormatError,
+  NinoFormatError,
+  RuleEndDateBeforeStartDateError,
+  RuleEndDateBeforeTaxYearStartError,
+  RuleIncorrectOrEmptyBodyError,
+  RuleStartDateAfterTaxYearEndError,
+  RuleTaxYearNotEndedError,
+  RuleTaxYearNotSupportedError,
+  RuleTaxYearRangeInvalidError,
+  StartDateFormatError,
+  TaxYearFormatError,
+  _
+}
 import v1r6.models.outcomes.ResponseWrapper
 import v1r6.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest, AmendBenefitRequestBody}
 
@@ -33,7 +48,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AmendBenefitControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -42,10 +57,10 @@ class AmendBenefitControllerSpec
     with MockAuditService
     with MockIdGenerator {
 
-  private val nino: String = "AA123456B"
+  private val nino: String    = "AA123456B"
   private val taxYear: String = "2020-21"
-  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
-  val correlationId: String = "X-123"
+  private val benefitId       = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+  val correlationId: String   = "X-123"
 
   val requestBodyJson: JsValue = Json.parse(
     """
@@ -241,11 +256,12 @@ class AmendBenefitControllerSpec
           (RuleEndDateBeforeTaxYearStartError, BAD_REQUEST),
           (RuleUpdateForbiddenError, FORBIDDEN),
           (NotFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR),
+          (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))
       }
     }
   }
+
 }

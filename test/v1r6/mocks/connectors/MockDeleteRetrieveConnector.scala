@@ -42,5 +42,7 @@ trait MockDeleteRetrieveConnector extends MockFactory {
         .retrieve[Resp]()(_: Reads[Resp], _: HeaderCarrier, _: ExecutionContext, _: DownstreamUri[Resp], _: String))
         .expects(*, *, *, *, *)
     }
+
   }
+
 }

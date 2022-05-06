@@ -69,4 +69,5 @@ class BenefitTypeValidationSpec extends UnitSpec {
       }
     }
   }
+
 }

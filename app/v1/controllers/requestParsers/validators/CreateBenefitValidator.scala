@@ -23,14 +23,14 @@ import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequestBody}
 
-class CreateBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[CreateBenefitRawData] {
+class CreateBenefitValidator @Inject() (implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[CreateBenefitRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidation, bodyParameterValidation)
 
   private def parameterFormatValidation: CreateBenefitRawData => List[List[MtdError]] = (data: CreateBenefitRawData) => {
     List(
       NinoValidation.validate(data.nino),
-      TaxYearValidation.validate(data.taxYear),
+      TaxYearValidation.validate(data.taxYear)
     )
   }
 
@@ -44,7 +44,6 @@ class CreateBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime
   }
 
   private def bodyFormatValidation: CreateBenefitRawData => List[List[MtdError]] = { data =>
-
     List(
       JsonFormatValidation.validate[CreateBenefitRequestBody](data.body.json)
     )
@@ -62,4 +61,5 @@ class CreateBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime
   override def validate(data: CreateBenefitRawData): List[MtdError] = {
     run(validationSet, data).distinct
   }
+
 }

@@ -22,8 +22,7 @@ import v1r6.models.utils.JsonErrorValidators
 
 class CustomerStateBenefitSpec extends UnitSpec with JsonErrorValidators {
 
-  val json: JsValue = Json.parse(
-    """{
+  val json: JsValue = Json.parse("""{
       |     "benefitType": "incapacityBenefit",
       |     "submittedOn": "9d51a3eb-e374-5349-aa02-96db92561138",
       |			"benefitId": "9d51a3eb-e374-5349-aa02-96db92561138",
@@ -70,4 +69,5 @@ class CustomerStateBenefitSpec extends UnitSpec with JsonErrorValidators {
       }
     }
   }
+
 }

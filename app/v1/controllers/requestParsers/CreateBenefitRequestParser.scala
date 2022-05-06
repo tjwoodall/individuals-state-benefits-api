@@ -22,8 +22,7 @@ import v1.controllers.requestParsers.validators.CreateBenefitValidator
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequest, CreateBenefitRequestBody}
 
 @Singleton
-class CreateBenefitRequestParser @Inject()(val validator: CreateBenefitValidator)
-  extends RequestParser[CreateBenefitRawData, CreateBenefitRequest] {
+class CreateBenefitRequestParser @Inject() (val validator: CreateBenefitValidator) extends RequestParser[CreateBenefitRawData, CreateBenefitRequest] {
 
   override protected def requestFor(data: CreateBenefitRawData): CreateBenefitRequest =
     CreateBenefitRequest(Nino(data.nino), data.taxYear, data.body.json.as[CreateBenefitRequestBody])

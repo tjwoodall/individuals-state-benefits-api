@@ -34,12 +34,13 @@ trait MockListBenefitsService extends MockFactory {
 
   object MockListBenefitsService {
 
-    def listBenefits(requestData: ListBenefitsRequest): CallHandler[Future[Either[ErrorWrapper,
-      ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]]] = {
+    def listBenefits(requestData: ListBenefitsRequest)
+        : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]]] = {
       (mockListBenefitsService
         .listBenefits(_: ListBenefitsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext, _: String))
         .expects(requestData, *, *, *, *)
     }
+
   }
 
 }

@@ -17,7 +17,7 @@
 package v1r6.models.audit
 
 case class AuditEvent[T](
-                          auditType: String,
-                          transactionName: String,
-                          detail: T
-                        )
+    auditType: String,
+    transactionName: String,
+    detail: T
+)

@@ -30,14 +30,14 @@ import v1r6.models.request.ignoreBenefit.IgnoreBenefitRawData
 
 class IgnoreBenefitValidatorSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
-  private val validTaxYear = "2020-21"
+  private val validNino      = "AA123456A"
+  private val validTaxYear   = "2020-21"
   private val validBenefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   class Test(errorFeatureSwitch: Boolean = true) extends MockCurrentDateTime with MockAppConfig {
 
     implicit val dateTimeProvider: CurrentDateTime = mockCurrentDateTime
-    val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+    val dateTimeFormatter: DateTimeFormatter       = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
 
@@ -47,14 +47,14 @@ class IgnoreBenefitValidatorSpec extends UnitSpec {
       .returns(DateTime.parse("2022-07-11", dateTimeFormatter))
       .anyNumberOfTimes()
 
-    //noinspection ScalaStyle
+    // noinspection ScalaStyle
     MockAppConfig.minimumPermittedTaxYear
       .returns(2021)
 
-    MockAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
-      s"""
+    MockAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(s"""
          |taxYearNotEndedRule.enabled = $errorFeatureSwitch
       """.stripMargin))))
+
   }
 
   "IgnoreBenefitValidator" when {
@@ -105,4 +105,5 @@ class IgnoreBenefitValidatorSpec extends UnitSpec {
       }
     }
   }
+
 }

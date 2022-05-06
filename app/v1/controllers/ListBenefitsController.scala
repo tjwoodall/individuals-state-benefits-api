@@ -15,6 +15,7 @@
  */
 
 package v1.controllers
+
 import cats.data.EitherT
 import cats.implicits._
 import config.AppConfig
@@ -34,15 +35,17 @@ import v1.services.{EnrolmentsAuthService, ListBenefitsService, MtdIdLookupServi
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
-                                       val lookupService: MtdIdLookupService,
-                                       appConfig: AppConfig,
-                                       requestParser: ListBenefitsRequestParser,
-                                       service: ListBenefitsService,
-                                       hateoasFactory: HateoasFactory,
-                                       cc: ControllerComponents,
-                                       idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging {
+class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
+                                        val lookupService: MtdIdLookupService,
+                                        appConfig: AppConfig,
+                                        requestParser: ListBenefitsRequestParser,
+                                        service: ListBenefitsService,
+                                        hateoasFactory: HateoasFactory,
+                                        cc: ControllerComponents,
+                                        idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with BaseController
+    with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -52,7 +55,6 @@ class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
 
   def listBenefits(nino: String, taxYear: String, benefitId: Option[String]): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
-
       implicit val correlationId: String = idGenerator.getCorrelationId
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"with correlationId : $correlationId")
@@ -64,7 +66,7 @@ class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
 
       val result =
         for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.listBenefits(parsedRequest))
           hateoasResponse <- EitherT.fromEither[Future](
             hateoasFactory
@@ -85,7 +87,7 @@ class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -96,26 +98,29 @@ class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError |
-           RuleTaxYearNotSupportedError | RuleTaxYearRangeInvalidError |
-           CustomMtdError(RuleIncorrectOrEmptyBodyError.code) => BadRequest(Json.toJson(errorWrapper))
-      case NotFoundError => NotFound(Json.toJson(errorWrapper))
+      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
+          RuleTaxYearRangeInvalidError | CustomMtdError(RuleIncorrectOrEmptyBodyError.code) =>
+        BadRequest(Json.toJson(errorWrapper))
+      case NotFoundError   => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 
-  private def findAndUpdateCommonBenefits(response: ListBenefitsResponse[StateBenefit], benefitId: Option[String]): ListBenefitsResponse[StateBenefit] = {
+  private def findAndUpdateCommonBenefits(response: ListBenefitsResponse[StateBenefit],
+                                          benefitId: Option[String]): ListBenefitsResponse[StateBenefit] = {
 
     benefitId match {
       case None => response
-      case _ => (response.stateBenefits, response.customerAddedStateBenefits) match {
-        case (Some(hmrc), Some(custom)) if hasCommon(hmrc, custom) =>
-          response.copy(Some(hmrc.map(_.copy(isCommon = true))), Some(custom.map(_.copy(isCommon = true))))
-        case (_, _) => response
-      }
+      case _ =>
+        (response.stateBenefits, response.customerAddedStateBenefits) match {
+          case (Some(hmrc), Some(custom)) if hasCommon(hmrc, custom) =>
+            response.copy(Some(hmrc.map(_.copy(isCommon = true))), Some(custom.map(_.copy(isCommon = true))))
+          case (_, _) => response
+        }
     }
   }
 
   private def hasCommon(hmrcB: Seq[StateBenefit], customB: Seq[StateBenefit]): Boolean =
     (hmrcB ++ customB).toList.groupBy(_.benefitId).values.exists(_.length > 1)
+
 }

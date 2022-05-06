@@ -35,6 +35,7 @@ trait MockUnignoreBenefitConnector extends MockFactory {
         .unignoreBenefit(_: IgnoreBenefitRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(request, *, *, *)
     }
+
   }
 
 }

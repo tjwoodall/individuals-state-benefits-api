@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -29,12 +29,11 @@ import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
 
 class CreateBenefitControllerISpec extends V1IntegrationBaseSpec {
 
-
   private trait Test {
 
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String          = "AA123456A"
+    val taxYear: String       = "2019-20"
+    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     val requestBodyJson: JsValue = Json.parse(
@@ -91,6 +90,7 @@ class CreateBenefitControllerISpec extends V1IntegrationBaseSpec {
       buildRequest(uri)
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
+
   }
 
   "Calling the 'create state benefit' endpoint" should {
@@ -113,7 +113,7 @@ class CreateBenefitControllerISpec extends V1IntegrationBaseSpec {
 
     "return error according to spec" when {
       val startDate = "2020-08-03"
-      val endDate = "2020-12-03"
+      val endDate   = "2020-12-03"
 
       val validRequestBodyJson: JsValue = Json.parse(
         s"""
@@ -206,18 +206,20 @@ class CreateBenefitControllerISpec extends V1IntegrationBaseSpec {
       )
 
       val invalidFieldType: MtdError = RuleIncorrectOrEmptyBodyError.copy(
-        paths = Some(List(
-          "/benefitType",
-          "/startDate",
-          "/endDate"
-        ))
+        paths = Some(
+          List(
+            "/benefitType",
+            "/startDate",
+            "/endDate"
+          ))
       )
 
       val missingMandatoryFieldErrors: MtdError = RuleIncorrectOrEmptyBodyError.copy(
-        paths = Some(List(
-          "/benefitType",
-          "/startDate"
-        ))
+        paths = Some(
+          List(
+            "/benefitType",
+            "/startDate"
+          ))
       )
 
       def getCurrentTaxYear: String = {
@@ -236,12 +238,16 @@ class CreateBenefitControllerISpec extends V1IntegrationBaseSpec {
       }
 
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, requestBody: JsValue, expectedStatus: Int,
-                                expectedBody: MtdError, scenario: Option[String]): Unit = {
+        def validationErrorTest(requestNino: String,
+                                requestTaxYear: String,
+                                requestBody: JsValue,
+                                expectedStatus: Int,
+                                expectedBody: MtdError,
+                                scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
+            override val nino: String             = requestNino
+            override val taxYear: String          = requestTaxYear
             override val requestBodyJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {
@@ -307,14 +313,16 @@ class CreateBenefitControllerISpec extends V1IntegrationBaseSpec {
           (FORBIDDEN, "NOT_SUPPORTED_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotEndedError),
           (BAD_REQUEST, "INVALID_REQUEST_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotSupportedError),
           (BAD_REQUEST, "INVALID_START_DATE", BAD_REQUEST, RuleStartDateAfterTaxYearEndError),
-          (BAD_REQUEST,  "INVALID_CESSATION_DATE" , BAD_REQUEST, RuleEndDateBeforeTaxYearStartError),
+          (BAD_REQUEST, "INVALID_CESSATION_DATE", BAD_REQUEST, RuleEndDateBeforeTaxYearStartError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, DownstreamError),
           (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, DownstreamError),
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError),
-          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError))
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError)
+        )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
   }
+
 }

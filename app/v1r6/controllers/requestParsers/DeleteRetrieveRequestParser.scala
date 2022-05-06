@@ -22,9 +22,10 @@ import v1r6.controllers.requestParsers.validators.DeleteRetrieveValidator
 import v1r6.models.domain.DesTaxYear
 import v1r6.models.request.{DeleteRetrieveRawData, DeleteRetrieveRequest}
 
-class DeleteRetrieveRequestParser @Inject()(val validator: DeleteRetrieveValidator)
-  extends RequestParser[DeleteRetrieveRawData, DeleteRetrieveRequest] {
+class DeleteRetrieveRequestParser @Inject() (val validator: DeleteRetrieveValidator)
+    extends RequestParser[DeleteRetrieveRawData, DeleteRetrieveRequest] {
 
   override protected def requestFor(data: DeleteRetrieveRawData): DeleteRetrieveRequest =
     DeleteRetrieveRequest(Nino(data.nino), DesTaxYear.fromMtd(data.taxYear))
+
 }

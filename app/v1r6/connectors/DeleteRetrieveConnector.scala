@@ -26,29 +26,29 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteRetrieveConnector @Inject()(val http: HttpClient,
-                                        val appConfig: AppConfig) extends BaseDownstreamConnector {
+class DeleteRetrieveConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def delete()(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    downstreamUri: DownstreamUri[Unit],
-    correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def delete()(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      downstreamUri: DownstreamUri[Unit],
+      correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import v1r6.connectors.httpparsers.StandardDesHttpParser._
 
     delete(uri = downstreamUri)
   }
 
-  def retrieve[Resp: Reads]()(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    downstreamUri: DownstreamUri[Resp],
-    correlationId: String): Future[DownstreamOutcome[Resp]] = {
+  def retrieve[Resp: Reads]()(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      downstreamUri: DownstreamUri[Resp],
+      correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     import v1r6.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
     get(uri = downstreamUri)
   }
+
 }

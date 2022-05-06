@@ -27,14 +27,14 @@ import scala.concurrent.Future
 
 class ListBenefitsConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA111111A"
-  val taxYear: String = "2019"
+  val nino: String      = "AA111111A"
+  val taxYear: String   = "2019"
   private val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
 
   def queryParams: Seq[(String, String)] =
     Seq("benefitId" -> benefitId)
-      .collect {
-        case (k, Some(v)) => (k, v)
+      .collect { case (k, Some(v)) =>
+        (k, v)
       }
 
   val request: ListBenefitsRequest = ListBenefitsRequest(Nino(nino), taxYear, benefitId)
@@ -79,7 +79,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     )
 
     val desRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
+      "Environment"   -> "des-environment",
       "Authorization" -> s"Bearer des-token"
     )
 
@@ -109,4 +109,5 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       }
     }
   }
+
 }

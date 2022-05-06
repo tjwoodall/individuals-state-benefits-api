@@ -36,5 +36,7 @@ trait MockListBenefitsConnector extends MockFactory {
         .listBenefits(_: ListBenefitsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)
     }
+
   }
+
 }

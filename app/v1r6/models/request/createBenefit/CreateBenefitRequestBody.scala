@@ -27,7 +27,7 @@ object CreateBenefitRequestBody {
     (JsPath \ "benefitType").read[String] and
       (JsPath \ "startDate").read[String] and
       (JsPath \ "endDate").readNullable[String]
-    ) (CreateBenefitRequestBody.apply _)
+  )(CreateBenefitRequestBody.apply _)
 
   implicit val writes: OWrites[CreateBenefitRequestBody] = Json.writes[CreateBenefitRequestBody]
 }

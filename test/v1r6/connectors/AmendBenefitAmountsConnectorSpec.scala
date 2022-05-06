@@ -27,8 +27,8 @@ import scala.concurrent.Future
 
 class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA123456A"
-  val taxYear: String = "2021-22"
+  val nino: String      = "AA123456A"
+  val taxYear: String   = "2021-22"
   val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
   val amendBenefitAmountsRequestBody: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
@@ -51,7 +51,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
     )
 
     val ifsRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "ifs-environment",
+      "Environment"   -> "ifs-environment",
       "Authorization" -> s"Bearer ifs-token"
     )
 
@@ -66,7 +66,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
       "return a 204 status for a success scenario" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        implicit val hc: HeaderCarrier                       = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredApi1651HeadersPut: Seq[(String, String)] = requiredApi1651Headers ++ Seq("Content-Type" -> "application/json")
 
         MockHttpClient
@@ -76,10 +76,12 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
             body = request.body,
             requiredHeaders = requiredApi1651HeadersPut,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          ).returns(Future.successful(outcome))
+          )
+          .returns(Future.successful(outcome))
 
         await(connector.amendBenefitAmounts(request)) shouldBe outcome
       }
     }
   }
+
 }

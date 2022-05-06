@@ -27,8 +27,8 @@ import scala.concurrent.Future
 
 class ListBenefitsConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA111111A"
-  val taxYear: String = "2019"
+  val nino: String      = "AA111111A"
+  val taxYear: String   = "2019"
   private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
 
   private val validResponse = ListBenefitsResponse(
@@ -69,12 +69,12 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     )
 
     val ifsRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "release6-environment",
+      "Environment"   -> "release6-environment",
       "Authorization" -> s"Bearer release6-token"
     )
 
-
-    def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]], queryParams: Seq[(String, String)]): Unit = {
+    def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]],
+                 queryParams: Seq[(String, String)]): Unit = {
       MockHttpClient
         .parameterGet(
           url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
@@ -113,4 +113,5 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       }
     }
   }
+
 }

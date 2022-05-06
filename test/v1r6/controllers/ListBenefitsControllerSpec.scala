@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ListBenefitsControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -69,6 +69,7 @@ class ListBenefitsControllerSpec
       listBenefits(mockAppConfig, nino, taxYear),
       addBenefit(mockAppConfig, nino, taxYear)
     )
+
   }
 
   "ListBenefitsController" should {
@@ -132,7 +133,8 @@ class ListBenefitsControllerSpec
         MockHateoasFactory
           .wrapList(
             responseData.copy(customerAddedStateBenefits = Option.empty[Seq[CustomerStateBenefit]]),
-            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Seq(benefitId)))
+            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Seq(benefitId))
+          )
           .returns(hmrcOnlyHateoasResponse)
 
         val result: Future[Result] = controller.listBenefits(nino, taxYear, None)(fakeGetRequest)
@@ -250,11 +252,12 @@ class ListBenefitsControllerSpec
           (TaxYearFormatError, BAD_REQUEST),
           (BenefitIdFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR),
+          (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))
       }
     }
   }
+
 }

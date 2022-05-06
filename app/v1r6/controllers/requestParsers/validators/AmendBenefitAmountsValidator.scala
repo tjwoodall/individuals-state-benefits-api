@@ -22,8 +22,9 @@ import v1r6.controllers.requestParsers.validators.validations._
 import v1r6.models.errors.MtdError
 import v1r6.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRawData, AmendBenefitAmountsRequestBody}
 
-class AmendBenefitAmountsValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[AmendBenefitAmountsRawData] with ValueFormatErrorMessages {
+class AmendBenefitAmountsValidator @Inject() (implicit appConfig: AppConfig)
+    extends Validator[AmendBenefitAmountsRawData]
+    with ValueFormatErrorMessages {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidator, bodyValueValidator)
 
@@ -67,4 +68,5 @@ class AmendBenefitAmountsValidator @Inject()(implicit appConfig: AppConfig)
       )
     )
   }
+
 }

@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -30,7 +30,7 @@ class ListBenefitsControllerISpec extends V1R6IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
+    val nino: String    = "AA123456A"
     val taxYear: String = "2020-21"
 
     def uri: String = s"/$nino/$taxYear"
@@ -42,14 +42,15 @@ class ListBenefitsControllerISpec extends V1R6IntegrationBaseSpec {
     def request(benefitId: Option[String]): WSRequest = {
       def queryParams: Seq[(String, String)] =
         Seq("benefitId" -> benefitId)
-          .collect {
-            case (k, Some(v)) => (k, v)
+          .collect { case (k, Some(v)) =>
+            (k, v)
           }
       setupStubs()
       buildRequest(uri)
         .addQueryStringParameters(queryParams: _*)
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
+
   }
 
   "Calling the sample endpoint" should {
@@ -158,11 +159,14 @@ class ListBenefitsControllerISpec extends V1R6IntegrationBaseSpec {
     "return error according to spec" when {
 
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, requestBenefitId: String,
-                                expectedStatus: Int, expectedBody: MtdError): Unit = {
+        def validationErrorTest(requestNino: String,
+                                requestTaxYear: String,
+                                requestBenefitId: String,
+                                expectedStatus: Int,
+                                expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
+            override val nino: String    = requestNino
             override val taxYear: String = requestTaxYear
 
             override def setupStubs(): StubMapping = {
@@ -230,4 +234,5 @@ class ListBenefitsControllerISpec extends V1R6IntegrationBaseSpec {
       }
     }
   }
+
 }

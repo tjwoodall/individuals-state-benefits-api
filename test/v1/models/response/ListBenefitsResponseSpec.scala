@@ -224,8 +224,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
     )
   )
 
-  val mtdJson: JsValue = Json.parse(
-    """
+  val mtdJson: JsValue = Json.parse("""
       {
         "stateBenefits": [
           {
@@ -376,7 +375,6 @@ class ListBenefitsResponseSpec extends UnitSpec {
       }
       |""".stripMargin)
 
-
   "ListBenefitsResponse" when {
     "read from valid JSON" should {
 
@@ -393,4 +391,5 @@ class ListBenefitsResponseSpec extends UnitSpec {
       }
     }
   }
+
 }

@@ -26,7 +26,7 @@ object StateBenefitsDateValidation {
   def validate(startDate: String, endDate: Option[String], taxYear: String): List[MtdError] = {
 
     lazy val taxYearStartDate: LocalDate = LocalDate.parse(taxYear.take(4) + "-04-06", dateFormat)
-    lazy val taxYearEndDate: LocalDate = LocalDate.parse(DesTaxYear.fromMtd(taxYear) + "-04-05", dateFormat)
+    lazy val taxYearEndDate: LocalDate   = LocalDate.parse(DesTaxYear.fromMtd(taxYear) + "-04-05", dateFormat)
 
     val formatErrors: List[MtdError] = List(
       Some(DateFormatValidation.validate(startDate, StartDateFormatError)),
@@ -36,7 +36,7 @@ object StateBenefitsDateValidation {
     formatErrors match {
       case Nil =>
         val start = LocalDate.parse(startDate, dateFormat)
-        val end = endDate.map(LocalDate.parse(_, dateFormat))
+        val end   = endDate.map(LocalDate.parse(_, dateFormat))
 
         List(
           Some(checkDateOrder(start, taxYearEndDate, RuleStartDateAfterTaxYearEndError)),
@@ -63,5 +63,5 @@ object StateBenefitsDateValidation {
 
   private def checkDateOrder(start: LocalDate, end: LocalDate, error: MtdError): List[MtdError] =
     if (start.isAfter(end)) List(error) else NoValidationErrors
-}
 
+}

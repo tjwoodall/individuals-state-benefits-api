@@ -21,9 +21,9 @@ import v1r6.models.domain.Nino
 import v1r6.controllers.requestParsers.validators.IgnoreBenefitValidator
 import v1r6.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
 
-class IgnoreBenefitRequestParser @Inject()(val validator: IgnoreBenefitValidator)
-  extends RequestParser[IgnoreBenefitRawData, IgnoreBenefitRequest] {
+class IgnoreBenefitRequestParser @Inject() (val validator: IgnoreBenefitValidator) extends RequestParser[IgnoreBenefitRawData, IgnoreBenefitRequest] {
 
   override protected def requestFor(data: IgnoreBenefitRawData): IgnoreBenefitRequest =
     IgnoreBenefitRequest(Nino(data.nino), data.taxYear, data.benefitId)
+
 }

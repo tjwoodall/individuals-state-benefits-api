@@ -26,10 +26,10 @@ import v1r6.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRawData, Amen
 
 class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
 
-  private val nino: String = "AA123456B"
+  private val nino: String    = "AA123456B"
   private val taxYear: String = "2020-21"
-  private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val benefitId       = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  implicit val correlationId  = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validRequestJson: JsValue = Json.parse(
     """
@@ -62,9 +62,11 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
   )
 
   trait Test extends MockAmendBenefitAmountsValidator {
+
     lazy val parser: AmendBenefitAmountsRequestParser = new AmendBenefitAmountsRequestParser(
       validator = mockUpdateBenefitAmountsValidator
     )
+
   }
 
   "parse" should {
@@ -77,7 +79,8 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockUpdateBenefitAmountsValidator.validate(updateBenefitAmountsRawData.copy(nino = "notANino"))
+        MockUpdateBenefitAmountsValidator
+          .validate(updateBenefitAmountsRawData.copy(nino = "notANino"))
           .returns(List(NinoFormatError))
 
         parser.parseRequest(updateBenefitAmountsRawData.copy(nino = "notANino")) shouldBe
@@ -85,8 +88,8 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
       }
 
       "multiple path parameter validation errors occur" in new Test {
-        MockUpdateBenefitAmountsValidator.validate(
-          updateBenefitAmountsRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId"))
+        MockUpdateBenefitAmountsValidator
+          .validate(updateBenefitAmountsRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId"))
           .returns(List(NinoFormatError, TaxYearFormatError, BenefitIdFormatError))
 
         parser.parseRequest(updateBenefitAmountsRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId")) shouldBe
@@ -117,7 +120,8 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
           )
         )
 
-        MockUpdateBenefitAmountsValidator.validate(updateBenefitAmountsRawData.copy(body = allInvalidValueRawRequestBody))
+        MockUpdateBenefitAmountsValidator
+          .validate(updateBenefitAmountsRawData.copy(body = allInvalidValueRawRequestBody))
           .returns(allInvalidValueErrors)
 
         parser.parseRequest(updateBenefitAmountsRawData.copy(body = allInvalidValueRawRequestBody)) shouldBe
@@ -125,4 +129,5 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

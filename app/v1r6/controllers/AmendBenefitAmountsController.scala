@@ -36,15 +36,18 @@ import v1r6.services.{AmendBenefitAmountsService, AuditService, EnrolmentsAuthSe
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsController @Inject()(val authService: EnrolmentsAuthService,
-                                              val lookupService: MtdIdLookupService,
-                                              appConfig: AppConfig,
-                                              requestParser: AmendBenefitAmountsRequestParser,
-                                              service: AmendBenefitAmountsService,
-                                              auditService: AuditService,
-                                              cc: ControllerComponents,
-                                              val idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging with AmendHateoasBodies {
+class AmendBenefitAmountsController @Inject() (val authService: EnrolmentsAuthService,
+                                               val lookupService: MtdIdLookupService,
+                                               appConfig: AppConfig,
+                                               requestParser: AmendBenefitAmountsRequestParser,
+                                               service: AmendBenefitAmountsService,
+                                               auditService: AuditService,
+                                               cc: ControllerComponents,
+                                               val idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with BaseController
+    with Logging
+    with AmendHateoasBodies {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -54,7 +57,6 @@ class AmendBenefitAmountsController @Inject()(val authService: EnrolmentsAuthSer
 
   def amendBenefitAmounts(nino: String, taxYear: String, benefitId: String): Action[JsValue] =
     authorisedAction(nino).async(parse.json) { implicit request =>
-
       implicit val correlationId: String = idGenerator.getCorrelationId
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"with correlationId : $correlationId")
@@ -68,7 +70,7 @@ class AmendBenefitAmountsController @Inject()(val authService: EnrolmentsAuthSer
 
       val result =
         for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.updateBenefitAmounts(parsedRequest))
         } yield {
           logger.info(
@@ -78,8 +80,12 @@ class AmendBenefitAmountsController @Inject()(val authService: EnrolmentsAuthSer
           val hateoasResponse = amendBenefitAmountsHateoasBody(appConfig, nino, taxYear, benefitId)
 
           auditSubmission(
-            GenericAuditDetail(request.userDetails, Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId), Some(request.body),
-              serviceResponse.correlationId, AuditResponse(httpStatus = OK, response = Right(Some(hateoasResponse)))
+            GenericAuditDetail(
+              request.userDetails,
+              Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+              Some(request.body),
+              serviceResponse.correlationId,
+              AuditResponse(httpStatus = OK, response = Right(Some(hateoasResponse)))
             )
           )
 
@@ -90,13 +96,17 @@ class AmendBenefitAmountsController @Inject()(val authService: EnrolmentsAuthSer
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
         auditSubmission(
-          GenericAuditDetail(request.userDetails, Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId), Some(request.body),
-            correlationId, AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
+          GenericAuditDetail(
+            request.userDetails,
+            Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+            Some(request.body),
+            correlationId,
+            AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
           )
         )
 
@@ -106,20 +116,18 @@ class AmendBenefitAmountsController @Inject()(val authService: EnrolmentsAuthSer
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError |
-           RuleTaxYearNotSupportedError | RuleTaxYearRangeInvalidError | RuleTaxYearNotEndedError |
-           CustomMtdError(RuleIncorrectOrEmptyBodyError.code) |
-           CustomMtdError(ValueFormatError.code)
-      => BadRequest(Json.toJson(errorWrapper))
-      case NotFoundError => NotFound(Json.toJson(errorWrapper))
+      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
+          RuleTaxYearRangeInvalidError | RuleTaxYearNotEndedError | CustomMtdError(RuleIncorrectOrEmptyBodyError.code) | CustomMtdError(
+            ValueFormatError.code) =>
+        BadRequest(Json.toJson(errorWrapper))
+      case NotFoundError   => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 
-  private def auditSubmission(details: GenericAuditDetail)
-                             (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuditResult] = {
+  private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val event = AuditEvent("AmendStateBenefitAmounts", "amend-state-benefit-amounts", details)
     auditService.auditEvent(event)
   }
+
 }

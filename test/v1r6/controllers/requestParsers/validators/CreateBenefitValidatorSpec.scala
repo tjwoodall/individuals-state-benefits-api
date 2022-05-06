@@ -31,11 +31,11 @@ import v1r6.models.errors._
 import v1r6.models.request.createBenefit.CreateBenefitRawData
 
 class CreateBenefitValidatorSpec extends UnitSpec {
-  private val validNino = "AA123456A"
+  private val validNino    = "AA123456A"
   private val validTaxYear = "2020-21"
 
   val startDate = "2020-08-03"
-  val endDate = "2020-12-03"
+  val endDate   = "2020-12-03"
 
   private val validRequestJson: JsValue = Json.parse(
     s"""
@@ -95,7 +95,7 @@ class CreateBenefitValidatorSpec extends UnitSpec {
   class Test(errorFeatureSwitch: Boolean = true) extends MockCurrentDateTime with MockAppConfig {
 
     implicit val dateTimeProvider: CurrentDateTime = mockCurrentDateTime
-    val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+    val dateTimeFormatter: DateTimeFormatter       = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
 
@@ -108,10 +108,10 @@ class CreateBenefitValidatorSpec extends UnitSpec {
     MockAppConfig.minimumPermittedTaxYear
       .returns(2021)
 
-    MockAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
-      s"""
+    MockAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(s"""
          |taxYearNotEndedRule.enabled = $errorFeatureSwitch
       """.stripMargin))))
+
   }
 
   "AddBenefitValidator" when {

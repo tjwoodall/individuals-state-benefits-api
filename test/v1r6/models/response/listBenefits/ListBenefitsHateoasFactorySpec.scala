@@ -23,17 +23,16 @@ import v1r6.hateoas.{HateoasLinks, HateoasListLinksFactory2}
 
 class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with MockAppConfig with TableDrivenPropertyChecks {
 
-  private val nino = "nino"
-  private val taxYear = "2020-21"
+  private val nino      = "nino"
+  private val taxYear   = "2020-21"
   private val benefitId = "benefitId"
 
   private val dateIgnored = Some("ignoreDate")
 
   class Test {
-    MockAppConfig.apiGatewayContext returns "gatewayContext" anyNumberOfTimes()
+    MockAppConfig.apiGatewayContext returns "gatewayContext" anyNumberOfTimes ()
 
-    val hateoasFactory: HateoasListLinksFactory2[ListBenefitsResponse,
-      HMRCStateBenefit, CustomerStateBenefit, ListBenefitsHateoasData] = implicitly
+    val hateoasFactory: HateoasListLinksFactory2[ListBenefitsResponse, HMRCStateBenefit, CustomerStateBenefit, ListBenefitsHateoasData] = implicitly
   }
 
   "Hateoas factory" when {
@@ -43,25 +42,27 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
       "be self and add" in new Test {
         hateoasFactory.links(mockAppConfig, hateoasData) should
           contain theSameElementsAs Seq(
-          addBenefit(mockAppConfig, nino, taxYear),
-          listBenefits(mockAppConfig, nino, taxYear),
-        )
+            addBenefit(mockAppConfig, nino, taxYear),
+            listBenefits(mockAppConfig, nino, taxYear)
+          )
       }
     }
 
     "links obtained for HMRC benefit item" when {
       def stateBenefit(dateIgnored: Option[String] = None): HMRCStateBenefit =
-        HMRCStateBenefit(benefitType = "someBenefitType",
+        HMRCStateBenefit(
+          benefitType = "someBenefitType",
           dateIgnored = dateIgnored,
           submittedOn = None,
           benefitId = benefitId,
           startDate = "startDate",
           endDate = None,
           amount = None,
-          taxPaid = None)
+          taxPaid = None
+        )
 
       val benefitNotIgnored = stateBenefit()
-      val benefitIgnored = stateBenefit(dateIgnored = dateIgnored)
+      val benefitIgnored    = stateBenefit(dateIgnored = dateIgnored)
 
       "query full list" when {
         val hateoasData = ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Seq(benefitId))
@@ -71,8 +72,8 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
             forAll(Table("benefit", benefitNotIgnored, benefitIgnored)) { benefit =>
               hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefit) should
                 contain theSameElementsAs Seq(
-                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-              )
+                  retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
+                )
             }
           }
         }
@@ -85,10 +86,10 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include ignore link" in new Test {
             hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitNotIgnored) should
               contain theSameElementsAs Seq(
-              retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-              ignoreBenefit(mockAppConfig, nino, taxYear, benefitId),
-            )
+                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                ignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
+              )
           }
         }
 
@@ -96,19 +97,19 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include unignore link" in new Test {
             hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitIgnored) should
               contain theSameElementsAs Seq(
-              retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-              unignoreBenefit(mockAppConfig, nino, taxYear, benefitId),
-            )
+                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                unignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
+              )
           }
         }
       }
     }
 
     "links obtained for custom benefit item" when {
-      def stateBenefit(amount: Option[BigDecimal] = None,
-                       taxPaid: Option[BigDecimal] = None): CustomerStateBenefit =
-        CustomerStateBenefit(benefitType = "someBenefitType",
+      def stateBenefit(amount: Option[BigDecimal] = None, taxPaid: Option[BigDecimal] = None): CustomerStateBenefit =
+        CustomerStateBenefit(
+          benefitType = "someBenefitType",
           submittedOn = None,
           benefitId = benefitId,
           startDate = "startDate",
@@ -116,26 +117,23 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           amount = amount,
           taxPaid = taxPaid)
 
-      val benefit = stateBenefit()
-      val benefitWithAmount = stateBenefit(amount = Some(1))
+      val benefit            = stateBenefit()
+      val benefitWithAmount  = stateBenefit(amount = Some(1))
       val benefitWithTaxPaid = stateBenefit(taxPaid = Some(1))
 
       "query full list" when {
         "any scenario" must {
           "just return list link with query param" in new Test {
-            forAll(Table(("benefit", "hmrcBenefitIds"),
-              (benefit, Nil),
-              (benefit, Seq(benefitId)),
-              (benefitWithAmount, Nil),
-              (benefitWithTaxPaid, Nil))) {
+            forAll(
+              Table(("benefit", "hmrcBenefitIds"), (benefit, Nil), (benefit, Seq(benefitId)), (benefitWithAmount, Nil), (benefitWithTaxPaid, Nil))) {
               case (benefit, hmrcBenefitIds) =>
                 hateoasFactory.itemLinks2(
                   mockAppConfig,
                   ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds),
                   benefit) should
                   contain theSameElementsAs Seq(
-                  retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                )
+                    retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
+                  )
             }
           }
         }
@@ -149,11 +147,11 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include update and delete links" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq("otherBenefitId")), benefit) should
               contain theSameElementsAs Seq(
-              retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefit(mockAppConfig, nino, taxYear, benefitId),
-              deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-            )
+                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefit(mockAppConfig, nino, taxYear, benefitId),
+                deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+              )
           }
         }
 
@@ -161,9 +159,9 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "not include update and delete links" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq(benefitId)), benefit) should
               contain theSameElementsAs Seq(
-              retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-            )
+                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+              )
           }
         }
 
@@ -171,12 +169,12 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include delete amount link" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithAmount) should
               contain theSameElementsAs Seq(
-              retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefit(mockAppConfig, nino, taxYear, benefitId),
-              deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-              deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-            )
+                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefit(mockAppConfig, nino, taxYear, benefitId),
+                deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+              )
           }
         }
 
@@ -184,16 +182,16 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include delete amount link" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithTaxPaid) should
               contain theSameElementsAs Seq(
-              retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefit(mockAppConfig, nino, taxYear, benefitId),
-              deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-              updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-              deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-            )
+                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefit(mockAppConfig, nino, taxYear, benefitId),
+                deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
+                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+              )
           }
         }
       }
     }
   }
-}
 
+}

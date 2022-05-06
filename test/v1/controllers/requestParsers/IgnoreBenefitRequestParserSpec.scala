@@ -24,9 +24,9 @@ import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitReque
 
 class IgnoreBenefitRequestParserSpec extends UnitSpec {
 
-  private val nino: String = "AA123456B"
-  private val taxYear: String = "2021-22"
-  private val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val nino: String           = "AA123456B"
+  private val taxYear: String        = "2021-22"
+  private val benefitId: String      = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val ignoreBenefitRawData = IgnoreBenefitRawData(
@@ -35,16 +35,18 @@ class IgnoreBenefitRequestParserSpec extends UnitSpec {
     benefitId = benefitId
   )
 
-  private val ignoreBenefitRequest = IgnoreBenefitRequest (
+  private val ignoreBenefitRequest = IgnoreBenefitRequest(
     nino = Nino(nino),
     taxYear = taxYear,
     benefitId = benefitId
   )
 
   trait Test extends MockIgnoreBenefitValidator {
+
     lazy val parser: IgnoreBenefitRequestParser = new IgnoreBenefitRequestParser(
       validator = mockIgnoreBenefitValidator
     )
+
   }
 
   "parse" should {
@@ -57,7 +59,8 @@ class IgnoreBenefitRequestParserSpec extends UnitSpec {
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockIgnoreBenefitValidator.validate(ignoreBenefitRawData.copy(nino = "notANino"))
+        MockIgnoreBenefitValidator
+          .validate(ignoreBenefitRawData.copy(nino = "notANino"))
           .returns(List(NinoFormatError))
 
         parser.parseRequest(ignoreBenefitRawData.copy(nino = "notANino")) shouldBe
@@ -65,7 +68,8 @@ class IgnoreBenefitRequestParserSpec extends UnitSpec {
       }
 
       "multiple path parameter validation errors occur" in new Test {
-        MockIgnoreBenefitValidator.validate(ignoreBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId"))
+        MockIgnoreBenefitValidator
+          .validate(ignoreBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId"))
           .returns(List(NinoFormatError, TaxYearFormatError, BenefitIdFormatError))
 
         parser.parseRequest(ignoreBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId")) shouldBe
@@ -73,4 +77,5 @@ class IgnoreBenefitRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

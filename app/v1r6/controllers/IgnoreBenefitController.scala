@@ -36,15 +36,18 @@ import v1r6.services.{AuditService, EnrolmentsAuthService, IgnoreBenefitService,
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
-                                        val lookupService: MtdIdLookupService,
-                                        appConfig: AppConfig,
-                                        requestParser: IgnoreBenefitRequestParser,
-                                        service: IgnoreBenefitService,
-                                        auditService: AuditService,
-                                        cc: ControllerComponents,
-                                        idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) with BaseController with Logging with IgnoreHateoasBody {
+class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
+                                         val lookupService: MtdIdLookupService,
+                                         appConfig: AppConfig,
+                                         requestParser: IgnoreBenefitRequestParser,
+                                         service: IgnoreBenefitService,
+                                         auditService: AuditService,
+                                         cc: ControllerComponents,
+                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
+    with BaseController
+    with Logging
+    with IgnoreHateoasBody {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -54,7 +57,6 @@ class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
 
   def ignoreBenefit(nino: String, taxYear: String, benefitId: String): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
-
       implicit val correlationId: String = idGenerator.getCorrelationId
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"with correlationId : $correlationId")
@@ -66,7 +68,7 @@ class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
 
       val result =
         for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.ignoreBenefit(parsedRequest))
         } yield {
           logger.info(
@@ -76,8 +78,12 @@ class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
           val hateoasResponse = ignoreBenefitHateoasBody(appConfig, nino, taxYear, benefitId)
 
           auditSubmission(
-            GenericAuditDetail(request.userDetails, Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId), None,
-              serviceResponse.correlationId, AuditResponse(httpStatus = OK, response = Right(Some(Json.toJson(hateoasResponse))))
+            GenericAuditDetail(
+              request.userDetails,
+              Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+              None,
+              serviceResponse.correlationId,
+              AuditResponse(httpStatus = OK, response = Right(Some(Json.toJson(hateoasResponse))))
             )
           )
 
@@ -88,13 +94,17 @@ class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
         auditSubmission(
-          GenericAuditDetail(request.userDetails, Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId), None,
-            correlationId, AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
+          GenericAuditDetail(
+            request.userDetails,
+            Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+            None,
+            correlationId,
+            AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
           )
         )
 
@@ -104,18 +114,16 @@ class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
     (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError |
-           RuleTaxYearNotSupportedError | RuleTaxYearRangeInvalidError | RuleTaxYearNotEndedError
-      => BadRequest(Json.toJson(errorWrapper))
+      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
+          RuleTaxYearRangeInvalidError | RuleTaxYearNotEndedError =>
+        BadRequest(Json.toJson(errorWrapper))
       case RuleIgnoreForbiddenError => Forbidden(Json.toJson(errorWrapper))
-      case NotFoundError => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
+      case NotFoundError            => NotFound(Json.toJson(errorWrapper))
+      case DownstreamError          => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 
-  private def auditSubmission(details: GenericAuditDetail)
-                             (implicit hc: HeaderCarrier,
-                              ec: ExecutionContext): Future[AuditResult] = {
+  private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val event = AuditEvent("IgnoreStateBenefit", "ignore-state-benefit", details)
     auditService.auditEvent(event)
   }

@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -31,9 +31,9 @@ class AmendBenefitControllerISpec extends V1R6IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456B"
-    val taxYear: String = "2019-20"
-    val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+    val nino: String          = "AA123456B"
+    val taxYear: String       = "2019-20"
+    val benefitId             = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
     val correlationId: String = "X-123"
 
     val requestJson: JsValue = Json.parse(
@@ -56,6 +56,7 @@ class AmendBenefitControllerISpec extends V1R6IntegrationBaseSpec {
       buildRequest(uri)
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
+
   }
 
   "Calling the sample endpoint" should {
@@ -116,10 +117,9 @@ class AmendBenefitControllerISpec extends V1R6IntegrationBaseSpec {
       def fromIfsIntToString(taxYear: Int): String =
         (taxYear - 1) + "-" + taxYear.toString.drop(2)
 
-      if (currentDate.isBefore(taxYearStartDate)){
+      if (currentDate.isBefore(taxYearStartDate)) {
         fromIfsIntToString(currentDate.getYear)
-      }
-      else {
+      } else {
         fromIfsIntToString(currentDate.getYear + 1)
       }
     }
@@ -136,8 +136,7 @@ class AmendBenefitControllerISpec extends V1R6IntegrationBaseSpec {
     """.stripMargin
         )
 
-        private val responseJson = Json.parse(
-          """
+        private val responseJson = Json.parse("""
             |{
             |	"code": "INVALID_REQUEST",
             |	"message": "Invalid request",
@@ -195,13 +194,17 @@ class AmendBenefitControllerISpec extends V1R6IntegrationBaseSpec {
       val emptyRequestJson: JsValue = JsObject.empty
 
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, requestBenefitId: String,
-                                requestBody: JsValue, expectedStatus: Int, expectedBody: MtdError): Unit = {
+        def validationErrorTest(requestNino: String,
+                                requestTaxYear: String,
+                                requestBenefitId: String,
+                                requestBody: JsValue,
+                                expectedStatus: Int,
+                                expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
-            override val benefitId: String = requestBenefitId
+            override val nino: String         = requestNino
+            override val taxYear: String      = requestTaxYear
+            override val benefitId: String    = requestBenefitId
             override val requestJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {
@@ -266,11 +269,12 @@ class AmendBenefitControllerISpec extends V1R6IntegrationBaseSpec {
           (FORBIDDEN, "UPDATE_FORBIDDEN", FORBIDDEN, RuleUpdateForbiddenError),
           (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError),
-          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError)
         )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
   }
+
 }

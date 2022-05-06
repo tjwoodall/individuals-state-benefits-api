@@ -26,8 +26,8 @@ import support.UnitSpec
 
 class VersionRoutingMapSpec extends UnitSpec with MockAppConfig with GuiceOneAppPerSuite {
 
-  val defaultRouter: Router = mock[Router]
-  val v1Routes: v1.Routes = app.injector.instanceOf[v1.Routes]
+  val defaultRouter: Router                       = mock[Router]
+  val v1Routes: v1.Routes                         = app.injector.instanceOf[v1.Routes]
   val v1WithRelease6Routes: v1WithRelease6.Routes = app.injector.instanceOf[v1WithRelease6.Routes]
 
   "map" when {
@@ -55,8 +55,9 @@ class VersionRoutingMapSpec extends UnitSpec with MockAppConfig with GuiceOneApp
 
       Seq(
         (false, v1Routes),
-        (true, v1WithRelease6Routes),
+        (true, v1WithRelease6Routes)
       ).foreach(args => (test _).tupled(args))
     }
   }
+
 }

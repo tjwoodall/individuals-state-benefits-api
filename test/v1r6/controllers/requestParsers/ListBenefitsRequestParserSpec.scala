@@ -24,9 +24,9 @@ import v1r6.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsReques
 
 class ListBenefitsRequestParserSpec extends UnitSpec {
 
-  val nino: String = "AA123456B"
-  val taxYear: String = "2020-21"
-  val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
+  val nino: String           = "AA123456B"
+  val taxYear: String        = "2020-21"
+  val benefitId              = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
   implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val listBenefitsRawData: ListBenefitsRawData = ListBenefitsRawData(
@@ -36,9 +36,11 @@ class ListBenefitsRequestParserSpec extends UnitSpec {
   )
 
   trait Test extends MockListBenefitsValidator {
+
     lazy val parser: ListBenefitsRequestParser = new ListBenefitsRequestParser(
       validator = mockListBenefitsValidator
     )
+
   }
 
   "parse" should {
@@ -53,7 +55,8 @@ class ListBenefitsRequestParserSpec extends UnitSpec {
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockListBenefitsValidator.validate(listBenefitsRawData)
+        MockListBenefitsValidator
+          .validate(listBenefitsRawData)
           .returns(List(NinoFormatError))
 
         parser.parseRequest(listBenefitsRawData) shouldBe
@@ -61,7 +64,8 @@ class ListBenefitsRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur (NinoFormatError and TaxYearFormatError errors)" in new Test {
-        MockListBenefitsValidator.validate(listBenefitsRawData)
+        MockListBenefitsValidator
+          .validate(listBenefitsRawData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(listBenefitsRawData) shouldBe
@@ -69,4 +73,5 @@ class ListBenefitsRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

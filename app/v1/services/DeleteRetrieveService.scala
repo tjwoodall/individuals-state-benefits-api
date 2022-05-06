@@ -32,14 +32,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extends DesResponseMappingSupport with Logging {
+class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) extends DesResponseMappingSupport with Logging {
 
-  def delete(desErrorMap: Map[String, MtdError] = defaultDesErrorMap)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    desUri: DesUri[Unit],
-    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+  def delete(desErrorMap: Map[String, MtdError] = defaultDesErrorMap)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      desUri: DesUri[Unit],
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.delete()).leftMap(mapDesErrors(desErrorMap))
@@ -48,12 +48,12 @@ class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extend
     result.value
   }
 
-  def retrieve[Resp: Format](desErrorMap: Map[String, MtdError] = defaultDesErrorMap)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    desUri: DesUri[Resp],
-    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
+  def retrieve[Resp: Format](desErrorMap: Map[String, MtdError] = defaultDesErrorMap)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      desUri: DesUri[Resp],
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDesErrors(desErrorMap))
@@ -64,10 +64,11 @@ class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extend
   }
 
   private def defaultDesErrorMap: Map[String, MtdError] = Map(
-    "INVALID_NINO" -> NinoFormatError,
-    "INVALID_TAX_YEAR" -> TaxYearFormatError,
-    "NOT_FOUND" -> NotFoundError,
-    "SERVER_ERROR" -> DownstreamError,
+    "INVALID_NINO"        -> NinoFormatError,
+    "INVALID_TAX_YEAR"    -> TaxYearFormatError,
+    "NOT_FOUND"           -> NotFoundError,
+    "SERVER_ERROR"        -> DownstreamError,
     "SERVICE_UNAVAILABLE" -> DownstreamError
   )
+
 }

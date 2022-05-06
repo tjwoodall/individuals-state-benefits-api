@@ -32,14 +32,13 @@ import v1.support.DesResponseMappingSupport
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateBenefitService @Inject()(connector: CreateBenefitConnector)
-  extends DesResponseMappingSupport with Logging {
+class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends DesResponseMappingSupport with Logging {
 
-  def addBenefit(request: CreateBenefitRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[AddBenefitResponse]]] = {
+  def addBenefit(request: CreateBenefitRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[AddBenefitResponse]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.addBenefit(request)).leftMap(mapDesErrors(desErrorMap))
@@ -51,14 +50,15 @@ class CreateBenefitService @Inject()(connector: CreateBenefitConnector)
   private def desErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR" -> TaxYearFormatError,
-      "INVALID_CORRELATIONID" -> DownstreamError,
-      "INVALID_PAYLOAD" -> DownstreamError,
-      "INVALID_REQUEST_TAX_YEAR" -> RuleTaxYearNotSupportedError,
-      "NOT_SUPPORTED_TAX_YEAR" -> RuleTaxYearNotEndedError,
-      "INVALID_START_DATE" -> RuleStartDateAfterTaxYearEndError,
-      "INVALID_CESSATION_DATE" -> RuleEndDateBeforeTaxYearStartError,
-      "SERVER_ERROR" -> DownstreamError,
-      "SERVICE_UNAVAILABLE" -> DownstreamError
+      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+      "INVALID_CORRELATIONID"     -> DownstreamError,
+      "INVALID_PAYLOAD"           -> DownstreamError,
+      "INVALID_REQUEST_TAX_YEAR"  -> RuleTaxYearNotSupportedError,
+      "NOT_SUPPORTED_TAX_YEAR"    -> RuleTaxYearNotEndedError,
+      "INVALID_START_DATE"        -> RuleStartDateAfterTaxYearEndError,
+      "INVALID_CESSATION_DATE"    -> RuleEndDateBeforeTaxYearStartError,
+      "SERVER_ERROR"              -> DownstreamError,
+      "SERVICE_UNAVAILABLE"       -> DownstreamError
     )
+
 }

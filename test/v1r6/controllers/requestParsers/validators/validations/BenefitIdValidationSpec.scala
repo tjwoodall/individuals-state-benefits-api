@@ -32,4 +32,5 @@ class BenefitIdValidationSpec extends UnitSpec {
       }
     }
   }
+
 }

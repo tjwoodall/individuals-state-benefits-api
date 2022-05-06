@@ -44,11 +44,11 @@ class CreateBenefitResponseSpec extends UnitSpec {
             |{
             |  "benefitId": "b1e8057e-fbbc-47a8-a8b4-78d9f015c258"
             |}
-          """.stripMargin
-        )
+          """.stripMargin)
 
         Json.toJson(model) shouldBe json
       }
     }
   }
+
 }

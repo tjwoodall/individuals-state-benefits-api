@@ -32,12 +32,13 @@ import v1.support.DesResponseMappingSupport
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsService @Inject()(connector: ListBenefitsConnector) extends DesResponseMappingSupport with Logging {
+class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends DesResponseMappingSupport with Logging {
 
-  def listBenefits(request: ListBenefitsRequest)
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext, logContext: EndpointLogContext,
-                   correlationId: String):
-  Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[StateBenefit]]]] = {
+  def listBenefits(request: ListBenefitsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[StateBenefit]]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDesErrors(mappingDesToMtdError))
@@ -48,15 +49,15 @@ class ListBenefitsService @Inject()(connector: ListBenefitsConnector) extends De
 
   private def mappingDesToMtdError: Map[String, MtdError] = Map(
     "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-    "INVALID_TAX_YEAR" -> TaxYearFormatError,
-    "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
-    "INVALID_VIEW" -> DownstreamError,
-    "INVALID_CORRELATIONID" -> DownstreamError,
-    "NO_DATA_FOUND" -> NotFoundError,
-    "INVALID_DATE_RANGE" -> RuleTaxYearNotSupportedError,
-    "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError,
-    "SERVER_ERROR" -> DownstreamError,
-    "SERVICE_UNAVAILABLE" -> DownstreamError
+    "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+    "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+    "INVALID_VIEW"              -> DownstreamError,
+    "INVALID_CORRELATIONID"     -> DownstreamError,
+    "NO_DATA_FOUND"             -> NotFoundError,
+    "INVALID_DATE_RANGE"        -> RuleTaxYearNotSupportedError,
+    "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
+    "SERVER_ERROR"              -> DownstreamError,
+    "SERVICE_UNAVAILABLE"       -> DownstreamError
   )
-}
 
+}

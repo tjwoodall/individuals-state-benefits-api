@@ -27,18 +27,17 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsConnector @Inject()(val http: HttpClient,
-                                      val appConfig: AppConfig) extends BaseDownstreamConnector {
+class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def listBenefits(request: ListBenefitsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
+  def listBenefits(request: ListBenefitsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
     import v1r6.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    val nino = request.nino.nino
+    val nino    = request.nino.nino
     val taxYear = request.taxYear
 
     getWithQueryParams(
@@ -46,5 +45,5 @@ class ListBenefitsConnector @Inject()(val http: HttpClient,
       request.benefitId.map("benefitId" -> _).toSeq
     )
   }
-}
 
+}

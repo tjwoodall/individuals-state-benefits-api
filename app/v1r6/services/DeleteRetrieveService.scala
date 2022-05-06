@@ -31,14 +31,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extends DesResponseMappingSupport with Logging {
+class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) extends DesResponseMappingSupport with Logging {
 
-  def delete(downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    downstreamUri: DownstreamUri[Unit],
-    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+  def delete(downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      downstreamUri: DownstreamUri[Unit],
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
       downstreamResponseWrapper <- EitherT(connector.delete()).leftMap(mapDesErrors(downstreamErrorMap))
@@ -47,26 +47,27 @@ class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extend
     result.value
   }
 
-  def retrieve[Resp: Format](downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    downstreamUri: DownstreamUri[Resp],
-    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
+  def retrieve[Resp: Format](downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      downstreamUri: DownstreamUri[Resp],
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
 
     val result = for {
       downstreamResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDesErrors(downstreamErrorMap))
-      mtdResponseWrapper <- EitherT.fromEither[Future](validateRetrieveResponse(downstreamResponseWrapper))
+      mtdResponseWrapper        <- EitherT.fromEither[Future](validateRetrieveResponse(downstreamResponseWrapper))
     } yield mtdResponseWrapper
 
     result.value
   }
 
   private def defaultDownstreamErrorMap: Map[String, MtdError] = Map(
-    "INVALID_NINO" -> NinoFormatError,
-    "INVALID_TAX_YEAR" -> TaxYearFormatError,
-    "NOT_FOUND" -> NotFoundError,
-    "SERVER_ERROR" -> DownstreamError,
+    "INVALID_NINO"        -> NinoFormatError,
+    "INVALID_TAX_YEAR"    -> TaxYearFormatError,
+    "NOT_FOUND"           -> NotFoundError,
+    "SERVER_ERROR"        -> DownstreamError,
     "SERVICE_UNAVAILABLE" -> DownstreamError
   )
+
 }

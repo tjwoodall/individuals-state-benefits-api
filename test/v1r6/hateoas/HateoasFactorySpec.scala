@@ -100,10 +100,14 @@ class HateoasFactorySpec extends UnitSpec with MockAppConfig {
 
     "work" in new Test {
       hateoasFactory.wrapList(ListResponse(Seq(item1), Seq(item2)), Data1("id")) shouldBe
-        HateoasWrapper(ListResponse(
-          items1 = Seq(HateoasWrapper(item1, Seq(Link("context/id/theItem1", GET, "item1")))),
-          items2 = Seq(HateoasWrapper(item2, Seq(Link("context/id/theItem2", GET, "item2"))))),
-          Seq(Link("context/id", GET, "rel")))
+        HateoasWrapper(
+          ListResponse(
+            items1 = Seq(HateoasWrapper(item1, Seq(Link("context/id/theItem1", GET, "item1")))),
+            items2 = Seq(HateoasWrapper(item2, Seq(Link("context/id/theItem2", GET, "item2"))))
+          ),
+          Seq(Link("context/id", GET, "rel"))
+        )
     }
   }
+
 }

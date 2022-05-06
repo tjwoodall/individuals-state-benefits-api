@@ -28,4 +28,5 @@ object TaxYearNotSupportedValidation {
 
     if (desTaxYear < appConfig.minimumPermittedTaxYear) List(RuleTaxYearNotSupportedError) else NoValidationErrors
   }
+
 }

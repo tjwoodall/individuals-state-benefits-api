@@ -16,8 +16,7 @@
 
 package v1r6.controllers
 
-
 case class EndpointLogContext(
-                               controllerName: String,
-                               endpointName: String
-                             )
+    controllerName: String,
+    endpointName: String
+)

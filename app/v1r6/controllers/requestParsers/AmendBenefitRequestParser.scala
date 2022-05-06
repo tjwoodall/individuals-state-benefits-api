@@ -21,9 +21,9 @@ import v1r6.models.domain.Nino
 import v1r6.controllers.requestParsers.validators.AmendBenefitValidator
 import v1r6.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest, AmendBenefitRequestBody}
 
-class AmendBenefitRequestParser @Inject()(val validator: AmendBenefitValidator)
-  extends RequestParser[AmendBenefitRawData, AmendBenefitRequest] {
+class AmendBenefitRequestParser @Inject() (val validator: AmendBenefitValidator) extends RequestParser[AmendBenefitRawData, AmendBenefitRequest] {
 
   override protected def requestFor(data: AmendBenefitRawData): AmendBenefitRequest =
     AmendBenefitRequest(Nino(data.nino), data.taxYear, data.benefitId, data.body.json.as[AmendBenefitRequestBody])
+
 }

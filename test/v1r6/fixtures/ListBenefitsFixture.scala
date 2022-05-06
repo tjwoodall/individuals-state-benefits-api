@@ -25,25 +25,27 @@ import v1r6.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit
 
 object ListBenefitsFixture {
 
-  val nino: String = "AA123456A"
+  val nino: String    = "AA123456A"
   val taxYear: String = "2020-21"
 
-  val benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f"
+  val benefitId                      = "f0d83ac0-a10a-4d57-9e41-6d033832779f"
   val queryBenefitId: Option[String] = Some(benefitId)
 
   val correlationId: String = "X-123"
 
-  val rawData: Option[String] => ListBenefitsRawData = reqBenefitId => ListBenefitsRawData(
-    nino = nino,
-    taxYear = taxYear,
-    benefitId = reqBenefitId
-  )
+  val rawData: Option[String] => ListBenefitsRawData = reqBenefitId =>
+    ListBenefitsRawData(
+      nino = nino,
+      taxYear = taxYear,
+      benefitId = reqBenefitId
+    )
 
-  val requestData: Option[String] => ListBenefitsRequest = reqBenefitId => ListBenefitsRequest(
-    nino = Nino(nino),
-    taxYear = taxYear,
-    benefitId = reqBenefitId
-  )
+  val requestData: Option[String] => ListBenefitsRequest = reqBenefitId =>
+    ListBenefitsRequest(
+      nino = Nino(nino),
+      taxYear = taxYear,
+      benefitId = reqBenefitId
+    )
 
   val hateosJson: JsValue = Json.parse(
     s"""
@@ -64,8 +66,7 @@ object ListBenefitsFixture {
     """.stripMargin
   )
 
-  val responseBody: JsValue = Json.parse(
-    s"""
+  val responseBody: JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -106,8 +107,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val singleRetrieveWithAmounts: JsValue = Json.parse(
-    """
+  val singleRetrieveWithAmounts: JsValue = Json.parse("""
       |{
       |	"customerAddedStateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -150,8 +150,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val singleRetrieveWithAmountsBenefitId: JsValue = Json.parse(
-    s"""
+  val singleRetrieveWithAmountsBenefitId: JsValue = Json.parse(s"""
       |{
       |	"customerAddedStateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -194,8 +193,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val singleRetrieveWithDuplicateBenefitId: JsValue = Json.parse(
-    s"""
+  val singleRetrieveWithDuplicateBenefitId: JsValue = Json.parse(s"""
       |{
       |	"customerAddedStateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -238,8 +236,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val responseBodyWithNoAmounts: JsValue = Json.parse(
-    s"""
+  val responseBodyWithNoAmounts: JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -272,8 +269,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val responseBodyWithNoAmountsBenefitId: JsValue = Json.parse(
-    s"""
+  val responseBodyWithNoAmountsBenefitId: JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -306,8 +302,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val responseBodyWithoutDateIgnored: JsValue = Json.parse(
-    s"""
+  val responseBodyWithoutDateIgnored: JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -339,8 +334,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val hmrcOnlyResponseBody: JsValue = Json.parse(
-    s"""
+  val hmrcOnlyResponseBody: JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -367,8 +361,7 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val duplicateIdResponse: JsValue = Json.parse(
-    s"""
+  val duplicateIdResponse: JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -426,8 +419,7 @@ object ListBenefitsFixture {
       |}
       |""".stripMargin)
 
-  val singleStateBenefitDesJson: JsValue = Json.parse(
-    s"""
+  val singleStateBenefitDesJson: JsValue = Json.parse(s"""
       |{
       |  "stateBenefits": {
       |    "incapacityBenefit": [
@@ -442,8 +434,7 @@ object ListBenefitsFixture {
       |   }
       |}""".stripMargin)
 
-  val singleStateBenefitDesJsonWithDuplicateId: JsValue = Json.parse(
-    s"""
+  val singleStateBenefitDesJsonWithDuplicateId: JsValue = Json.parse(s"""
       |{
       |  "stateBenefits": {
       |    "incapacityBenefit": [
@@ -469,8 +460,7 @@ object ListBenefitsFixture {
       |   }
       |}""".stripMargin)
 
-  val singleCustomerStateBenefitDesJson: JsValue = Json.parse(
-    s"""
+  val singleCustomerStateBenefitDesJson: JsValue = Json.parse(s"""
       |{
       |  "customerAddedStateBenefits": {
       |    "incapacityBenefit": [
@@ -485,8 +475,7 @@ object ListBenefitsFixture {
       |   }
       |}""".stripMargin)
 
-  val desJsonWithNoAmounts: JsValue = Json.parse(
-    s"""
+  val desJsonWithNoAmounts: JsValue = Json.parse(s"""
       |{
       |  "stateBenefits": {
       |    "incapacityBenefit": [
@@ -499,8 +488,7 @@ object ListBenefitsFixture {
       |   }
       |}""".stripMargin)
 
-  val desJsonWithNoDateIgnored: JsValue = Json.parse(
-    s"""
+  val desJsonWithNoDateIgnored: JsValue = Json.parse(s"""
       |{
       |  "stateBenefits": {
       |    "incapacityBenefit": [
@@ -675,8 +663,7 @@ object ListBenefitsFixture {
       |""".stripMargin
   )
 
-  val mtdJson: JsValue = Json.parse(
-    s"""
+  val mtdJson: JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -950,29 +937,28 @@ object ListBenefitsFixture {
   val singleStateBenefitsLinks: Seq[Link] = List(
     Link(s"/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId", GET, "self"),
     Link(s"/individuals/state-benefits/AA123456A/2020-21/$benefitId/amounts", PUT, "amend-state-benefit-amounts"),
-    Link(s"/individuals/state-benefits/AA123456A/2020-21/$benefitId/ignore", POST, "ignore-state-benefit"))
+    Link(s"/individuals/state-benefits/AA123456A/2020-21/$benefitId/ignore", POST, "ignore-state-benefit")
+  )
 
-  val amountsLink: Link = Link(s"/individuals/state-benefits/AA123456A/2020-21/$benefitId/amounts",
-    DELETE, "delete-state-benefit-amounts")
+  val amountsLink: Link = Link(s"/individuals/state-benefits/AA123456A/2020-21/$benefitId/amounts", DELETE, "delete-state-benefit-amounts")
 
-  val customerStateBenefitsLinks: Seq[Link] = List(
-    Link(s"/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId", GET, "self"))
+  val customerStateBenefitsLinks: Seq[Link] = List(Link(s"/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId", GET, "self"))
 
   val singleCustomerStateBenefitsLinks: Seq[Link] = List(
     Link("/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g", GET, "self"),
     Link("/individuals/state-benefits/AA123456A/2020-21/f0d83ac0-a10a-4d57-9e41-6d033832779g/amounts", PUT, "amend-state-benefit-amounts"),
-    Link("/individuals/state-benefits/AA123456A/2020-21/f0d83ac0-a10a-4d57-9e41-6d033832779g/amounts",
-      DELETE, "delete-state-benefit-amounts"),
+    Link("/individuals/state-benefits/AA123456A/2020-21/f0d83ac0-a10a-4d57-9e41-6d033832779g/amounts", DELETE, "delete-state-benefit-amounts"),
     Link("/individuals/state-benefits/AA123456A/2020-21/f0d83ac0-a10a-4d57-9e41-6d033832779g", DELETE, "delete-state-benefit"),
-    Link("/individuals/state-benefits/AA123456A/2020-21/f0d83ac0-a10a-4d57-9e41-6d033832779g", PUT, "amend-state-benefit"))
+    Link("/individuals/state-benefits/AA123456A/2020-21/f0d83ac0-a10a-4d57-9e41-6d033832779g", PUT, "amend-state-benefit")
+  )
 
-  val listBenefitsLink: Seq[Link] = List(Link("/individuals/state-benefits/AA123456A/2020-21", POST, "create-state-benefit"),
+  val listBenefitsLink: Seq[Link] = List(
+    Link("/individuals/state-benefits/AA123456A/2020-21", POST, "create-state-benefit"),
     Link("/individuals/state-benefits/AA123456A/2020-21", GET, "self"))
 
   val listBenefitsResponse: ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit] = ListBenefitsResponse(
     stateBenefits = Some(Seq(stateBenefits)),
-    customerAddedStateBenefits = Some(Seq(customerAddedStateBenefits)
-    )
+    customerAddedStateBenefits = Some(Seq(customerAddedStateBenefits))
   )
 
   val hateoasResponse: HateoasWrapper[ListBenefitsResponse[HateoasWrapper[HMRCStateBenefit], HateoasWrapper[CustomerStateBenefit]]] =
@@ -980,34 +966,23 @@ object ListBenefitsFixture {
       ListBenefitsResponse(
         Some(List(HateoasWrapper(stateBenefits, stateBenefitsLinks))),
         Some(List(HateoasWrapper(customerAddedStateBenefits, customerStateBenefitsLinks)))),
-      listBenefitsLink)
+      listBenefitsLink
+    )
 
   val hmrcOnlyHateoasResponse: HateoasWrapper[ListBenefitsResponse[HateoasWrapper[HMRCStateBenefit], HateoasWrapper[CustomerStateBenefit]]] =
-    HateoasWrapper(
-      ListBenefitsResponse(
-        Some(List(HateoasWrapper(stateBenefits, stateBenefitsLinks))),
-        None),
-      listBenefitsLink)
+    HateoasWrapper(ListBenefitsResponse(Some(List(HateoasWrapper(stateBenefits, stateBenefitsLinks))), None), listBenefitsLink)
 
   val customOnlyHateoasResponse: HateoasWrapper[ListBenefitsResponse[HateoasWrapper[HMRCStateBenefit], HateoasWrapper[CustomerStateBenefit]]] =
-    HateoasWrapper(
-      ListBenefitsResponse(
-        None,
-        Some(List(HateoasWrapper(customerAddedStateBenefits, customerStateBenefitsLinks)))),
-      listBenefitsLink)
+    HateoasWrapper(ListBenefitsResponse(None, Some(List(HateoasWrapper(customerAddedStateBenefits, customerStateBenefitsLinks)))), listBenefitsLink)
 
   val singleCustomOnlyHateoasResponse: HateoasWrapper[ListBenefitsResponse[HateoasWrapper[HMRCStateBenefit], HateoasWrapper[CustomerStateBenefit]]] =
     HateoasWrapper(
-      ListBenefitsResponse(
-        None,
-        Some(List(HateoasWrapper(customerAddedStateBenefits, singleCustomerStateBenefitsLinks)))),
+      ListBenefitsResponse(None, Some(List(HateoasWrapper(customerAddedStateBenefits, singleCustomerStateBenefitsLinks)))),
       listBenefitsLink)
-
 
   val hateoasResponseWithOutAmounts: HateoasWrapper[ListBenefitsResponse[HateoasWrapper[HMRCStateBenefit], HateoasWrapper[CustomerStateBenefit]]] =
     HateoasWrapper(
-      ListBenefitsResponse(
-        Some(List(HateoasWrapper(stateBenefits.copy(amount = None, taxPaid = None), singleStateBenefitsLinks))),
-        None),
+      ListBenefitsResponse(Some(List(HateoasWrapper(stateBenefits.copy(amount = None, taxPaid = None), singleStateBenefitsLinks))), None),
       listBenefitsLink)
+
 }

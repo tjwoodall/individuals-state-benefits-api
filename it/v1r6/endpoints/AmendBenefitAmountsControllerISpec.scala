@@ -29,9 +29,9 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String          = "AA123456A"
+    val taxYear: String       = "2019-20"
+    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     val requestBodyJson: JsValue = Json.parse(
@@ -54,6 +54,7 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
       buildRequest(uri)
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
+
   }
 
   "Calling the 'amend benefit amounts' endpoint" should {
@@ -100,8 +101,8 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
 
     "return error according to spec" when {
 
-      val validNino: String = "AA123456A"
-      val validTaxYear: String = "2019-20"
+      val validNino: String      = "AA123456A"
+      val validTaxYear: String   = "2019-20"
       val validBenefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
       val validRequestJson: JsValue = Json.parse(
@@ -154,17 +155,21 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
           message = "The field should be between -99999999999.99 and 99999999999.99",
           paths = Some(List("/taxPaid"))
         )
-
       )
 
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, requestBenefitId: String, requestBody: JsValue, expectedStatus: Int,
-                                expectedBody: ErrorWrapper, scenario: Option[String]): Unit = {
+        def validationErrorTest(requestNino: String,
+                                requestTaxYear: String,
+                                requestBenefitId: String,
+                                requestBody: JsValue,
+                                expectedStatus: Int,
+                                expectedBody: ErrorWrapper,
+                                scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.error} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
-            override val benefitId: String = requestBenefitId
+            override val nino: String             = requestNino
+            override val taxYear: String          = requestTaxYear
+            override val benefitId: String        = requestBenefitId
             override val requestBodyJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {
@@ -186,12 +191,30 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
           (validNino, "2018-19", validBenefitId, validRequestJson, BAD_REQUEST, ErrorWrapper("X-123", RuleTaxYearNotSupportedError, None), None),
           (validNino, "2019-21", validBenefitId, validRequestJson, BAD_REQUEST, ErrorWrapper("X-123", RuleTaxYearRangeInvalidError, None), None),
           (validNino, validTaxYear, validBenefitId, emptyRequestJson, BAD_REQUEST, ErrorWrapper("X-123", RuleIncorrectOrEmptyBodyError, None), None),
-          (validNino, validTaxYear, validBenefitId, invalidFieldTypeRequestBody, BAD_REQUEST,
-            ErrorWrapper("X-123", invalidFieldTypeErrors, None), Some("(invalid field type)")),
-          (validNino, validTaxYear, validBenefitId, missingFieldRequestBodyJson, BAD_REQUEST,
-            ErrorWrapper("X-123", missingMandatoryFieldError, None), Some("(missing mandatory field)")),
-          (validNino, validTaxYear, validBenefitId, allInvalidValueRequestBodyJson, BAD_REQUEST,
-            ErrorWrapper("X-123", BadRequestError, Some(allInvalidValueErrors)), None)
+          (
+            validNino,
+            validTaxYear,
+            validBenefitId,
+            invalidFieldTypeRequestBody,
+            BAD_REQUEST,
+            ErrorWrapper("X-123", invalidFieldTypeErrors, None),
+            Some("(invalid field type)")),
+          (
+            validNino,
+            validTaxYear,
+            validBenefitId,
+            missingFieldRequestBodyJson,
+            BAD_REQUEST,
+            ErrorWrapper("X-123", missingMandatoryFieldError, None),
+            Some("(missing mandatory field)")),
+          (
+            validNino,
+            validTaxYear,
+            validBenefitId,
+            allInvalidValueRequestBodyJson,
+            BAD_REQUEST,
+            ErrorWrapper("X-123", BadRequestError, Some(allInvalidValueErrors)),
+            None)
         )
 
         input.foreach(args => (validationErrorTest _).tupled(args))
@@ -231,10 +254,12 @@ class AmendBenefitAmountsControllerISpec extends V1R6IntegrationBaseSpec {
           (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, DownstreamError),
           (UNPROCESSABLE_ENTITY, "INVALID_REQUEST_BEFORE_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotEndedError),
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError))
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
+        )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
   }
+
 }

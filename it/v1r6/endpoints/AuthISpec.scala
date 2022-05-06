@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -26,8 +26,8 @@ import v1r6.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 class AuthISpec extends V1R6IntegrationBaseSpec {
 
   private trait Test {
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
+    val nino: String      = "AA123456A"
+    val taxYear: String   = "2019-20"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
     def uri: String = s"/$nino/$taxYear/$benefitId"
@@ -41,6 +41,7 @@ class AuthISpec extends V1R6IntegrationBaseSpec {
       buildRequest(uri)
         .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
     }
+
   }
 
   "Calling the `delete state benefit` endpoint" when {
@@ -102,4 +103,5 @@ class AuthISpec extends V1R6IntegrationBaseSpec {
       }
     }
   }
+
 }

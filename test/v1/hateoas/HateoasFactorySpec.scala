@@ -37,11 +37,11 @@ class HateoasFactorySpec extends UnitSpec with MockAppConfig {
 
   val response: Response = Response("X")
 
-  val nino: String = "AA123456A"
-  val taxYear: String = "2020-21"
+  val nino: String      = "AA123456A"
+  val taxYear: String   = "2020-21"
   val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  val createStateBenefitResponse: AddBenefitResponse = AddBenefitResponse(benefitId)
+  val createStateBenefitResponse: AddBenefitResponse        = AddBenefitResponse(benefitId)
   val createStateBenefitsHateoasData: AddBenefitHateoasData = AddBenefitHateoasData(nino, taxYear, benefitId)
 
   val listBenefitsHateoasData: ListBenefitsHateoasData = ListBenefitsHateoasData(nino, taxYear, None)
@@ -69,23 +69,24 @@ class HateoasFactorySpec extends UnitSpec with MockAppConfig {
     createdBy = "CUSTOM"
   )
 
-  val stateBenefitsLinks: Seq[Link] = List(Link("/context/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779f",GET,"self"))
+  val stateBenefitsLinks: Seq[Link] = List(Link("/context/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779f", GET, "self"))
 
-  val customerStateBenefitsLinks: Seq[Link] = List(Link("/context/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779f",GET,"self"))
+  val customerStateBenefitsLinks: Seq[Link] = List(Link("/context/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779f", GET, "self"))
 
-  val listBenefitsLink: Seq[Link] = List(Link("/context/AA123456A/2020-21",POST,"create-state-benefit"), Link("/context/AA123456A/2020-21",GET,"self"))
+  val listBenefitsLink: Seq[Link] =
+    List(Link("/context/AA123456A/2020-21", POST, "create-state-benefit"), Link("/context/AA123456A/2020-21", GET, "self"))
 
   val listBenefitsResponse: ListBenefitsResponse[StateBenefit] = ListBenefitsResponse(
     stateBenefits = Some(Seq(stateBenefits)),
-    customerAddedStateBenefits = Some(Seq(customerAddedStateBenefits)
-    )
+    customerAddedStateBenefits = Some(Seq(customerAddedStateBenefits))
   )
 
   val hateoasResponse: HateoasWrapper[ListBenefitsResponse[HateoasWrapper[StateBenefit]]] = HateoasWrapper(
     ListBenefitsResponse(
       Some(List(HateoasWrapper(stateBenefits, stateBenefitsLinks))),
       Some(List(HateoasWrapper(customerAddedStateBenefits, customerStateBenefitsLinks)))),
-    listBenefitsLink)
+    listBenefitsLink
+  )
 
   class Test {
     MockAppConfig.apiGatewayContext.returns("context").anyNumberOfTimes
@@ -114,9 +115,9 @@ class HateoasFactorySpec extends UnitSpec with MockAppConfig {
         HateoasWrapper(
           AddBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253"),
           List(
-            Link("/context/AA123456A/2020-21?benefitId=b1e8057e-fbbc-47a8-a8b4-78d9f015c253",GET,"self"),
-            Link("/context/AA123456A/2020-21/b1e8057e-fbbc-47a8-a8b4-78d9f015c253",PUT,"amend-state-benefit"),
-            Link("/context/AA123456A/2020-21/b1e8057e-fbbc-47a8-a8b4-78d9f015c253",DELETE,"delete-state-benefit")
+            Link("/context/AA123456A/2020-21?benefitId=b1e8057e-fbbc-47a8-a8b4-78d9f015c253", GET, "self"),
+            Link("/context/AA123456A/2020-21/b1e8057e-fbbc-47a8-a8b4-78d9f015c253", PUT, "amend-state-benefit"),
+            Link("/context/AA123456A/2020-21/b1e8057e-fbbc-47a8-a8b4-78d9f015c253", DELETE, "delete-state-benefit")
           )
         )
     }
@@ -144,4 +145,5 @@ class HateoasFactorySpec extends UnitSpec with MockAppConfig {
       hateoasFactory.wrapList(listBenefitsResponse, listBenefitsHateoasData) shouldBe hateoasResponse
     }
   }
+
 }

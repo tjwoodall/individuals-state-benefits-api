@@ -21,12 +21,19 @@ import v1r6.models.errors.{BenefitTypeFormatError, MtdError}
 
 object BenefitTypeValidation {
 
-  private val benefitTypeEnumList = List(BenefitType.statePension, BenefitType.statePensionLumpSum,
-    BenefitType.employmentSupportAllowance, BenefitType.jobSeekersAllowance, BenefitType.bereavementAllowance,
-    BenefitType.otherStateBenefits, BenefitType.incapacityBenefit).map(_.toString)
+  private val benefitTypeEnumList = List(
+    BenefitType.statePension,
+    BenefitType.statePensionLumpSum,
+    BenefitType.employmentSupportAllowance,
+    BenefitType.jobSeekersAllowance,
+    BenefitType.bereavementAllowance,
+    BenefitType.otherStateBenefits,
+    BenefitType.incapacityBenefit
+  ).map(_.toString)
 
   def validate(benefitType: String): List[MtdError] = {
-    if(benefitTypeEnumList.contains(benefitType)) NoValidationErrors else List(BenefitTypeFormatError)
+    if (benefitTypeEnumList.contains(benefitType)) NoValidationErrors else List(BenefitTypeFormatError)
 
   }
+
 }

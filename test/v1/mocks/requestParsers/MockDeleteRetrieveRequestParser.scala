@@ -31,6 +31,7 @@ trait MockDeleteRetrieveRequestParser extends MockFactory {
     def parse(data: DeleteRetrieveRawData): CallHandler[Either[ErrorWrapper, DeleteRetrieveRequest]] = {
       (mockDeleteRetrieveRequestParser.parseRequest(_: DeleteRetrieveRawData)(_: String)).expects(data, *)
     }
+
   }
 
 }

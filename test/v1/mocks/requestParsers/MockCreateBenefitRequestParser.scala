@@ -27,9 +27,11 @@ trait MockCreateBenefitRequestParser extends MockFactory {
   val mockAddBenefitRequestParser: CreateBenefitRequestParser = mock[CreateBenefitRequestParser]
 
   object MockAddBenefitRequestParser {
+
     def parse(data: CreateBenefitRawData): CallHandler[Either[ErrorWrapper, CreateBenefitRequest]] = {
       (mockAddBenefitRequestParser.parseRequest(_: CreateBenefitRawData)(_: String)).expects(data, *)
     }
+
   }
 
 }

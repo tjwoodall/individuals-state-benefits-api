@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class IgnoreBenefitControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -42,9 +42,9 @@ class IgnoreBenefitControllerSpec
     with MockAuditService
     with MockIdGenerator {
 
-  val nino: String = "AA123456A"
-  val taxYear: String = "2019-20"
-  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String          = "AA123456A"
+  val taxYear: String       = "2019-20"
+  val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   trait Test {
@@ -205,4 +205,5 @@ class IgnoreBenefitControllerSpec
       }
     }
   }
+
 }

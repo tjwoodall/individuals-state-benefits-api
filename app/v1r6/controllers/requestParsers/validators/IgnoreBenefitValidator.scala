@@ -23,8 +23,7 @@ import v1r6.controllers.requestParsers.validators.validations._
 import v1r6.models.errors.MtdError
 import v1r6.models.request.ignoreBenefit.IgnoreBenefitRawData
 
-class IgnoreBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime, appConfig: AppConfig)
-  extends Validator[IgnoreBenefitRawData] {
+class IgnoreBenefitValidator @Inject() (implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[IgnoreBenefitRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
@@ -48,4 +47,5 @@ class IgnoreBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime
       if (featureSwitch.isTaxYearNotEndedRuleEnabled) TaxYearNotEndedValidation.validate(data.taxYear) else List.empty[MtdError]
     )
   }
+
 }

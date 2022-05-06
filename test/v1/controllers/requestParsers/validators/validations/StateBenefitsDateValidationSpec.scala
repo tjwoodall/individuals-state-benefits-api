@@ -114,4 +114,5 @@ class StateBenefitsDateValidationSpec extends UnitSpec {
       }
     }
   }
+
 }

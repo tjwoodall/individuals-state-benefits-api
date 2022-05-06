@@ -31,14 +31,13 @@ import v1r6.support.DesResponseMappingSupport
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UnignoreBenefitService @Inject()(connector: UnignoreBenefitConnector)
-  extends DesResponseMappingSupport with Logging {
+class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) extends DesResponseMappingSupport with Logging {
 
-  def unignoreBenefit(request: IgnoreBenefitRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+  def unignoreBenefit(request: IgnoreBenefitRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.unignoreBenefit(request)).leftMap(mapDesErrors(desErrorMap))
@@ -58,4 +57,5 @@ class UnignoreBenefitService @Inject()(connector: UnignoreBenefitConnector)
     ("SERVICE_ERROR", DownstreamError),
     ("SERVICE_UNAVAILABLE", DownstreamError)
   )
+
 }

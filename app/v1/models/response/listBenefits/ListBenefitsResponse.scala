@@ -23,46 +23,45 @@ import utils.JsonUtils
 import v1.hateoas.{HateoasLinks, HateoasListLinksFactory}
 import v1.models.hateoas.{HateoasData, Link}
 
-case class ListBenefitsResponse[B](stateBenefits: Option[Seq[B]],
-                                customerAddedStateBenefits: Option[Seq[B]])
+case class ListBenefitsResponse[B](stateBenefits: Option[Seq[B]], customerAddedStateBenefits: Option[Seq[B]])
 
 object ListBenefitsResponse extends HateoasLinks with JsonUtils {
 
   implicit object ListBenefitsLinksFactory extends HateoasListLinksFactory[ListBenefitsResponse, StateBenefit, ListBenefitsHateoasData] {
 
-    //noinspection ScalaStyle
+    // noinspection ScalaStyle
     override def itemLinks(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: StateBenefit): Seq[Link] = {
       import data._
 
-      val retrieveLink = retrieveSingleBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
+      val retrieveLink      = retrieveSingleBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
       val updateAmountsLink = updateBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
       val deleteAmountsLink = deleteBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
-      val deleteLink = deleteBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
-      val updateLink = updateBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
-      val ignoreLink = ignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
-      val unignoreLink = unignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
+      val deleteLink        = deleteBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
+      val updateLink        = updateBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
+      val ignoreLink        = ignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
+      val unignoreLink      = unignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
 
       val commonLinks = Seq(retrieveLink, updateAmountsLink)
 
-      val hmrcLinks = if(stateBenefit.dateIgnored.isEmpty){
+      val hmrcLinks = if (stateBenefit.dateIgnored.isEmpty) {
         commonLinks :+ ignoreLink
-      }else{
+      } else {
         commonLinks :+ unignoreLink
       }
 
       // Pattern matching based on benefit amounts, duplicate/common benefit on both HMRC and CUSTOM
       val links = (stateBenefit.hasAmounts, stateBenefit.isCommon) match {
-        case (true, true) if stateBenefit.createdBy == "CUSTOM" => commonLinks :+ deleteAmountsLink
-        case (true, false) if stateBenefit.createdBy == "CUSTOM" => commonLinks ++ Seq(deleteAmountsLink, deleteLink, updateLink)
+        case (true, true) if stateBenefit.createdBy == "CUSTOM"   => commonLinks :+ deleteAmountsLink
+        case (true, false) if stateBenefit.createdBy == "CUSTOM"  => commonLinks ++ Seq(deleteAmountsLink, deleteLink, updateLink)
         case (false, false) if stateBenefit.createdBy == "CUSTOM" => commonLinks ++ Seq(deleteLink, updateLink)
-        case (_, _) if stateBenefit.createdBy == "HMRC" => hmrcLinks
+        case (_, _) if stateBenefit.createdBy == "HMRC"           => hmrcLinks
       }
 
       // Differentiate the links based on the call list/single by benefitId passed in the request
       // for list only retrieve (self)
       data.benefitId match {
         case None => Seq(retrieveSingleBenefit(appConfig, nino, taxYear, stateBenefit.benefitId))
-        case _ => links
+        case _    => links
       }
     }
 
@@ -74,12 +73,14 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
         listBenefits(appConfig, nino, taxYear)
       )
     }
+
   }
 
   implicit object ResponseFunctor extends Functor[ListBenefitsResponse] {
+
     override def map[A, B](fa: ListBenefitsResponse[A])(f: A => B): ListBenefitsResponse[B] =
-      ListBenefitsResponse(
-        fa.stateBenefits.map(x => x.map(f)), fa.customerAddedStateBenefits.map(y => y.map(f)))
+      ListBenefitsResponse(fa.stateBenefits.map(x => x.map(f)), fa.customerAddedStateBenefits.map(y => y.map(f)))
+
   }
 
   implicit def writes[B: Writes]: OWrites[ListBenefitsResponse[B]] = Json.writes[ListBenefitsResponse[B]]
@@ -89,22 +90,23 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
   def readJson[T](createdBy: String)(implicit rds: Reads[Seq[T]]): Reads[Seq[T]] = (json: JsValue) => {
     json
       .validate[JsValue]
-      .flatMap(
-        readJson => {
-          Json.toJson(readJson.as[JsObject].fields.flatMap {
+      .flatMap(readJson => {
+        Json
+          .toJson(readJson.as[JsObject].fields.flatMap {
             case (field, arr: JsArray) =>
-              arr.value.map {
-                element =>
-                  element.as[JsObject] + ("benefitType" -> Json.toJson(field)) + ("createdBy" -> Json.toJson(createdBy))
+              arr.value.map { element =>
+                element.as[JsObject] + ("benefitType" -> Json.toJson(field)) + ("createdBy" -> Json.toJson(createdBy))
               }
             case (field, obj: JsObject) =>
               Seq(obj.as[JsObject] + ("benefitType" -> Json.toJson(field)) + ("createdBy" -> Json.toJson(createdBy)))
             case (_, _) => Seq.empty
-          }).validate[Seq[T]]})
+          })
+          .validate[Seq[T]]
+      })
   }
 
   implicit def reads[B: Reads]: Reads[ListBenefitsResponse[B]] = for {
-    stateBenefits <- (__ \ "stateBenefits").readNullable(readJson[B](createdBy = "HMRC")).mapEmptySeqToNone
+    stateBenefits              <- (__ \ "stateBenefits").readNullable(readJson[B](createdBy = "HMRC")).mapEmptySeqToNone
     customerAddedStateBenefits <- (__ \ "customerAddedStateBenefits").readNullable(readJson[B](createdBy = "CUSTOM")).mapEmptySeqToNone
   } yield {
     ListBenefitsResponse[B](stateBenefits, customerAddedStateBenefits)

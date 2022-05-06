@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 class CreateBenefitConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA111111A"
+  val nino: String    = "AA111111A"
   val taxYear: String = "2021-22"
 
   val addBenefitRequestBody: CreateBenefitRequestBody = CreateBenefitRequestBody(
@@ -70,10 +70,12 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
             body = addBenefitRequestBody,
             requiredHeaders = requiredDesHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          ).returns(Future.successful(outcome))
+          )
+          .returns(Future.successful(outcome))
 
         await(connector.addBenefit(request)) shouldBe outcome
       }
     }
   }
+
 }

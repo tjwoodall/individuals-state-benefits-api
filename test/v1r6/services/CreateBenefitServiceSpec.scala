@@ -29,7 +29,7 @@ import scala.concurrent.Future
 
 class CreateBenefitServiceSpec extends ServiceSpec {
 
-  private val nino = "AA112233A"
+  private val nino    = "AA112233A"
   private val taxYear = "2021-22"
 
   val addBenefitRequestBody: CreateBenefitRequestBody = CreateBenefitRequestBody(
@@ -46,12 +46,13 @@ class CreateBenefitServiceSpec extends ServiceSpec {
 
   val response: AddBenefitResponse = AddBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253")
 
-  trait Test extends MockCreateBenefitConnector{
+  trait Test extends MockCreateBenefitConnector {
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
     val service: CreateBenefitService = new CreateBenefitService(
       connector = mockAddBenefitConnector
     )
+
   }
 
   "AddBenefitService" when {
@@ -59,7 +60,8 @@ class CreateBenefitServiceSpec extends ServiceSpec {
       "return correct result for a success" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, response))
 
-        MockAddBenefitConnector.addBenefit(request)
+        MockAddBenefitConnector
+          .addBenefit(request)
           .returns(Future.successful(outcome))
 
         await(service.addBenefit(request)) shouldBe outcome
@@ -70,7 +72,8 @@ class CreateBenefitServiceSpec extends ServiceSpec {
         def serviceError(desErrorCode: String, error: MtdError): Unit =
           s"a $desErrorCode error is returned from the service" in new Test {
 
-            MockAddBenefitConnector.addBenefit(request)
+            MockAddBenefitConnector
+              .addBenefit(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
 
             await(service.addBenefit(request)) shouldBe Left(ErrorWrapper(correlationId, error))
@@ -93,4 +96,5 @@ class CreateBenefitServiceSpec extends ServiceSpec {
       }
     }
   }
+
 }

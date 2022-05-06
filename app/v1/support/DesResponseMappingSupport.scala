@@ -33,8 +33,8 @@ trait DesResponseMappingSupport {
     }
   }
 
-  final def mapDesErrors[D](errorCodeMap: PartialFunction[String, MtdError])(desResponseWrapper: ResponseWrapper[DesError])(
-    implicit logContext: EndpointLogContext): ErrorWrapper = {
+  final def mapDesErrors[D](errorCodeMap: PartialFunction[String, MtdError])(desResponseWrapper: ResponseWrapper[DesError])(implicit
+      logContext: EndpointLogContext): ErrorWrapper = {
 
     lazy val defaultErrorCodeMapping: String => MtdError = { code =>
       logger.warn(s"[${logContext.controllerName}] [${logContext.endpointName}] - No mapping found for error code $code")
@@ -62,4 +62,5 @@ trait DesResponseMappingSupport {
         ErrorWrapper(correlationId, error, errors)
     }
   }
+
 }

@@ -30,5 +30,5 @@ object DateFormatValidation {
     case Success(_) => NoValidationErrors
     case Failure(_) => List(error)
   }
-}
 
+}

@@ -27,23 +27,19 @@ import v1.models.request.AmendBenefit.AmendBenefitRequest
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitConnector @Inject()(val http: HttpClient,
-                                      val appConfig: AppConfig) extends BaseDownstreamConnector {
+class AmendBenefitConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def amendBenefit(request: AmendBenefitRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def amendBenefit(
+      request: AmendBenefitRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import v1.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.CREATED)
 
-    val nino = request.nino.nino
-    val taxYear = request.taxYear
+    val nino      = request.nino.nino
+    val taxYear   = request.taxYear
     val benefitId = request.benefitId
 
-    put(request.body,
-      DesUri[Unit](s"income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId")
-    )
+    put(request.body, DesUri[Unit](s"income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"))
   }
+
 }

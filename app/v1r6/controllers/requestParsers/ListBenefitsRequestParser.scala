@@ -21,9 +21,9 @@ import v1r6.models.domain.Nino
 import v1r6.controllers.requestParsers.validators.ListBenefitsValidator
 import v1r6.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
 
-class ListBenefitsRequestParser @Inject()(val validator: ListBenefitsValidator)
-  extends RequestParser[ListBenefitsRawData, ListBenefitsRequest] {
+class ListBenefitsRequestParser @Inject() (val validator: ListBenefitsValidator) extends RequestParser[ListBenefitsRawData, ListBenefitsRequest] {
 
   override protected def requestFor(data: ListBenefitsRawData): ListBenefitsRequest =
     ListBenefitsRequest(Nino(data.nino), data.taxYear, data.benefitId)
+
 }

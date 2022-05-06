@@ -23,7 +23,7 @@ import v1r6.models.utils.JsonErrorValidators
 class CreateBenefitRequestBodySpec extends UnitSpec with JsonErrorValidators {
 
   val startDate = "2020-08-03"
-  val endDate = "2020-12-03"
+  val endDate   = "2020-12-03"
 
   "AddBenefitBody" should {
     "read" when {
@@ -165,4 +165,5 @@ class CreateBenefitRequestBodySpec extends UnitSpec with JsonErrorValidators {
       }
     }
   }
+
 }

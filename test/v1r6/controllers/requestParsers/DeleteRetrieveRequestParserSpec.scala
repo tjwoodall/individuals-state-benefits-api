@@ -25,8 +25,8 @@ import v1r6.models.request.{DeleteRetrieveRawData, DeleteRetrieveRequest}
 
 class DeleteRetrieveRequestParserSpec extends UnitSpec {
 
-  val nino: String = "AA123456B"
-  val taxYear: String = "2017-18"
+  val nino: String           = "AA123456B"
+  val taxYear: String        = "2017-18"
   implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val deleteRetrieveSavingsRawData: DeleteRetrieveRawData = DeleteRetrieveRawData(
@@ -35,9 +35,11 @@ class DeleteRetrieveRequestParserSpec extends UnitSpec {
   )
 
   trait Test extends MockDeleteRetrieveValidator {
+
     lazy val parser: DeleteRetrieveRequestParser = new DeleteRetrieveRequestParser(
       validator = mockDeleteRetrieveValidator
     )
+
   }
 
   "parse" should {
@@ -52,7 +54,8 @@ class DeleteRetrieveRequestParserSpec extends UnitSpec {
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockDeleteRetrieveValidator.validate(deleteRetrieveSavingsRawData)
+        MockDeleteRetrieveValidator
+          .validate(deleteRetrieveSavingsRawData)
           .returns(List(NinoFormatError))
 
         parser.parseRequest(deleteRetrieveSavingsRawData) shouldBe
@@ -60,7 +63,8 @@ class DeleteRetrieveRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur" in new Test {
-        MockDeleteRetrieveValidator.validate(deleteRetrieveSavingsRawData)
+        MockDeleteRetrieveValidator
+          .validate(deleteRetrieveSavingsRawData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(deleteRetrieveSavingsRawData) shouldBe
@@ -68,4 +72,5 @@ class DeleteRetrieveRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

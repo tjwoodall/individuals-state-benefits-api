@@ -23,12 +23,12 @@ import v1r6.models.errors.TaxYearFormatError
 
 class GenericAuditDetailSpec extends UnitSpec {
 
-  val nino: String = "XX751130C"
-  val taxYear: String = "2020-21"
-  val benefitId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  val userType: String = "Agent"
+  val nino: String                         = "XX751130C"
+  val taxYear: String                      = "2020-21"
+  val benefitId: String                    = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val userType: String                     = "Agent"
   val agentReferenceNumber: Option[String] = Some("012345678")
-  val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val correlationId: String                = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val auditDetailJsonSuccess: JsValue = Json.parse(
     s"""
@@ -74,20 +74,20 @@ class GenericAuditDetailSpec extends UnitSpec {
     userType = userType,
     agentReferenceNumber = agentReferenceNumber,
     params = Map("nino" -> nino, "taxYear" -> taxYear),
-    request = Some(Json.parse(
-      """
+    request = Some(
+      Json.parse(
+        """
         |{
         |  "benefitType": "incapacityBenefit",
         |  "startDate": "2020-08-03",
         |  "endDate": "2020-12-03"
         |}
         """.stripMargin
-    )),
+      )),
     `X-CorrelationId` = correlationId,
     response = AuditResponse(
       OK,
-      Right(Some(Json.parse(
-        s"""
+      Right(Some(Json.parse(s"""
            |{
            |  "benefitId": "$benefitId",
            |  "links": [
@@ -108,8 +108,7 @@ class GenericAuditDetailSpec extends UnitSpec {
            |    }
            |  ]
            |}
-        """.stripMargin))
-      )
+        """.stripMargin)))
     )
   )
 
@@ -142,15 +141,16 @@ class GenericAuditDetailSpec extends UnitSpec {
     userType = userType,
     agentReferenceNumber = agentReferenceNumber,
     params = Map("nino" -> nino, "taxYear" -> "2020-2021"),
-    request = Some(Json.parse(
-      """
+    request = Some(
+      Json.parse(
+        """
         |{
         |  "benefitType": "incapacityBenefit",
         |  "startDate": "2020-08-03",
         |  "endDate": "2020-12-03"
         |}
       """.stripMargin
-    )),
+      )),
     `X-CorrelationId` = correlationId,
     response = AuditResponse(BAD_REQUEST, Left(Seq(AuditError(TaxYearFormatError.code))))
   )
@@ -168,4 +168,5 @@ class GenericAuditDetailSpec extends UnitSpec {
       }
     }
   }
+
 }

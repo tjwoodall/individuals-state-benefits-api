@@ -27,8 +27,8 @@ import scala.concurrent.Future
 
 class UnignoreBenefitServiceSpec extends ServiceSpec {
 
-  val nino: String = "AA111111A"
-  val taxYear: String = "2019-20"
+  val nino: String      = "AA111111A"
+  val taxYear: String   = "2019-20"
   val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
   val request: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), taxYear, benefitId)
@@ -39,6 +39,7 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
     val service: UnignoreBenefitService = new UnignoreBenefitService(
       connector = mockUnignoreBenefitConnector
     )
+
   }
 
   "UnignoreBenefitService" when {
@@ -46,7 +47,8 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
       "return correct result for a success" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        MockUnignoreBenefitConnector.unignoreBenefit(request)
+        MockUnignoreBenefitConnector
+          .unignoreBenefit(request)
           .returns(Future.successful(outcome))
 
         await(service.unignoreBenefit(request)) shouldBe outcome
@@ -57,7 +59,8 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
         def serviceError(desErrorCode: String, error: MtdError): Unit =
           s"a $desErrorCode error is returned from the service" in new Test {
 
-            MockUnignoreBenefitConnector.unignoreBenefit(request)
+            MockUnignoreBenefitConnector
+              .unignoreBenefit(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
 
             await(service.unignoreBenefit(request)) shouldBe Left(ErrorWrapper(correlationId, error))
@@ -79,4 +82,5 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
       }
     }
   }
+
 }
