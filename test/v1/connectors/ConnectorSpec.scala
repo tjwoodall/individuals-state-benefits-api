@@ -83,4 +83,20 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     "X-Session-Id"
   )
 
+  val requiredRelease6Headers: Seq[(String, String)] = Seq(
+    "Authorization"     -> "Bearer release6-token",
+    "Environment"       -> "release6-environment",
+    "User-Agent"        -> "self-assessment-accounts-api",
+    "CorrelationId"     -> correlationId,
+    "Gov-Test-Scenario" -> "DEFAULT"
+  )
+
+  val requiredApi1651Headers: Seq[(String, String)] = Seq(
+    "Authorization"     -> "Bearer api1651-token",
+    "Environment"       -> "api1651-environment",
+    "User-Agent"        -> "self-assessment-accounts-api",
+    "CorrelationId"     -> correlationId,
+    "Gov-Test-Scenario" -> "DEFAULT"
+  )
+
 }

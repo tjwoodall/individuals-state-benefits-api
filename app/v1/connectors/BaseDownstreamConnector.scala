@@ -20,7 +20,7 @@ import config.AppConfig
 import play.api.libs.json.Writes
 import play.api.Logger
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
-import v1.connectors.DownstreamUri.{DesUri, IfsUri}
+import v1.connectors.DownstreamUri._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -56,6 +56,18 @@ trait BaseDownstreamConnector {
         hc.headers(additionalHeaders ++ appConfig.ifsEnvironmentHeaders.getOrElse(Seq.empty))
     )
 
+  private def api1651HeaderCarrier(additionalHeaders: Seq[String])(implicit hc: HeaderCarrier, correlationId: String): HeaderCarrier =
+    HeaderCarrier(
+      extraHeaders = hc.extraHeaders ++
+        // Contract headers
+        Seq(
+          "Authorization" -> s"Bearer ${appConfig.api1651Token}",
+          "Environment"   -> appConfig.api1651Env,
+          "CorrelationId" -> correlationId
+        ) ++
+        // Other headers (i.e Gov-Test-Scenario, Content-Type)
+        hc.headers(additionalHeaders ++ appConfig.api1651EnvironmentHeaders.getOrElse(Seq.empty))
+    )
   def post[Body: Writes, Resp](body: Body, uri: DownstreamUri[Resp])(implicit
       ec: ExecutionContext,
       hc: HeaderCarrier,
@@ -120,8 +132,9 @@ trait BaseDownstreamConnector {
   }
 
   private def getBackendUri[Resp](uri: DownstreamUri[Resp]): String = uri match {
-    case DesUri(value) => s"${appConfig.desBaseUrl}/$value"
-    case IfsUri(value) => s"${appConfig.ifsBaseUrl}/$value"
+    case DesUri(value)      => s"${appConfig.desBaseUrl}/$value"
+    case IfsUri(value)      => s"${appConfig.ifsBaseUrl}/$value"
+    case Api1651Uri(value)  => s"${appConfig.api1651BaseUrl}/$value"
   }
 
   private def getBackendHeaders[Resp](uri: DownstreamUri[Resp],
@@ -129,8 +142,9 @@ trait BaseDownstreamConnector {
                                       correlationId: String,
                                       additionalHeaders: Seq[String] = Seq.empty): HeaderCarrier =
     uri match {
-      case DesUri(_) => desHeaderCarrier(additionalHeaders)(hc, correlationId)
-      case IfsUri(_) => ifsHeaderCarrier(additionalHeaders)(hc, correlationId)
+      case DesUri(_)      => desHeaderCarrier(additionalHeaders)(hc, correlationId)
+      case IfsUri(_)      => ifsHeaderCarrier(additionalHeaders)(hc, correlationId)
+      case Api1651Uri(_)  => api1651HeaderCarrier(additionalHeaders)(hc, correlationId)
     }
 
 }

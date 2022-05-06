@@ -20,7 +20,7 @@ import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.Reads
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.DownstreamUri.DesUri
+import v1.connectors.DownstreamUri
 import v1.connectors.{DeleteRetrieveConnector, DownstreamOutcome}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -33,13 +33,13 @@ trait MockDeleteRetrieveConnector extends MockFactory {
 
     def delete(): CallHandler[Future[DownstreamOutcome[Unit]]] = {
       (mockDeleteRetrieveConnector
-        .delete()(_: HeaderCarrier, _: ExecutionContext, _: DesUri[Unit], _: String))
+        .delete()(_: HeaderCarrier, _: ExecutionContext, _: DownstreamUri[Unit], _: String))
         .expects(*, *, *, *)
     }
 
     def retrieve[Resp: Reads](): CallHandler[Future[DownstreamOutcome[Resp]]] = {
       (mockDeleteRetrieveConnector
-        .retrieve[Resp]()(_: Reads[Resp], _: HeaderCarrier, _: ExecutionContext, _: DesUri[Resp], _: String))
+        .retrieve[Resp]()(_: Reads[Resp], _: HeaderCarrier, _: ExecutionContext, _: DownstreamUri[Resp], _: String))
         .expects(*, *, *, *, *)
     }
 

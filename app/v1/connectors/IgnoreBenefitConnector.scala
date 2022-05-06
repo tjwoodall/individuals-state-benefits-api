@@ -17,11 +17,10 @@
 package v1.connectors
 
 import config.AppConfig
-
 import javax.inject.{Inject, Singleton}
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.DesUri
+import v1.connectors.DownstreamUri.IfsUri
 import v1.models.request.EmptyBody
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 
@@ -41,7 +40,7 @@ class IgnoreBenefitConnector @Inject() (val http: HttpClient, val appConfig: App
     val taxYear   = request.taxYear
     val benefitId = request.benefitId
 
-    put(EmptyBody, DesUri[Unit](s"income-tax/income/state-benefits/$nino/$taxYear/ignore/$benefitId"))
+    put(EmptyBody, IfsUri[Unit](s"income-tax/income/state-benefits/$nino/$taxYear/ignore/$benefitId"))
   }
 
 }

@@ -17,14 +17,13 @@
 package v1.connectors
 
 import config.AppConfig
-
-import javax.inject.{Inject, Singleton}
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.DesUri
+import v1.connectors.DownstreamUri.IfsUri
 import v1.models.request.createBenefit.CreateBenefitRequest
 import v1.models.response.AddBenefitResponse
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -41,7 +40,7 @@ class CreateBenefitConnector @Inject() (val http: HttpClient, val appConfig: App
     val nino    = request.nino.nino
     val taxYear = request.taxYear
 
-    post(request.body, DesUri[AddBenefitResponse](s"income-tax/income/state-benefits/$nino/$taxYear/custom"))
+    post(request.body, IfsUri[AddBenefitResponse](s"income-tax/income/state-benefits/$nino/$taxYear/custom"))
   }
 
 }

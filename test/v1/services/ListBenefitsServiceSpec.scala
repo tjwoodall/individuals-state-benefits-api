@@ -16,13 +16,13 @@
 
 package v1.services
 
-import v1.models.domain.Nino
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockListBenefitsConnector
+import v1.models.domain.Nino
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
-import v1.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import scala.concurrent.Future
 
@@ -37,7 +37,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
   private val validResponse = ListBenefitsResponse(
     stateBenefits = Some(
       Seq(
-        StateBenefit(
+        HMRCStateBenefit(
           benefitType = "incapacityBenefit",
           dateIgnored = Some("2019-04-04T01:01:01Z"),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
@@ -45,22 +45,20 @@ class ListBenefitsServiceSpec extends ServiceSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = None,
-          createdBy = "HMRC"
+          submittedOn = None
         )
       )
     ),
     customerAddedStateBenefits = Some(
       Seq(
-        StateBenefit(
+        CustomerStateBenefit(
           benefitType = "incapacityBenefit",
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z"),
-          createdBy = "CUSTOM"
+          submittedOn = Some("2019-04-04T01:01:01Z")
         )
       )
     )
@@ -103,7 +101,6 @@ class ListBenefitsServiceSpec extends ServiceSpec {
           ("INVALID_VIEW", DownstreamError),
           ("INVALID_CORRELATIONID", DownstreamError),
           ("NO_DATA_FOUND", NotFoundError),
-          ("INVALID_DATE_RANGE", RuleTaxYearNotSupportedError),
           ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
           ("SERVER_ERROR", DownstreamError),
           ("SERVICE_UNAVAILABLE", DownstreamError)

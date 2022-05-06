@@ -40,11 +40,6 @@ trait AppConfig {
   def api1651Token: String
   def api1651EnvironmentHeaders: Option[Seq[String]]
 
-  def release6BaseUrl: String
-  def release6Env: String
-  def release6Token: String
-  def release6EnvironmentHeaders: Option[Seq[String]]
-
   def apiGatewayContext: String
   def minimumPermittedTaxYear: Int
 
@@ -77,12 +72,6 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   val api1651Env: String                             = config.getString("microservice.services.api1651.env")
   val api1651Token: String                           = config.getString("microservice.services.api1651.token")
   val api1651EnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.api1651.environmentHeaders")
-
-  // Release7 config
-  val release6BaseUrl: String                         = config.baseUrl("release6")
-  val release6Env: String                             = config.getString("microservice.services.release6.env")
-  val release6Token: String                           = config.getString("microservice.services.release6.token")
-  val release6EnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.release6.environmentHeaders")
 
   val minimumPermittedTaxYear: Int = config.getInt("minimumPermittedTaxYear")
 

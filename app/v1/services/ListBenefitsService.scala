@@ -18,7 +18,6 @@ package v1.services
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.ListBenefitsConnector
@@ -26,9 +25,10 @@ import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
-import v1.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 import v1.support.DesResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -38,7 +38,7 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
       hc: HeaderCarrier,
       ec: ExecutionContext,
       logContext: EndpointLogContext,
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[StateBenefit]]]] = {
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDesErrors(mappingDesToMtdError))
@@ -54,7 +54,6 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
     "INVALID_VIEW"              -> DownstreamError,
     "INVALID_CORRELATIONID"     -> DownstreamError,
     "NO_DATA_FOUND"             -> NotFoundError,
-    "INVALID_DATE_RANGE"        -> RuleTaxYearNotSupportedError,
     "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
     "SERVER_ERROR"              -> DownstreamError,
     "SERVICE_UNAVAILABLE"       -> DownstreamError

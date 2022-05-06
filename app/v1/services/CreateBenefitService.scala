@@ -49,16 +49,16 @@ class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends
 
   private def desErrorMap: Map[String, MtdError] =
     Map(
-      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "INVALID_CORRELATIONID"     -> DownstreamError,
-      "INVALID_PAYLOAD"           -> DownstreamError,
-      "INVALID_REQUEST_TAX_YEAR"  -> RuleTaxYearNotSupportedError,
-      "NOT_SUPPORTED_TAX_YEAR"    -> RuleTaxYearNotEndedError,
-      "INVALID_START_DATE"        -> RuleStartDateAfterTaxYearEndError,
-      "INVALID_CESSATION_DATE"    -> RuleEndDateBeforeTaxYearStartError,
-      "SERVER_ERROR"              -> DownstreamError,
-      "SERVICE_UNAVAILABLE"       -> DownstreamError
+      "INVALID_TAXABLE_ENTITY_ID"   -> NinoFormatError,
+      "INVALID_TAX_YEAR"            -> TaxYearFormatError,
+      "INVALID_CORRELATIONID"       -> DownstreamError,
+      "INVALID_PAYLOAD"             -> DownstreamError,
+      "BENEFIT_TYPE_ALREADY_EXISTS" -> RuleBenefitTypeExists,
+      "NOT_SUPPORTED_TAX_YEAR"      -> RuleTaxYearNotEndedError,
+      "INVALID_START_DATE"          -> RuleStartDateAfterTaxYearEndError,
+      "INVALID_CESSATION_DATE"      -> RuleEndDateBeforeTaxYearStartError,
+      "SERVER_ERROR"                -> DownstreamError,
+      "SERVICE_UNAVAILABLE"         -> DownstreamError
     )
 
 }
