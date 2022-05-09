@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 class CreateBenefitConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA111111A"
+  val nino: String    = "AA111111A"
   val taxYear: String = "2021-22"
 
   val addBenefitRequestBody: CreateBenefitRequestBody = CreateBenefitRequestBody(
@@ -52,10 +52,10 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockAppConfig.ifsBaseUrl returns baseUrl
+    MockAppConfig.ifsToken returns "release6-token"
+    MockAppConfig.ifsEnvironment returns "release6-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "CreateBenefitConnector" when {
@@ -66,14 +66,16 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
         MockHttpClient
           .post(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
-            config = dummyDesHeaderCarrierConfig,
+            config = dummyIfsHeaderCarrierConfig,
             body = addBenefitRequestBody,
-            requiredHeaders = requiredDesHeaders,
+            requiredHeaders = requiredRelease6Headers,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          ).returns(Future.successful(outcome))
+          )
+          .returns(Future.successful(outcome))
 
         await(connector.addBenefit(request)) shouldBe outcome
       }
     }
   }
+
 }

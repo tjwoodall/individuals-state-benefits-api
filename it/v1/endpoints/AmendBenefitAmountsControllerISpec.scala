@@ -21,18 +21,18 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
-import support.V1IntegrationBaseSpec
+import play.api.test.Helpers.AUTHORIZATION
+import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1.stubs._
 
-class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
-
+class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String          = "AA123456A"
+    val taxYear: String       = "2019-20"
+    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     val requestBodyJson: JsValue = Json.parse(
@@ -46,15 +46,19 @@ class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear/$benefitId/amounts"
 
-    def desUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
+    def Api1651Uri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
 
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
       setupStubs()
       buildRequest(uri)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
     }
+
   }
 
   "Calling the 'amend benefit amounts' endpoint" should {
@@ -65,7 +69,7 @@ class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.PUT, desUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, Api1651Uri, NO_CONTENT)
         }
 
         val hateoasResponse: JsValue = Json.parse(
@@ -101,8 +105,8 @@ class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
 
     "return error according to spec" when {
 
-      val validNino: String = "AA123456A"
-      val validTaxYear: String = "2019-20"
+      val validNino: String      = "AA123456A"
+      val validTaxYear: String   = "2019-20"
       val validBenefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
       val validRequestJson: JsValue = Json.parse(
@@ -158,13 +162,18 @@ class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
       )
 
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, requestBenefitId: String, requestBody: JsValue, expectedStatus: Int,
-                                expectedBody: ErrorWrapper, scenario: Option[String]): Unit = {
+        def validationErrorTest(requestNino: String,
+                                requestTaxYear: String,
+                                requestBenefitId: String,
+                                requestBody: JsValue,
+                                expectedStatus: Int,
+                                expectedBody: ErrorWrapper,
+                                scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.error} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
-            override val benefitId: String = requestBenefitId
+            override val nino: String             = requestNino
+            override val taxYear: String          = requestTaxYear
+            override val benefitId: String        = requestBenefitId
             override val requestBodyJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {
@@ -186,26 +195,44 @@ class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
           (validNino, "2018-19", validBenefitId, validRequestJson, BAD_REQUEST, ErrorWrapper("X-123", RuleTaxYearNotSupportedError, None), None),
           (validNino, "2019-21", validBenefitId, validRequestJson, BAD_REQUEST, ErrorWrapper("X-123", RuleTaxYearRangeInvalidError, None), None),
           (validNino, validTaxYear, validBenefitId, emptyRequestJson, BAD_REQUEST, ErrorWrapper("X-123", RuleIncorrectOrEmptyBodyError, None), None),
-          (validNino, validTaxYear, validBenefitId, invalidFieldTypeRequestBody, BAD_REQUEST,
-            ErrorWrapper("X-123", invalidFieldTypeErrors, None), Some("(invalid field type)")),
-          (validNino, validTaxYear, validBenefitId, missingFieldRequestBodyJson, BAD_REQUEST,
-            ErrorWrapper("X-123", missingMandatoryFieldError, None), Some("(missing mandatory field)")),
-          (validNino, validTaxYear, validBenefitId, allInvalidValueRequestBodyJson, BAD_REQUEST,
-            ErrorWrapper("X-123", BadRequestError, Some(allInvalidValueErrors)), None)
+          (
+            validNino,
+            validTaxYear,
+            validBenefitId,
+            invalidFieldTypeRequestBody,
+            BAD_REQUEST,
+            ErrorWrapper("X-123", invalidFieldTypeErrors, None),
+            Some("(invalid field type)")),
+          (
+            validNino,
+            validTaxYear,
+            validBenefitId,
+            missingFieldRequestBodyJson,
+            BAD_REQUEST,
+            ErrorWrapper("X-123", missingMandatoryFieldError, None),
+            Some("(missing mandatory field)")),
+          (
+            validNino,
+            validTaxYear,
+            validBenefitId,
+            allInvalidValueRequestBodyJson,
+            BAD_REQUEST,
+            ErrorWrapper("X-123", BadRequestError, Some(allInvalidValueErrors)),
+            None)
         )
 
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
-      "des service error" when {
-        def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"des returns an $desCode error and status $desStatus" in new Test {
+      "ifs service error" when {
+        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.PUT, desUri, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.PUT, Api1651Uri, ifsStatus, errorBody(ifsCode))
             }
 
             val response: WSResponse = await(request().put(requestBodyJson))
@@ -218,22 +245,25 @@ class AmendBenefitAmountsControllerISpec extends V1IntegrationBaseSpec {
           s"""
              |{
              |   "code": "$code",
-             |   "reason": "des message"
+             |   "reason": "ifs message"
              |}
             """.stripMargin
 
         val input = Seq(
+          (NOT_FOUND, "INCOME_SOURCE_NOT_FOUND", NOT_FOUND, NotFoundError),
           (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
-          (BAD_REQUEST, "INVALID_BENEFIT_ID", NOT_FOUND, NotFoundError),
+          (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, DownstreamError),
           (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, DownstreamError),
           (UNPROCESSABLE_ENTITY, "INVALID_REQUEST_BEFORE_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotEndedError),
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError))
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
+        )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
   }
+
 }

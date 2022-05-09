@@ -22,8 +22,7 @@ import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.deleteBenefit.DeleteBenefitRawData
 
-class DeleteBenefitValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[DeleteBenefitRawData] {
+class DeleteBenefitValidator @Inject() (implicit appConfig: AppConfig) extends Validator[DeleteBenefitRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
@@ -44,4 +43,5 @@ class DeleteBenefitValidator @Inject()(implicit appConfig: AppConfig)
       TaxYearNotSupportedValidation.validate(data.taxYear)
     )
   }
+
 }

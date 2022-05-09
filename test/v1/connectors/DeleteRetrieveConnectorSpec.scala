@@ -18,7 +18,7 @@ package v1.connectors
 
 import mocks.MockAppConfig
 import play.api.libs.json.{Json, Reads}
-import v1.connectors.DownstreamUri.DesUri
+import v1.connectors.DownstreamUri.IfsUri
 import v1.mocks.MockHttpClient
 import v1.models.outcomes.ResponseWrapper
 
@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
 class DeleteRetrieveConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA111111A"
+  val nino: String    = "AA111111A"
   val taxYear: String = "2019"
 
   class Test extends MockHttpClient with MockAppConfig {
@@ -36,29 +36,29 @@ class DeleteRetrieveConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    val desRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
-      "Authorization" -> s"Bearer des-token"
+    val ifsRequestHeaders: Seq[(String, String)] = Seq(
+      "Environment"   -> "ifs-environment",
+      "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockAppConfig.ifsBaseUrl returns baseUrl
+    MockAppConfig.ifsToken returns "ifs-token"
+    MockAppConfig.ifsEnvironment returns "ifs-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "DeleteRetrieveConnector" when {
     "delete" must {
       "return a 204 status for a success scenario" in new Test {
 
-        val outcome = Right(ResponseWrapper(correlationId, ()))
-        implicit val desUri: DesUri[Unit] = DesUri[Unit](s"some-placeholder/savings/$nino/$taxYear")
+        val outcome                       = Right(ResponseWrapper(correlationId, ()))
+        implicit val ifsUri: IfsUri[Unit] = IfsUri[Unit](s"some-placeholder/savings/$nino/$taxYear")
 
         MockHttpClient
           .delete(
             url = s"$baseUrl/some-placeholder/savings/$nino/$taxYear",
-            config = dummyDesHeaderCarrierConfig,
-            requiredHeaders = desRequestHeaders,
+            config = dummyIfsHeaderCarrierConfig,
+            requiredHeaders = ifsRequestHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           )
           .returns(Future.successful(outcome))
@@ -76,14 +76,14 @@ class DeleteRetrieveConnectorSpec extends ConnectorSpec {
           implicit val reads: Reads[Data] = Json.reads[Data]
         }
 
-        val outcome = Right(ResponseWrapper(correlationId, Data("value")))
-        implicit val desUri: DesUri[Data] = DesUri[Data](s"some-placeholder/savings/$nino/$taxYear")
+        val outcome                       = Right(ResponseWrapper(correlationId, Data("value")))
+        implicit val ifsUri: IfsUri[Data] = IfsUri[Data](s"some-placeholder/savings/$nino/$taxYear")
 
         MockHttpClient
           .get(
             url = s"$baseUrl/some-placeholder/savings/$nino/$taxYear",
-            config = dummyDesHeaderCarrierConfig,
-            requiredHeaders = desRequestHeaders,
+            config = dummyIfsHeaderCarrierConfig,
+            requiredHeaders = ifsRequestHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
           )
           .returns(Future.successful(outcome))
@@ -92,4 +92,5 @@ class DeleteRetrieveConnectorSpec extends ConnectorSpec {
       }
     }
   }
+
 }

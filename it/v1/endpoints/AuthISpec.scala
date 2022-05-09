@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -20,16 +20,16 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.ws.{WSRequest, WSResponse}
-import support.V1IntegrationBaseSpec
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import play.api.test.Helpers.AUTHORIZATION
+import support.IntegrationBaseSpec
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
-class AuthISpec extends V1IntegrationBaseSpec {
+class AuthISpec extends IntegrationBaseSpec {
 
   private trait Test {
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
+    val nino: String      = "AA123456A"
+    val taxYear: String   = "2019-20"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-    val correlationId: String = "X-123"
 
     def uri: String = s"/$nino/$taxYear/$benefitId"
 
@@ -40,8 +40,12 @@ class AuthISpec extends V1IntegrationBaseSpec {
     def request(): WSRequest = {
       setupStubs()
       buildRequest(uri)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
     }
+
   }
 
   "Calling the `delete state benefit` endpoint" when {
@@ -65,7 +69,7 @@ class AuthISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.DELETE, desUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.DELETE, desUri, NO_CONTENT)
         }
 
         val response: WSResponse = await(request().delete())
@@ -103,4 +107,5 @@ class AuthISpec extends V1IntegrationBaseSpec {
       }
     }
   }
+
 }

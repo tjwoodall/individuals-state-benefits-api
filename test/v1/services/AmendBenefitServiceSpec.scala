@@ -27,8 +27,8 @@ import scala.concurrent.Future
 
 class AmendBenefitServiceSpec extends ServiceSpec {
 
-  private val nino = "AA123456A"
-  private val taxYear = "2021-22"
+  private val nino      = "AA123456A"
+  private val taxYear   = "2021-22"
   private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
   val updateBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody(
@@ -49,6 +49,7 @@ class AmendBenefitServiceSpec extends ServiceSpec {
     val service: AmendBenefitService = new AmendBenefitService(
       connector = mockUpdateBenefitConnector
     )
+
   }
 
   "UpdateBenefitService" when {
@@ -56,7 +57,8 @@ class AmendBenefitServiceSpec extends ServiceSpec {
       "return correct result for a success" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        MockUpdateBenefitConnector.updateBenefit(requestData)
+        MockUpdateBenefitConnector
+          .updateBenefit(requestData)
           .returns(Future.successful(outcome))
 
         await(service.updateBenefit(requestData)) shouldBe outcome
@@ -68,7 +70,8 @@ class AmendBenefitServiceSpec extends ServiceSpec {
       def serviceError(desErrorCode: String, error: MtdError): Unit =
         s"a $desErrorCode error is returned from the service" in new Test {
 
-          MockUpdateBenefitConnector.updateBenefit(requestData)
+          MockUpdateBenefitConnector
+            .updateBenefit(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
 
           await(service.updateBenefit(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
@@ -82,7 +85,6 @@ class AmendBenefitServiceSpec extends ServiceSpec {
         ("INVALID_PAYLOAD", DownstreamError),
         ("UPDATE_FORBIDDEN", RuleUpdateForbiddenError),
         ("NO_DATA_FOUND", NotFoundError),
-        ("INVALID_REQUEST_TAX_YEAR", RuleTaxYearNotEndedError),
         ("INVALID_START_DATE", RuleStartDateAfterTaxYearEndError),
         ("INVALID_CESSATION_DATE", RuleEndDateBeforeTaxYearStartError),
         ("SERVER_ERROR", DownstreamError),
@@ -92,4 +94,5 @@ class AmendBenefitServiceSpec extends ServiceSpec {
       input.foreach(args => (serviceError _).tupled(args))
     }
   }
+
 }

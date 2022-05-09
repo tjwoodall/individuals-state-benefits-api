@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -21,19 +21,18 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
-import support.V1IntegrationBaseSpec
+import play.api.test.Helpers.AUTHORIZATION
+import support.IntegrationBaseSpec
 import v1.fixtures.ListBenefitsFixture._
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
-class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
-
+class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
+    val nino: String    = "AA123456A"
     val taxYear: String = "2020-21"
-    val correlationId: String = "X-123"
 
     def uri: String = s"/$nino/$taxYear"
 
@@ -44,14 +43,18 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
     def request(benefitId: Option[String]): WSRequest = {
       def queryParams: Seq[(String, String)] =
         Seq("benefitId" -> benefitId)
-          .collect {
-            case (k, Some(v)) => (k, v)
+          .collect { case (k, Some(v)) =>
+            (k, v)
           }
       setupStubs()
       buildRequest(uri)
         .addQueryStringParameters(queryParams: _*)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
     }
+
   }
 
   "Calling the sample endpoint" should {
@@ -62,7 +65,7 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, OK, desJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, desJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -79,7 +82,7 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, OK, singleStateBenefitDesJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, singleStateBenefitDesJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -96,10 +99,10 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, singleStateBenefitDesJsonWithDuplicateId)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, singleStateBenefitDesJsonWithDuplicateId)
         }
 
-        val response: WSResponse = await(request(benefitId).get())
+        val response: WSResponse = await(request(queryBenefitId).get())
         response.status shouldBe OK
         response.json shouldBe duplicateIdResponse
         response.header("Content-Type") shouldBe Some("application/json")
@@ -113,10 +116,10 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, singleCustomerStateBenefitDesJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, singleCustomerStateBenefitDesJson)
         }
 
-        val response: WSResponse = await(request(benefitId).get())
+        val response: WSResponse = await(request(queryBenefitId).get())
         response.status shouldBe OK
         response.json shouldBe singleRetrieveWithAmountsBenefitId
         response.header("Content-Type") shouldBe Some("application/json")
@@ -130,10 +133,10 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, desJsonWithNoAmounts)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, desJsonWithNoAmounts)
         }
 
-        val response: WSResponse = await(request(benefitId).get())
+        val response: WSResponse = await(request(queryBenefitId).get())
         response.status shouldBe OK
         response.json shouldBe responseBodyWithNoAmountsBenefitId
         response.header("Content-Type") shouldBe Some("application/json")
@@ -147,10 +150,10 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.GET, desUri, Map("benefitId" -> benefitId.get), OK, desJsonWithNoDateIgnored)
+          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, desJsonWithNoDateIgnored)
         }
 
-        val response: WSResponse = await(request(benefitId).get())
+        val response: WSResponse = await(request(queryBenefitId).get())
         response.status shouldBe OK
         response.json shouldBe responseBodyWithoutDateIgnored
         response.header("Content-Type") shouldBe Some("application/json")
@@ -160,11 +163,14 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
     "return error according to spec" when {
 
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, requestBenefitId: String,
-                                expectedStatus: Int, expectedBody: MtdError): Unit = {
+        def validationErrorTest(requestNino: String,
+                                requestTaxYear: String,
+                                requestBenefitId: String,
+                                expectedStatus: Int,
+                                expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
+            override val nino: String    = requestNino
             override val taxYear: String = requestTaxYear
 
             override def setupStubs(): StubMapping = {
@@ -199,7 +205,7 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.GET, desUri, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.GET, desUri, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(request(None).get())
@@ -219,7 +225,6 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
         val input = Seq(
           (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
-          (BAD_REQUEST, "INVALID_DATE_RANGE", BAD_REQUEST, RuleTaxYearNotSupportedError),
           (BAD_REQUEST, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError),
           (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),
           (BAD_REQUEST, "INVALID_VIEW", INTERNAL_SERVER_ERROR, DownstreamError),
@@ -233,4 +238,5 @@ class ListBenefitsControllerISpec extends V1IntegrationBaseSpec {
       }
     }
   }
+
 }

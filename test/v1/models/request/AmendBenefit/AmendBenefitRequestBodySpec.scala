@@ -60,4 +60,5 @@ class AmendBenefitRequestBodySpec extends UnitSpec with JsonErrorValidators {
       }
     }
   }
+
 }

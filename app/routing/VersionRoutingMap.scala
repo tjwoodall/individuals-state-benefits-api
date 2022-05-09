@@ -17,7 +17,7 @@
 package routing
 
 import com.google.inject.ImplementedBy
-import config.{AppConfig, FeatureSwitch}
+import config.AppConfig
 import definition.Versions.VERSION_1
 import play.api.routing.Router
 
@@ -36,14 +36,13 @@ trait VersionRoutingMap {
 }
 
 // Add routes corresponding to available versions...
-case class VersionRoutingMapImpl @Inject()(appConfig: AppConfig,
-                                           defaultRouter: Router,
-                                           v1Router: v1.Routes,
-                                           v1RouterWithRelease6: v1WithRelease6.Routes) extends VersionRoutingMap {
+case class VersionRoutingMapImpl @Inject() (appConfig: AppConfig,
+                                            defaultRouter: Router,
+                                            v1Router: v1.Routes)
+    extends VersionRoutingMap {
 
   val map: Map[String, Router] = Map(
-    VERSION_1 -> {
-      if (FeatureSwitch(appConfig.featureSwitch).isRelease6RoutingEnabled) v1RouterWithRelease6 else v1Router
-    }
+    VERSION_1 -> v1Router
   )
+
 }

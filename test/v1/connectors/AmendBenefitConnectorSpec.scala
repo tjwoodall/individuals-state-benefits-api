@@ -27,8 +27,8 @@ import scala.concurrent.Future
 
 class AmendBenefitConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA123456A"
-  val taxYear: String = "2021-22"
+  val nino: String      = "AA123456A"
+  val taxYear: String   = "2021-22"
   val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
   val updateBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody(
@@ -50,15 +50,15 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    val desRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
-      "Authorization" -> s"Bearer des-token"
+    val ifsRequestHeaders: Seq[(String, String)] = Seq(
+      "Environment"   -> "ifs-environment",
+      "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockAppConfig.ifsBaseUrl returns baseUrl
+    MockAppConfig.ifsToken returns "release6-token"
+    MockAppConfig.ifsEnvironment returns "release6-environment"
+    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "UpdateBenefitConnector" when {
@@ -67,19 +67,21 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
         implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredDesHeadersPut: Seq[(String, String)] = requiredDesHeaders ++ Seq("Content-Type" -> "application/json")
+        val requiredRelease6HeadersPut: Seq[(String, String)] = requiredRelease6Headers ++ Seq("Content-Type" -> "application/json")
 
         MockHttpClient
           .put(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
-            config = dummyDesHeaderCarrierConfig,
+            config = dummyIfsHeaderCarrierConfig,
             body = request.body,
-            requiredHeaders = requiredDesHeadersPut,
+            requiredHeaders = requiredRelease6HeadersPut,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          ).returns(Future.successful(outcome))
+          )
+          .returns(Future.successful(outcome))
 
         await(connector.amendBenefit(request)) shouldBe outcome
       }
     }
   }
+
 }

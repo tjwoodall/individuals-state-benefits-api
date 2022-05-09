@@ -21,6 +21,7 @@ import play.api.Configuration
 import support.UnitSpec
 
 class FeatureSwitchSpec extends UnitSpec {
+
   private def createFeatureSwitch(config: String) =
     FeatureSwitch(Some(Configuration(ConfigFactory.parseString(config))))
 
@@ -43,8 +44,7 @@ class FeatureSwitchSpec extends UnitSpec {
       }
 
       "config set" must {
-        val featureSwitch = createFeatureSwitch(
-          """
+        val featureSwitch = createFeatureSwitch("""
             |version-1.enabled = false
             |version-2.enabled = true
         """.stripMargin)
@@ -64,24 +64,6 @@ class FeatureSwitchSpec extends UnitSpec {
         }
       }
     }
-
-    "getting release-6.enabled" when {
-      "no feature switch config available" must {
-        "default to true" in {
-          FeatureSwitch(None).isRelease6RoutingEnabled shouldBe true
-        }
-      }
-
-      "config available but no release-6.enabled setting" must {
-        "default to true" in {
-          createFeatureSwitch("").isRelease6RoutingEnabled shouldBe true
-        }
-      }
-
-      "config available and release-6.enabled set" in {
-        createFeatureSwitch("release-6.enabled = true").isRelease6RoutingEnabled shouldBe true
-        createFeatureSwitch("release-6.enabled = false").isRelease6RoutingEnabled shouldBe false
-      }
-    }
   }
+
 }

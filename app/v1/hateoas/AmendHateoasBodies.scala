@@ -43,4 +43,5 @@ trait AmendHateoasBodies extends HateoasLinks {
 
     Json.obj("links" -> links)
   }
+
 }

@@ -21,9 +21,9 @@ import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.DeleteBenefitValidator
 import v1.models.request.deleteBenefit.{DeleteBenefitRawData, DeleteBenefitRequest}
 
-class DeleteBenefitRequestParser @Inject()(val validator: DeleteBenefitValidator)
-  extends RequestParser[DeleteBenefitRawData, DeleteBenefitRequest] {
+class DeleteBenefitRequestParser @Inject() (val validator: DeleteBenefitValidator) extends RequestParser[DeleteBenefitRawData, DeleteBenefitRequest] {
 
   override protected def requestFor(data: DeleteBenefitRawData): DeleteBenefitRequest =
     DeleteBenefitRequest(Nino(data.nino), data.taxYear, data.benefitId)
+
 }

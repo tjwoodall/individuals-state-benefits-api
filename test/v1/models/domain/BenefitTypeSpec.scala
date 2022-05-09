@@ -27,7 +27,7 @@ class BenefitTypeSpec extends UnitSpec with EnumJsonSpecSupport {
     ("jobSeekersAllowance", BenefitType.jobSeekersAllowance),
     ("employmentSupportAllowance", BenefitType.employmentSupportAllowance),
     ("statePensionLumpSum", BenefitType.statePensionLumpSum),
-    ("statePension", BenefitType.statePension),
+    ("statePension", BenefitType.statePension)
   )
 
   "the Benefit Type" must {
@@ -40,4 +40,5 @@ class BenefitTypeSpec extends UnitSpec with EnumJsonSpecSupport {
       BenefitType.statePension.toString shouldBe "statePension"
     }
   }
+
 }

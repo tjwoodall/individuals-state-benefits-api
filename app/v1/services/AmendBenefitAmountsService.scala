@@ -31,29 +31,31 @@ import v1.support.DesResponseMappingSupport
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsService @Inject()(connector: AmendBenefitAmountsConnector) extends DesResponseMappingSupport with Logging {
+class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnector) extends DesResponseMappingSupport with Logging {
 
-  def updateBenefitAmounts(request: AmendBenefitAmountsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    logContext: EndpointLogContext,
-    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+  def updateBenefitAmounts(request: AmendBenefitAmountsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.amendBenefitAmounts(request)).leftMap(mapDesErrors(desErrorMap))
+      desResponseWrapper <- EitherT(connector.amendBenefitAmounts(request)).leftMap(mapDesErrors(ifsErrorMap))
     } yield desResponseWrapper
 
     result.value
   }
 
-  private def desErrorMap: Map[String, MtdError] = Map(
-      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR" -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID" -> NotFoundError,
-      "INVALID_CORRELATIONID" -> DownstreamError,
-      "INVALID_PAYLOAD" -> DownstreamError,
-      "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
-      "SERVER_ERROR" -> DownstreamError,
-      "SERVICE_UNAVAILABLE" -> DownstreamError
-    )
+  private def ifsErrorMap: Map[String, MtdError] = Map(
+    "INCOME_SOURCE_NOT_FOUND"         -> NotFoundError,
+    "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,
+    "INVALID_TAX_YEAR"                -> TaxYearFormatError,
+    "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
+    "INVALID_CORRELATIONID"           -> DownstreamError,
+    "INVALID_PAYLOAD"                 -> DownstreamError,
+    "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
+    "SERVER_ERROR"                    -> DownstreamError,
+    "SERVICE_UNAVAILABLE"             -> DownstreamError
+  )
+
 }

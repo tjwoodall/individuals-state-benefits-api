@@ -33,6 +33,7 @@ trait MockDeleteBenefitValidator extends MockFactory {
         .validate(_: DeleteBenefitRawData))
         .expects(data)
     }
+
   }
 
 }

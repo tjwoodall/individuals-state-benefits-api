@@ -9,7 +9,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -21,31 +21,35 @@ import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
-import support.V1IntegrationBaseSpec
+import play.api.test.Helpers.AUTHORIZATION
+import support.IntegrationBaseSpec
 import v1.models.errors._
-import v1.stubs.{AuditStub, AuthStub, DesStub, MtdIdLookupStub}
+import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
-class DeleteBenefitControllerISpec extends V1IntegrationBaseSpec {
-
+class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String          = "AA123456A"
+    val taxYear: String       = "2019-20"
+    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     def uri: String = s"/$nino/$taxYear/$benefitId"
 
-    def desUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
+    def ifsUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
 
     def setupStubs(): StubMapping
 
     def request(): WSRequest = {
       setupStubs()
       buildRequest(uri)
-        .withHttpHeaders((ACCEPT, "application/vnd.hmrc.1.0+json"))
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
     }
+
   }
 
   "Calling the 'delete state benefit' endpoint" should {
@@ -56,7 +60,7 @@ class DeleteBenefitControllerISpec extends V1IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DesStub.onSuccess(DesStub.DELETE, desUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.DELETE, ifsUri, NO_CONTENT)
         }
 
         val response: WSResponse = await(request().delete)
@@ -69,11 +73,15 @@ class DeleteBenefitControllerISpec extends V1IntegrationBaseSpec {
     "return error according to spec" when {
 
       "validation error" when {
-        def validationErrorTest(requestNino: String, requestTaxYear: String, requestBenefitId: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+        def validationErrorTest(requestNino: String,
+                                requestTaxYear: String,
+                                requestBenefitId: String,
+                                expectedStatus: Int,
+                                expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
+            override val nino: String      = requestNino
+            override val taxYear: String   = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             override def setupStubs(): StubMapping = {
@@ -94,20 +102,21 @@ class DeleteBenefitControllerISpec extends V1IntegrationBaseSpec {
           ("AA123456A", "20199", "78d9f015-a8b4-57b9-8bbc-c253a1e8057e", BAD_REQUEST, TaxYearFormatError),
           ("AA123456A", "2019-20", "ABCDE12345FG", BAD_REQUEST, BenefitIdFormatError),
           ("AA123456A", "2018-19", "b1e8057e-fbbc-47a8-a8b4-78d9f015c253", BAD_REQUEST, RuleTaxYearNotSupportedError),
-          ("AA123456A", "2019-21", "78d9f015-a8b4-57b9-8bbc-c253a1e8057e", BAD_REQUEST, RuleTaxYearRangeInvalidError))
+          ("AA123456A", "2019-21", "78d9f015-a8b4-57b9-8bbc-c253a1e8057e", BAD_REQUEST, RuleTaxYearRangeInvalidError)
+        )
 
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
-      "des service error" when {
-        def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"des returns an $desCode error and status $desStatus" in new Test {
+      "ifs service error" when {
+        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DesStub.onError(DesStub.DELETE, desUri, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.DELETE, ifsUri, ifsStatus, errorBody(ifsCode))
             }
 
             val response: WSResponse = await(request().delete)
@@ -121,7 +130,7 @@ class DeleteBenefitControllerISpec extends V1IntegrationBaseSpec {
           s"""
              |{
              |   "code": "$code",
-             |   "reason": "des message"
+             |   "reason": "ifs message"
              |}
             """.stripMargin
 
@@ -133,10 +142,12 @@ class DeleteBenefitControllerISpec extends V1IntegrationBaseSpec {
           (FORBIDDEN, "DELETE_FORBIDDEN", FORBIDDEN, RuleDeleteForbiddenError),
           (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError))
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
+        )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
   }
+
 }

@@ -31,13 +31,14 @@ trait MockAmendBenefitAmountsService extends MockFactory {
 
   val mockUpdateBenefitAmountsService: AmendBenefitAmountsService = mock[AmendBenefitAmountsService]
 
-  object MockUpdateBenefitAmountsService{
+  object MockUpdateBenefitAmountsService {
 
     def updateBenefitAmounts(requestData: AmendBenefitAmountsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
       (mockUpdateBenefitAmountsService
         .updateBenefitAmounts(_: AmendBenefitAmountsRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext, _: String))
         .expects(requestData, *, *, *, *)
     }
+
   }
 
 }

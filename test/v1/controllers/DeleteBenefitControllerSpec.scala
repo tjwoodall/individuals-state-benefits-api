@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DeleteBenefitControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAuditService
@@ -40,9 +40,9 @@ class DeleteBenefitControllerSpec
     with MockDeleteBenefitRequestParser
     with MockIdGenerator {
 
-  val nino: String = "AA123456A"
-  val taxYear: String = "2019-20"
-  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String          = "AA123456A"
+  val taxYear: String       = "2019-20"
+  val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   val correlationId: String = "a1e8057e-fbbc-47a8-a8b478d9f015c253"
 
   val rawData: DeleteBenefitRawData = DeleteBenefitRawData(
@@ -180,4 +180,5 @@ class DeleteBenefitControllerSpec
       }
     }
   }
+
 }

@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package config
 
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WSResponse
-import support.V1IntegrationBaseSpec
+import support.IntegrationBaseSpec
 
-class DocumentationControllerISpec extends V1IntegrationBaseSpec {
+class DocumentationControllerISpec extends IntegrationBaseSpec {
 
   val apiDefinitionJson: JsValue = Json.parse(
     """

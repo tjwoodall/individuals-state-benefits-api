@@ -33,6 +33,7 @@ trait MockListBenefitsValidator extends MockFactory {
         .validate(_: ListBenefitsRawData))
         .expects(data)
     }
+
   }
 
 }

@@ -38,8 +38,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CreateBenefitControllerSpec
-
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -50,12 +49,12 @@ class CreateBenefitControllerSpec
     with HateoasLinks
     with MockIdGenerator {
 
-  val nino: String = "AA123456A"
-  val taxYear: String = "2019-20"
-  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String          = "AA123456A"
+  val taxYear: String       = "2019-20"
+  val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  val startDate = "2020-08-03"
-  val endDate = "2020-12-03"
+  val startDate             = "2020-08-03"
+  val endDate               = "2020-12-03"
 
   trait Test {
     val hc: HeaderCarrier = HeaderCarrier()
@@ -77,10 +76,11 @@ class CreateBenefitControllerSpec
     MockIdGenerator.getCorrelationId.returns(correlationId)
 
     val links: List[Link] = List(
-      retrieveSingleBenefit(mockAppConfig, nino, taxYear,benefitId),
+      retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
       updateBenefit(mockAppConfig, nino, taxYear, benefitId),
       deleteBenefit(mockAppConfig, nino, taxYear, benefitId)
     )
+
   }
 
   val requestBodyJson: JsValue = Json.parse(
@@ -245,6 +245,7 @@ class CreateBenefitControllerSpec
           (NinoFormatError, BAD_REQUEST),
           (TaxYearFormatError, BAD_REQUEST),
           (RuleTaxYearNotEndedError, BAD_REQUEST),
+          (RuleBenefitTypeExists, FORBIDDEN),
           (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 
@@ -252,4 +253,5 @@ class CreateBenefitControllerSpec
       }
     }
   }
+
 }

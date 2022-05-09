@@ -22,34 +22,33 @@ import javax.inject.{Inject, Singleton}
 import play.api.http.Status
 import play.api.libs.json.Reads
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.DesUri
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteRetrieveConnector @Inject()(val http: HttpClient,
-                                        val appConfig: AppConfig) extends BaseDownstreamConnector {
+class DeleteRetrieveConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def delete()(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    desUri: DesUri[Unit],
-    correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def delete()(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      downstreamUri: DownstreamUri[Unit],
+      correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import v1.connectors.httpparsers.StandardDesHttpParser._
 
-    delete(uri = desUri)
+    delete(uri = downstreamUri)
   }
 
-  def retrieve[Resp: Reads]()(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    desUri: DesUri[Resp],
-    correlationId: String): Future[DownstreamOutcome[Resp]] = {
+  def retrieve[Resp: Reads]()(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      downstreamUri: DownstreamUri[Resp],
+      correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
     import v1.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    get(uri = desUri)
+    get(uri = downstreamUri)
   }
+
 }

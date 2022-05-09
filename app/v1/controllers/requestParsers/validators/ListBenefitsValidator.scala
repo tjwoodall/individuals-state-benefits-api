@@ -22,8 +22,7 @@ import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.listBenefits.ListBenefitsRawData
 
-class ListBenefitsValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[ListBenefitsRawData] {
+class ListBenefitsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[ListBenefitsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
@@ -44,4 +43,5 @@ class ListBenefitsValidator @Inject()(implicit appConfig: AppConfig)
       TaxYearNotSupportedValidation.validate(data.taxYear)
     )
   }
+
 }

@@ -32,9 +32,9 @@ import v1.models.request.AmendBenefit.AmendBenefitRawData
 
 class AmendBenefitValidatorSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
+  private val validNino    = "AA123456A"
   private val validTaxYear = "2020-21"
-  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+  private val benefitId    = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
 
   private val validRequestJson: JsValue = Json.parse(
     """
@@ -82,18 +82,18 @@ class AmendBenefitValidatorSpec extends UnitSpec {
     """.stripMargin
   )
 
-  private val validRawBody = AnyContentAsJson(validRequestJson)
-  private val emptyRawBody = AnyContentAsJson(emptyRequestJson)
-  private val noMandatoryFieldsRawBody = AnyContentAsJson(noMandatoryFieldsRequestJson)
-  private val invalidDateTypeRawBody = AnyContentAsJson(invalidDateTypeRequestJson)
+  private val validRawBody                   = AnyContentAsJson(validRequestJson)
+  private val emptyRawBody                   = AnyContentAsJson(emptyRequestJson)
+  private val noMandatoryFieldsRawBody       = AnyContentAsJson(noMandatoryFieldsRequestJson)
+  private val invalidDateTypeRawBody         = AnyContentAsJson(invalidDateTypeRequestJson)
   private val startDateBeforeEndDateRawBody1 = AnyContentAsJson(startDateBeforeEndDateJson)
-  private val incorrectDatesRawBody2 = AnyContentAsJson(notValidTaxYearDates)
+  private val incorrectDatesRawBody2         = AnyContentAsJson(notValidTaxYearDates)
 
-  //noinspection ScalaStyle
+  // noinspection ScalaStyle
   class Test(errorFeatureSwitch: Boolean = true) extends MockCurrentDateTime with MockAppConfig {
 
     implicit val dateTimeProvider: CurrentDateTime = mockCurrentDateTime
-    val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+    val dateTimeFormatter: DateTimeFormatter       = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
 
@@ -106,10 +106,10 @@ class AmendBenefitValidatorSpec extends UnitSpec {
     MockAppConfig.minimumPermittedTaxYear
       .returns(2021)
 
-    MockAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(
-      s"""
+    MockAppConfig.featureSwitch.returns(Some(Configuration(ConfigFactory.parseString(s"""
          |taxYearNotEndedRule.enabled = $errorFeatureSwitch
       """.stripMargin))))
+
   }
 
   "UpdateBenefitValidator" when {
@@ -184,4 +184,5 @@ class AmendBenefitValidatorSpec extends UnitSpec {
       }
     }
   }
+
 }

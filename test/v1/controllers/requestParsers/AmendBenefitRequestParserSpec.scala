@@ -26,10 +26,10 @@ import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest,
 
 class AmendBenefitRequestParserSpec extends UnitSpec {
 
-  private val nino: String = "AA123456B"
+  private val nino: String    = "AA123456B"
   private val taxYear: String = "2020-21"
-  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
-  implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val benefitId       = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+  implicit val correlationId  = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validRequestJson: JsValue = Json.parse(
     """
@@ -62,9 +62,11 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
   )
 
   trait Test extends MockAmendBenefitValidator {
+
     lazy val parser: AmendBenefitRequestParser = new AmendBenefitRequestParser(
       validator = mockUpdateBenefitValidator
     )
+
   }
 
   "parse" should {
@@ -77,7 +79,8 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockUpdateBenefitValidator.validate(updateBenefitRawData.copy(nino = "notANino"))
+        MockUpdateBenefitValidator
+          .validate(updateBenefitRawData.copy(nino = "notANino"))
           .returns(List(NinoFormatError))
 
         parser.parseRequest(updateBenefitRawData.copy(nino = "notANino")) shouldBe
@@ -85,7 +88,8 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
       }
 
       "multiple path parameter validation errors occur" in new Test {
-        MockUpdateBenefitValidator.validate(updateBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear"))
+        MockUpdateBenefitValidator
+          .validate(updateBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear"))
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(updateBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear")) shouldBe
@@ -110,7 +114,8 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
           EndDateFormatError
         )
 
-        MockUpdateBenefitValidator.validate(updateBenefitRawData.copy(body = invalidValueRawBody))
+        MockUpdateBenefitValidator
+          .validate(updateBenefitRawData.copy(body = invalidValueRawBody))
           .returns(errors)
 
         parser.parseRequest(updateBenefitRawData.copy(body = invalidValueRawBody)) shouldBe
@@ -118,4 +123,5 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

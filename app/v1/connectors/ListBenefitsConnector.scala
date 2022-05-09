@@ -17,39 +17,33 @@
 package v1.connectors
 
 import config.AppConfig
-
-import javax.inject.{Inject, Singleton}
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.DesUri
+import v1.connectors.DownstreamUri.IfsUri
 import v1.models.request.listBenefits.ListBenefitsRequest
-import v1.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsConnector @Inject()(val http: HttpClient,
-                                      val appConfig: AppConfig) extends BaseDownstreamConnector {
+class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def listBenefits(request: ListBenefitsRequest)(
-    implicit hc: HeaderCarrier,
-    ec: ExecutionContext,
-    correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[StateBenefit]]] = {
+  def listBenefits(request: ListBenefitsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
     import v1.connectors.httpparsers.StandardDesHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    val nino = request.nino.nino
+    val nino    = request.nino.nino
     val taxYear = request.taxYear
 
-    val queryParams = Seq("benefitId" -> request.benefitId).collect {
-        case (key, Some(value)) => key -> value
-      }
-
     getWithQueryParams(
-      DesUri[ListBenefitsResponse[StateBenefit]](s"income-tax/income/state-benefits/$nino/$taxYear"),
-      queryParams
+      IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/$nino/$taxYear"),
+      request.benefitId.map("benefitId" -> _).toSeq
     )
   }
-}
 
+}

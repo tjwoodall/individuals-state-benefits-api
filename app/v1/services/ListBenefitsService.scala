@@ -18,7 +18,6 @@ package v1.services
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.ListBenefitsConnector
@@ -26,18 +25,20 @@ import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
-import v1.models.response.listBenefits.{ListBenefitsResponse, StateBenefit}
+import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 import v1.support.DesResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsService @Inject()(connector: ListBenefitsConnector) extends DesResponseMappingSupport with Logging {
+class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends DesResponseMappingSupport with Logging {
 
-  def listBenefits(request: ListBenefitsRequest)
-                  (implicit hc: HeaderCarrier, ec: ExecutionContext, logContext: EndpointLogContext,
-                   correlationId: String):
-  Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[StateBenefit]]]] = {
+  def listBenefits(request: ListBenefitsRequest)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      logContext: EndpointLogContext,
+      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDesErrors(mappingDesToMtdError))
@@ -48,15 +49,14 @@ class ListBenefitsService @Inject()(connector: ListBenefitsConnector) extends De
 
   private def mappingDesToMtdError: Map[String, MtdError] = Map(
     "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-    "INVALID_TAX_YEAR" -> TaxYearFormatError,
-    "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
-    "INVALID_VIEW" -> DownstreamError,
-    "INVALID_CORRELATIONID" -> DownstreamError,
-    "NO_DATA_FOUND" -> NotFoundError,
-    "INVALID_DATE_RANGE" -> RuleTaxYearNotSupportedError,
-    "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError,
-    "SERVER_ERROR" -> DownstreamError,
-    "SERVICE_UNAVAILABLE" -> DownstreamError
+    "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+    "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+    "INVALID_VIEW"              -> DownstreamError,
+    "INVALID_CORRELATIONID"     -> DownstreamError,
+    "NO_DATA_FOUND"             -> NotFoundError,
+    "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
+    "SERVER_ERROR"              -> DownstreamError,
+    "SERVICE_UNAVAILABLE"       -> DownstreamError
   )
-}
 
+}

@@ -24,9 +24,9 @@ import v1.models.request.deleteBenefit.{DeleteBenefitRawData, DeleteBenefitReque
 
 class DeleteBenefitRequestParserSpec extends UnitSpec {
 
-  val nino: String = "AA123456B"
-  val taxYear: String = "2021-22"
-  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String           = "AA123456B"
+  val taxYear: String        = "2021-22"
+  val benefitId: String      = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val deleteBenefitRawData: DeleteBenefitRawData = DeleteBenefitRawData(
@@ -36,9 +36,11 @@ class DeleteBenefitRequestParserSpec extends UnitSpec {
   )
 
   trait Test extends MockDeleteBenefitValidator {
+
     lazy val parser: DeleteBenefitRequestParser = new DeleteBenefitRequestParser(
       validator = mockDeleteBenefitValidator
     )
+
   }
 
   "parse" should {
@@ -53,7 +55,8 @@ class DeleteBenefitRequestParserSpec extends UnitSpec {
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockDeleteBenefitValidator.validate(deleteBenefitRawData)
+        MockDeleteBenefitValidator
+          .validate(deleteBenefitRawData)
           .returns(List(NinoFormatError))
 
         parser.parseRequest(deleteBenefitRawData) shouldBe
@@ -61,7 +64,8 @@ class DeleteBenefitRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur (NinoFormatError and TaxYearFormatError errors)" in new Test {
-        MockDeleteBenefitValidator.validate(deleteBenefitRawData)
+        MockDeleteBenefitValidator
+          .validate(deleteBenefitRawData)
           .returns(List(NinoFormatError, TaxYearFormatError))
 
         parser.parseRequest(deleteBenefitRawData) shouldBe
@@ -69,7 +73,8 @@ class DeleteBenefitRequestParserSpec extends UnitSpec {
       }
 
       "multiple validation errors occur (NinoFormatError, TaxYearFormatError and BenefitIdFormatError errors)" in new Test {
-        MockDeleteBenefitValidator.validate(deleteBenefitRawData)
+        MockDeleteBenefitValidator
+          .validate(deleteBenefitRawData)
           .returns(List(NinoFormatError, TaxYearFormatError, BenefitIdFormatError))
 
         parser.parseRequest(deleteBenefitRawData) shouldBe
@@ -77,4 +82,5 @@ class DeleteBenefitRequestParserSpec extends UnitSpec {
       }
     }
   }
+
 }

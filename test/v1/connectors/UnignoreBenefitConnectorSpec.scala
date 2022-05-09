@@ -26,12 +26,13 @@ import scala.concurrent.Future
 
 class UnignoreBenefitConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA111111A"
-  val taxYear: String = "2019-20"
-  val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
+  val nino: String                  = "AA111111A"
+  val taxYear: String               = "2019-20"
+  val benefitId: String             = "123e4567-e89b-12d3-a456-426614174000"
   val request: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), taxYear, benefitId)
 
   class Test extends MockHttpClient with MockAppConfig {
+
     val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(
       http = mockHttpClient,
       appConfig = mockAppConfig
@@ -48,15 +49,18 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
       "return a successful response" in new Test {
         private val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        MockHttpClient.delete(
-          url = s"$baseUrl/income-tax/state-benefits/$nino/$taxYear/ignore/$benefitId",
-          config = dummyIfsHeaderCarrierConfig,
-          requiredHeaders = requiredIfsHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-        ).returns(Future.successful(outcome))
+        MockHttpClient
+          .delete(
+            url = s"$baseUrl/income-tax/state-benefits/$nino/$taxYear/ignore/$benefitId",
+            config = dummyIfsHeaderCarrierConfig,
+            requiredHeaders = requiredIfsHeaders,
+            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+          )
+          .returns(Future.successful(outcome))
 
         await(connector.unignoreBenefit(request)) shouldBe outcome
       }
     }
   }
+
 }

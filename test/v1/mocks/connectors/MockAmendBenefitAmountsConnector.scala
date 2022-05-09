@@ -35,6 +35,7 @@ trait MockAmendBenefitAmountsConnector extends MockFactory {
         .amendBenefitAmounts(_: AmendBenefitAmountsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)
     }
+
   }
 
 }

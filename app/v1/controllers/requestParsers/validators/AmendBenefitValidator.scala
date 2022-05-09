@@ -23,7 +23,7 @@ import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequestBody}
 
-class AmendBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[AmendBenefitRawData] {
+class AmendBenefitValidator @Inject() (implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[AmendBenefitRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidator, bodyValueValidator)
 
@@ -61,4 +61,5 @@ class AmendBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime,
       StateBenefitsDateValidation.validate(requestBodyData.startDate, requestBodyData.endDate, data.taxYear)
     )
   }
+
 }

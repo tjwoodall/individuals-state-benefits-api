@@ -29,13 +29,13 @@ import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockListB
 import v1.models.errors.{BadRequestError, NinoFormatError, RuleTaxYearNotSupportedError, RuleTaxYearRangeInvalidError, TaxYearFormatError, _}
 import v1.models.hateoas.Link
 import v1.models.outcomes.ResponseWrapper
-import v1.models.response.listBenefits.ListBenefitsHateoasData
+import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ListBenefitsControllerSpec
-  extends ControllerBaseSpec
+    extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -69,6 +69,7 @@ class ListBenefitsControllerSpec
       listBenefits(mockAppConfig, nino, taxYear),
       addBenefit(mockAppConfig, nino, taxYear)
     )
+
   }
 
   "ListBenefitsController" should {
@@ -84,7 +85,7 @@ class ListBenefitsControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData))))
 
         MockHateoasFactory
-          .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, None))
+          .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Seq(benefitId)))
           .returns(hateoasResponse)
 
         val result: Future[Result] = controller.listBenefits(nino, taxYear, None)(fakeGetRequest)
@@ -99,18 +100,18 @@ class ListBenefitsControllerSpec
       "state benefits has no amount properties" in new Test {
 
         MockListBenefitsRequestParser
-          .parse(rawData(benefitId))
-          .returns(Right(requestData(benefitId)))
+          .parse(rawData(queryBenefitId))
+          .returns(Right(requestData(queryBenefitId)))
 
         MockListBenefitsService
-          .listBenefits(requestData(benefitId))
+          .listBenefits(requestData(queryBenefitId))
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseDataWithNoAmounts))))
 
         MockHateoasFactory
-          .wrapList(responseDataWithNoAmounts, ListBenefitsHateoasData(nino, taxYear, benefitId))
+          .wrapList(responseDataWithNoAmounts, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Seq(benefitId)))
           .returns(hateoasResponseWithOutAmounts)
 
-        val result: Future[Result] = controller.listBenefits(nino, taxYear, benefitId)(fakeGetRequest)
+        val result: Future[Result] = controller.listBenefits(nino, taxYear, queryBenefitId)(fakeGetRequest)
 
         status(result) shouldBe OK
         contentAsJson(result) shouldBe responseBodyWithNoAmounts
@@ -130,7 +131,10 @@ class ListBenefitsControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(customerAddedStateBenefits = None)))))
 
         MockHateoasFactory
-          .wrapList(responseData.copy(customerAddedStateBenefits = None), ListBenefitsHateoasData(nino, taxYear, None))
+          .wrapList(
+            responseData.copy(customerAddedStateBenefits = Option.empty[Seq[CustomerStateBenefit]]),
+            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Seq(benefitId))
+          )
           .returns(hmrcOnlyHateoasResponse)
 
         val result: Future[Result] = controller.listBenefits(nino, taxYear, None)(fakeGetRequest)
@@ -153,7 +157,9 @@ class ListBenefitsControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
         MockHateoasFactory
-          .wrapList(responseData.copy(stateBenefits = None), ListBenefitsHateoasData(nino, taxYear, None))
+          .wrapList(
+            responseData.copy(stateBenefits = Option.empty[Seq[HMRCStateBenefit]]),
+            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Nil))
           .returns(customOnlyHateoasResponse)
 
         val result: Future[Result] = controller.listBenefits(nino, taxYear, None)(fakeGetRequest)
@@ -176,7 +182,9 @@ class ListBenefitsControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
         MockHateoasFactory
-          .wrapList(responseData.copy(stateBenefits = None), ListBenefitsHateoasData(nino, taxYear, Some("f0d83ac0-a10a-4d57-9e41-6d033832779g")))
+          .wrapList(
+            responseData.copy(stateBenefits = Option.empty[Seq[HMRCStateBenefit]]),
+            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Nil))
           .returns(singleCustomOnlyHateoasResponse)
 
         val result: Future[Result] = controller.listBenefits(nino, taxYear, Some("f0d83ac0-a10a-4d57-9e41-6d033832779g"))(fakeGetRequest)
@@ -193,10 +201,10 @@ class ListBenefitsControllerSpec
           s"a ${error.code} error is returned from the parser" in new Test {
 
             MockListBenefitsRequestParser
-              .parse(rawData(benefitId))
+              .parse(rawData(queryBenefitId))
               .returns(Left(ErrorWrapper(correlationId, error, None)))
 
-            val result: Future[Result] = controller.listBenefits(nino, taxYear, benefitId)(fakeGetRequest)
+            val result: Future[Result] = controller.listBenefits(nino, taxYear, queryBenefitId)(fakeGetRequest)
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(error)
@@ -224,14 +232,14 @@ class ListBenefitsControllerSpec
           s"a $mtdError error is returned from the service" in new Test {
 
             MockListBenefitsRequestParser
-              .parse(rawData(benefitId))
-              .returns(Right(requestData(benefitId)))
+              .parse(rawData(queryBenefitId))
+              .returns(Right(requestData(queryBenefitId)))
 
             MockListBenefitsService
-              .listBenefits(requestData(benefitId))
+              .listBenefits(requestData(queryBenefitId))
               .returns(Future.successful(Left(ErrorWrapper(correlationId, mtdError))))
 
-            val result: Future[Result] = controller.listBenefits(nino, taxYear, benefitId)(fakeGetRequest)
+            val result: Future[Result] = controller.listBenefits(nino, taxYear, queryBenefitId)(fakeGetRequest)
 
             status(result) shouldBe expectedStatus
             contentAsJson(result) shouldBe Json.toJson(mtdError)
@@ -244,11 +252,12 @@ class ListBenefitsControllerSpec
           (TaxYearFormatError, BAD_REQUEST),
           (BenefitIdFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR),
+          (DownstreamError, INTERNAL_SERVER_ERROR)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))
       }
     }
   }
+
 }

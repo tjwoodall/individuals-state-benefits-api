@@ -27,8 +27,8 @@ import scala.concurrent.Future
 
 class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
-  val nino: String = "AA123456A"
-  val taxYear: String = "2021-22"
+  val nino: String      = "AA123456A"
+  val taxYear: String   = "2021-22"
   val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
   val amendBenefitAmountsRequestBody: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
@@ -50,36 +50,38 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    val desRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
-      "Authorization" -> s"Bearer des-token"
+    val ifsRequestHeaders: Seq[(String, String)] = Seq(
+      "Environment"   -> "ifs-environment",
+      "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockAppConfig.api1651BaseUrl returns baseUrl
+    MockAppConfig.api1651Token returns "api1651-token"
+    MockAppConfig.api1651Environment returns "api1651-environment"
+    MockAppConfig.api1651EnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
-  "UpdateBenefitAmountsConnector" when {
-    "updateBenefitAmounts" must {
+  "AmendBenefitAmountsConnector" when {
+    "amendBenefitAmounts" must {
       "return a 204 status for a success scenario" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredDesHeadersPut: Seq[(String, String)] = requiredDesHeaders ++ Seq("Content-Type" -> "application/json")
+        implicit val hc: HeaderCarrier                       = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        val requiredApi1651HeadersPut: Seq[(String, String)] = requiredApi1651Headers ++ Seq("Content-Type" -> "application/json")
 
         MockHttpClient
           .put(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/$benefitId",
-            config = dummyDesHeaderCarrierConfig,
+            config = dummyIfsHeaderCarrierConfig,
             body = request.body,
-            requiredHeaders = requiredDesHeadersPut,
+            requiredHeaders = requiredApi1651HeadersPut,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          ).returns(Future.successful(outcome))
+          )
+          .returns(Future.successful(outcome))
 
         await(connector.amendBenefitAmounts(request)) shouldBe outcome
       }
     }
   }
+
 }
