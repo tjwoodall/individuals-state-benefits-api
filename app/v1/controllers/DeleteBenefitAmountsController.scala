@@ -38,8 +38,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthService,
                                                 val lookupService: MtdIdLookupService,
-                                                requestParser: DeleteBenefitRequestParser,
-                                                service: DeleteRetrieveService,
+                                                requestParser: DeleteBenefitAmountsRequestParser,
+                                                service: DeleteRetrieveAmountsService,
                                                 auditService: AuditService,
                                                 cc: ControllerComponents,
                                                 idGenerator: IdGenerator)(implicit ec: ExecutionContext)
@@ -59,18 +59,17 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"with correlationId : $correlationId")
 
+      // MAYBE ADD NEW CLASS???
       val rawData: DeleteBenefitRawData = DeleteBenefitRawData(
         nino = nino,
         taxYear = taxYear,
         benefitId = benefitId
       )
-      implicit val desUri: DesUri[Unit] = DesUri[Unit](
-        s"income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
-      )
+
       val result =
         for {
-          _               <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.delete(desErrorMap))
+          parsedRequest               <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          serviceResponse <- EitherT(service.delete(parsedRequest))
         } yield {
           logger.info(
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
@@ -112,25 +111,15 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
+    errorWrapper.error match {
       case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
           RuleTaxYearRangeInvalidError =>
         BadRequest(Json.toJson(errorWrapper))
       case NotFoundError   => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
+      case _               => unhandledError(errorWrapper)
     }
   }
-
-  private def desErrorMap: Map[String, MtdError] =
-    Map(
-      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID"     -> DownstreamError,
-      "NO_DATA_FOUND"             -> NotFoundError,
-      "SERVER_ERROR"              -> DownstreamError,
-      "SERVICE_UNAVAILABLE"       -> DownstreamError
-    )
 
   private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val event = AuditEvent("DeleteStateBenefitAmounts", "delete-state-benefit-amounts", details)
