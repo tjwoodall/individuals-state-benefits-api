@@ -29,17 +29,14 @@ import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
+    def taxYear: String
+    def setupStubs(): StubMapping
 
-    val nino: String          = "AA123456A"
-    val taxYear: String       = "2019-20"
-    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-    val correlationId: String = "X-123"
+    def nino: String          = "AA123456A"
+    def benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
     def uri: String = s"/$nino/$taxYear/$benefitId/amounts"
-
-    def desUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
-
-    def setupStubs(): StubMapping
+    def downstreamUri: String    = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
 
     def request(): WSRequest = {
       setupStubs()
@@ -52,15 +49,25 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
   }
 
+  private trait NonTysTest extends Test {
+    override def taxYear: String = "2020-21"
+//    def downstreamUri: String    = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
+  }
+
+  private trait TysIfsTest extends Test {
+    override def taxYear: String = "2023-24"
+//    def downstreamUri: String    = s"/income-tax/income/state-benefits/$taxYear/$nino/$benefitId"
+  }
+
   "Calling the 'delete state benefit amounts' endpoint" should {
     "return a 204 status code" when {
-      "any valid request is made" in new Test {
+      "any valid non-TYS request is made" in new NonTysTest {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, desUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
         }
 
         val response: WSResponse = await(request().delete)
@@ -68,6 +75,21 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
         response.body shouldBe ""
         response.header("Content-Type") shouldBe Some("application/json")
       }
+    }
+
+    "any valid tys request is made" in new TysIfsTest {
+
+      override def setupStubs(): StubMapping = {
+        AuditStub.audit()
+        AuthStub.authorised()
+        MtdIdLookupStub.ninoFound(nino)
+        DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
+      }
+
+      val response: WSResponse = await(request().delete)
+      response.status shouldBe NO_CONTENT
+      response.body shouldBe ""
+      response.header("Content-Type") shouldBe Some("application/json")
     }
 
     "return error according to spec" when {
@@ -78,11 +100,11 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
                                 requestBenefitId: String,
                                 expectedStatus: Int,
                                 expectedBody: MtdError): Unit = {
-          s"validation fails with ${expectedBody.code} error" in new Test {
+          s"validation fails with ${expectedBody.code} error" in new NonTysTest {
 
-            override val nino: String      = requestNino
-            override val taxYear: String   = requestTaxYear
-            override val benefitId: String = requestBenefitId
+            override def nino: String      = requestNino
+            override def taxYear: String   = requestTaxYear
+            override def benefitId: String = requestBenefitId
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
@@ -110,13 +132,13 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
       "des service error" when {
         def serviceErrorTest(desStatus: Int, desCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"des returns an $desCode error and status $desStatus" in new Test {
+          s"des returns an $desCode error and status $desStatus" in new NonTysTest {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.DELETE, desUri, desStatus, errorBody(desCode))
+              DownstreamStub.onError(DownstreamStub.DELETE, downstreamUri, desStatus, errorBody(desCode))
             }
 
             val response: WSResponse = await(request().delete)
@@ -144,7 +166,11 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError)
         )
 
-        input.foreach(args => (serviceErrorTest _).tupled(args))
+        val extraTysErrors = Seq(
+          (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError)
+        )
+
+        (input ++ extraTysErrors).foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
   }
