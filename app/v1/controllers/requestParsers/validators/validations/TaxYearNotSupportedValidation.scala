@@ -24,9 +24,9 @@ object TaxYearNotSupportedValidation {
 
   // @param taxYear In format YYYY-YY
   def validate(taxYear: String)(implicit appConfig: AppConfig): List[MtdError] = {
-    val desTaxYear = Integer.parseInt(DesTaxYear.fromMtd(taxYear).value)
+    val year = Integer.parseInt(DesTaxYear.fromMtd(taxYear).value)
 
-    if (desTaxYear < appConfig.minimumPermittedTaxYear) List(RuleTaxYearNotSupportedError) else NoValidationErrors
+    if (year < appConfig.minimumPermittedTaxYear) List(RuleTaxYearNotSupportedError) else NoValidationErrors
   }
 
 }

@@ -50,7 +50,7 @@ object ValueFormatError extends MtdError("FORMAT_VALUE", "")
 object RuleTaxYearNotSupportedError
     extends MtdError(
       "RULE_TAX_YEAR_NOT_SUPPORTED",
-      "The specified tax year is not supported. That is, the tax year specified is before the minimum tax year value")
+      "The tax year specified does not lie within the supported range")
 
 object RuleTaxYearRangeInvalidError
     extends MtdError(code = "RULE_TAX_YEAR_RANGE_INVALID", message = "Tax year range invalid. A tax year range of one year is required")
