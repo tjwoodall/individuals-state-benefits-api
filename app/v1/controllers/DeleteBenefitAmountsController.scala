@@ -27,11 +27,12 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
 import v1.connectors.DownstreamUri.DesUri
-import v1.controllers.requestParsers.DeleteBenefitRequestParser
+import v1.controllers.requestParsers.{DeleteBenefitAmountsRequestParser, DeleteBenefitRequestParser}
 import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import v1.models.errors._
 import v1.models.request.deleteBenefit.DeleteBenefitRawData
-import v1.services.{AuditService, DeleteRetrieveService, EnrolmentsAuthService, MtdIdLookupService}
+import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRawData
+import v1.services.{AuditService, DeleteBenefitAmountsService, DeleteRetrieveService, EnrolmentsAuthService, MtdIdLookupService}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthService,
                                                 val lookupService: MtdIdLookupService,
                                                 requestParser: DeleteBenefitAmountsRequestParser,
-                                                service: DeleteRetrieveAmountsService,
+                                                service: DeleteBenefitAmountsService,
                                                 auditService: AuditService,
                                                 cc: ControllerComponents,
                                                 idGenerator: IdGenerator)(implicit ec: ExecutionContext)
@@ -59,8 +60,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"with correlationId : $correlationId")
 
-      // MAYBE ADD NEW CLASS???
-      val rawData: DeleteBenefitRawData = DeleteBenefitRawData(
+      val rawData: DeleteBenefitAmountsRawData = DeleteBenefitAmountsRawData(
         nino = nino,
         taxYear = taxYear,
         benefitId = benefitId
@@ -68,7 +68,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
 
       val result =
         for {
-          parsedRequest               <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.delete(parsedRequest))
         } yield {
           logger.info(
