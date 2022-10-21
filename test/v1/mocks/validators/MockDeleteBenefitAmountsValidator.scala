@@ -26,7 +26,7 @@ trait MockDeleteBenefitAmountsValidator extends MockFactory {
 
   val mockValidator: DeleteBenefitAmountsValidator = mock[DeleteBenefitAmountsValidator]
 
-  object MockDeleteOtherEmploymentIncomeValidator {
+  object MockDeleteBenefitAmountsValidator {
 
     def validate(data: DeleteBenefitAmountsRawData): CallHandler1[DeleteBenefitAmountsRawData, List[MtdError]] = {
       (mockValidator

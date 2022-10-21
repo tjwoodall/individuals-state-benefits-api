@@ -21,8 +21,9 @@ import cats.data.EitherT
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
+import v1.connectors.DeleteBenefitAmountsConnector
 import v1.controllers.EndpointLogContext
-import v1.models.errors.{BenefitIdFormatError, DownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, TaxYearFormatError}
+import v1.models.errors.{BenefitIdFormatError, DownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, TaxYearFormatError}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequest
 
@@ -48,7 +49,7 @@ class DeleteBenefitAmountsService @Inject() (connector: DeleteBenefitAmountsConn
     val errorMap = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError
+      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
       "INVALID_CORRELATIONID"     -> DownstreamError,
       "NO_DATA_FOUND"             -> NotFoundError,
       "SERVER_ERROR"              -> DownstreamError,

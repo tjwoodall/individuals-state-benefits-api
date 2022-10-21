@@ -18,8 +18,8 @@ package v1.controllers.requestParsers
 
 import support.UnitSpec
 import v1.mocks.validators.MockDeleteBenefitAmountsValidator
-import v1.models.domain.Nino
-import v1.models.errors.ErrorWrapper
+import v1.models.domain.{Nino, TaxYear}
+import v1.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TaxYearFormatError}
 import v1.models.request.deleteBenefitAmounts.{DeleteBenefitAmountsRawData, DeleteBenefitAmountsRequest}
 
 class DeleteBenefitAmountsRequestParserSpec extends UnitSpec {

@@ -77,13 +77,6 @@ class DeleteBenefitAmountsValidatorSpec extends UnitSpec {
       }
     }
 
-    "return RuleTaxYearNotSupportedError error" when {
-      "a tax year that is not supported is supplied" in new Test {
-        validator.validate(DeleteBenefitAmountsRawData(validNino, "2018-19", validBenefitId)) shouldBe
-          List(RuleTaxYearNotSupportedError)
-      }
-    }
-
     "return RuleTaxYearRangeInvalidError error" when {
       "an out of range tax year is supplied" in new Test {
         validator.validate(DeleteBenefitAmountsRawData(validNino, "2020-22", validBenefitId)) shouldBe
@@ -91,15 +84,15 @@ class DeleteBenefitAmountsValidatorSpec extends UnitSpec {
       }
     }
 
-    "return NinoFormatError and TaxYearFormatError errors" when {
-      "request supplied has invalid nino and tax year" in new Test {
-        validator.validate(DeleteBenefitAmountsRawData("A12344A", "20199", validBenefitId)) shouldBe
-          List(NinoFormatError, TaxYearFormatError)
+    "return RuleTaxYearNotSupportedError error" when {
+      "a tax year that is not supported is supplied" in new Test {
+        validator.validate(DeleteBenefitAmountsRawData(validNino, "2018-19", validBenefitId)) shouldBe
+          List(RuleTaxYearNotSupportedError)
       }
     }
 
-    "return NinoFormatError, TaxYearFormatError and BenefitIdFormatError errors" when {
-      "request supplied has invalid nino, tax year and benefit ID" in new Test {
+    "return multiple errors" when {
+      "request supplied has multiple invalid data fields" in new Test {
         validator.validate(DeleteBenefitAmountsRawData("A12344A", "20178", "ABCDE12345FG")) shouldBe
           List(NinoFormatError, TaxYearFormatError, BenefitIdFormatError)
       }
