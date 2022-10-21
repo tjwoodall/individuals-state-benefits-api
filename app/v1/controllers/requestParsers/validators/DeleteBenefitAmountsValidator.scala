@@ -16,9 +16,11 @@
 
 package v1.controllers.requestParsers.validators
 
-//import api.models.errors.MtdError
+import v1.models.errors.MtdError
 import config.AppConfig
+import v1.controllers.requestParsers.validators.validations.{NinoValidation, TaxYearNotSupportedValidation, TaxYearValidation}
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRawData
+
 import javax.inject.{Inject, Singleton}
 
 @Singleton
@@ -44,7 +46,6 @@ class DeleteBenefitAmountsValidator @Inject()(implicit appConfig: AppConfig)
     (data: DeleteBenefitAmountsRawData) => {
       List(
         TaxYearRangeValidation.validate(data.taxYear),
-        // THIS IS A GENERAL TAX YEAR NOT SUPPORTED NOT JUST TYS
         TaxYearNotSupportedValidation.validate(data.taxYear, appConfig.minimumPermittedTaxYear)
       )
     }

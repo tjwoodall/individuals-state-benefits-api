@@ -16,6 +16,6 @@
 
 package v1.models.request.deleteBenefitAmounts
 
-import api.models.request.RawData
+import v1.models.request.RawData
 
 case class DeleteBenefitAmountsRawData(nino: String, taxYear: String, benefitId: String) extends RawData
