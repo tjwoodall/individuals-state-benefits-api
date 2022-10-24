@@ -19,7 +19,6 @@ package v1.controllers
 import cats.data.EitherT
 import cats.implicits._
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -33,6 +32,7 @@ import v1.models.errors._
 import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRawData
 import v1.services.{AmendBenefitAmountsService, AuditService, EnrolmentsAuthService, MtdIdLookupService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -115,11 +115,21 @@ class AmendBenefitAmountsController @Inject() (val authService: EnrolmentsAuthSe
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
-          RuleTaxYearRangeInvalidError | RuleTaxYearNotEndedError | CustomMtdError(RuleIncorrectOrEmptyBodyError.code) | CustomMtdError(
-            ValueFormatError.code) =>
+    errorWrapper.error match {
+      case _
+          if errorWrapper.containsAnyOf(
+            BadRequestError,
+            NinoFormatError,
+            TaxYearFormatError,
+            BenefitIdFormatError,
+            RuleTaxYearNotSupportedError,
+            RuleTaxYearRangeInvalidError,
+            RuleTaxYearNotEndedError,
+            RuleIncorrectOrEmptyBodyError,
+            ValueFormatError
+          ) =>
         BadRequest(Json.toJson(errorWrapper))
+
       case NotFoundError   => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }

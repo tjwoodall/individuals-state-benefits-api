@@ -19,7 +19,7 @@ package v1.controllers.requestParsers
 import support.UnitSpec
 import v1.models.domain.Nino
 import v1.mocks.validators.MockDeleteRetrieveValidator
-import v1.models.domain.DesTaxYear
+import v1.models.domain.TaxYear
 import v1.models.errors._
 import v1.models.request.{DeleteRetrieveRawData, DeleteRetrieveRequest}
 
@@ -48,7 +48,7 @@ class DeleteRetrieveRequestParserSpec extends UnitSpec {
         MockDeleteRetrieveValidator.validate(deleteRetrieveSavingsRawData).returns(Nil)
 
         parser.parseRequest(deleteRetrieveSavingsRawData) shouldBe
-          Right(DeleteRetrieveRequest(Nino(nino), DesTaxYear("2018")))
+          Right(DeleteRetrieveRequest(Nino(nino), TaxYear("2018")))
       }
     }
 

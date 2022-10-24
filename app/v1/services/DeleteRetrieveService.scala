@@ -25,13 +25,13 @@ import v1.connectors.{DeleteRetrieveConnector, DownstreamUri}
 import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.support.DesResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) extends DesResponseMappingSupport with Logging {
+class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def delete(downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(implicit
       hc: HeaderCarrier,
@@ -41,7 +41,7 @@ class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) exten
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
-      downstreamResponseWrapper <- EitherT(connector.delete()).leftMap(mapDesErrors(downstreamErrorMap))
+      downstreamResponseWrapper <- EitherT(connector.delete()).leftMap(mapDownstreamErrors(downstreamErrorMap))
     } yield downstreamResponseWrapper
 
     result.value
@@ -55,7 +55,7 @@ class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) exten
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
 
     val result = for {
-      downstreamResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDesErrors(downstreamErrorMap))
+      downstreamResponseWrapper <- EitherT(connector.retrieve[Resp]()).leftMap(mapDownstreamErrors(downstreamErrorMap))
       mtdResponseWrapper        <- EitherT.fromEither[Future](validateRetrieveResponse(downstreamResponseWrapper))
     } yield mtdResponseWrapper
 

@@ -18,7 +18,6 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -33,6 +32,7 @@ import v1.models.request.createBenefit.CreateBenefitRawData
 import v1.models.response.AddBenefitHateoasData
 import v1.services.{AuditService, CreateBenefitService, EnrolmentsAuthService, MtdIdLookupService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -116,11 +116,26 @@ class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | RuleTaxYearRangeInvalidError | RuleTaxYearNotSupportedError |
-          RuleTaxYearNotEndedError | BenefitTypeFormatError | StartDateFormatError | EndDateFormatError | RuleEndDateBeforeStartDateError |
-          RuleStartDateAfterTaxYearEndError | RuleEndDateBeforeTaxYearStartError | CustomMtdError(RuleIncorrectOrEmptyBodyError.code) =>
+    errorWrapper.error match {
+
+      case _
+          if errorWrapper.containsAnyOf(
+            BadRequestError,
+            NinoFormatError,
+            TaxYearFormatError,
+            RuleTaxYearNotSupportedError,
+            RuleTaxYearRangeInvalidError,
+            RuleTaxYearNotEndedError,
+            BenefitTypeFormatError,
+            StartDateFormatError,
+            EndDateFormatError,
+            RuleEndDateBeforeStartDateError,
+            RuleStartDateAfterTaxYearEndError,
+            RuleEndDateBeforeTaxYearStartError,
+            RuleIncorrectOrEmptyBodyError
+          ) =>
         BadRequest(Json.toJson(errorWrapper))
+
       case RuleBenefitTypeExists => Forbidden(Json.toJson(errorWrapper))
       case DownstreamError       => InternalServerError(Json.toJson(errorWrapper))
     }

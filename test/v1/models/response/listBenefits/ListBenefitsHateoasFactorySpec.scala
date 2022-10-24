@@ -30,7 +30,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
   private val dateIgnored = Some("ignoreDate")
 
   class Test {
-    MockAppConfig.apiGatewayContext returns "gatewayContext" anyNumberOfTimes ()
+    MockedAppConfig.apiGatewayContext returns "gatewayContext" anyNumberOfTimes ()
 
     val hateoasFactory: HateoasListLinksFactory2[ListBenefitsResponse, HMRCStateBenefit, CustomerStateBenefit, ListBenefitsHateoasData] = implicitly
   }

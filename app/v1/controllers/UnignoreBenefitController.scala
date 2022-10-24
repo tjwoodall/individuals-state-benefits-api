@@ -19,7 +19,6 @@ package v1.controllers
 import cats.data.EitherT
 import cats.implicits._
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -33,6 +32,7 @@ import v1.models.errors._
 import v1.models.request.ignoreBenefit.IgnoreBenefitRawData
 import v1.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService, UnignoreBenefitService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -113,10 +113,19 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
-          RuleTaxYearRangeInvalidError | RuleTaxYearNotEndedError =>
+    errorWrapper.error match {
+      case _
+          if errorWrapper.containsAnyOf(
+            BadRequestError,
+            NinoFormatError,
+            TaxYearFormatError,
+            BenefitIdFormatError,
+            RuleTaxYearNotSupportedError,
+            RuleTaxYearRangeInvalidError,
+            RuleTaxYearNotEndedError
+          ) =>
         BadRequest(Json.toJson(errorWrapper))
+
       case RuleUnignoreForbiddenError => Forbidden(Json.toJson(errorWrapper))
       case NotFoundError              => NotFound(Json.toJson(errorWrapper))
       case DownstreamError            => InternalServerError(Json.toJson(errorWrapper))

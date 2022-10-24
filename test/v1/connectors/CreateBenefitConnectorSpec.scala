@@ -52,10 +52,10 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "release6-token"
-    MockAppConfig.ifsEnvironment returns "release6-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockedAppConfig.ifsBaseUrl returns baseUrl
+    MockedAppConfig.ifsToken returns "release6-token"
+    MockedAppConfig.ifsEnvironment returns "release6-environment"
+    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "CreateBenefitConnector" when {
@@ -63,7 +63,7 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
       "return a 200 status upon HttpClient success" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, response))
 
-        MockHttpClient
+        MockedHttpClient
           .post(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
             config = dummyIfsHeaderCarrierConfig,

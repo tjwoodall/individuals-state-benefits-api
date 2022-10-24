@@ -19,7 +19,6 @@ package v1.controllers
 import cats.data.EitherT
 import cats.implicits._
 import config.AppConfig
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -33,6 +32,7 @@ import v1.models.errors._
 import v1.models.request.AmendBenefit.AmendBenefitRawData
 import v1.services.{AmendBenefitService, AuditService, EnrolmentsAuthService, MtdIdLookupService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -113,11 +113,25 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
-          RuleTaxYearRangeInvalidError | RuleTaxYearNotEndedError | CustomMtdError(RuleIncorrectOrEmptyBodyError.code) | StartDateFormatError |
-          EndDateFormatError | RuleEndDateBeforeStartDateError | RuleStartDateAfterTaxYearEndError | RuleEndDateBeforeTaxYearStartError =>
+    errorWrapper.error match {
+      case _
+          if errorWrapper.containsAnyOf(
+            BadRequestError,
+            NinoFormatError,
+            TaxYearFormatError,
+            BenefitIdFormatError,
+            RuleTaxYearNotSupportedError,
+            RuleTaxYearRangeInvalidError,
+            RuleTaxYearNotEndedError,
+            RuleIncorrectOrEmptyBodyError,
+            StartDateFormatError,
+            EndDateFormatError,
+            RuleEndDateBeforeStartDateError,
+            RuleStartDateAfterTaxYearEndError,
+            RuleEndDateBeforeTaxYearStartError
+          ) =>
         BadRequest(Json.toJson(errorWrapper))
+
       case RuleUpdateForbiddenError => Forbidden(Json.toJson(errorWrapper))
       case NotFoundError            => NotFound(Json.toJson(errorWrapper))
       case DownstreamError          => InternalServerError(Json.toJson(errorWrapper))
