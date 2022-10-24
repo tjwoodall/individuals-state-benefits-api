@@ -44,13 +44,13 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     HeaderCarrier.Config(
       Seq("^not-test-BaseUrl?$".r),
       Seq.empty[String],
-      Some("self-assessment-accounts-api")
+      Some("individuals-income-received-api")
     )
 
   val requiredDesHeaders: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer des-token",
     "Environment"       -> "des-environment",
-    "User-Agent"        -> "self-assessment-accounts-api",
+    "User-Agent"        -> "individuals-income-received-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
@@ -68,7 +68,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     HeaderCarrier.Config(
       Seq("^not-test-BaseUrl?$".r),
       Seq.empty[String],
-      Some("self-assessment-accounts-api")
+      Some("individuals-income-received-api")
     )
 
   val dummyHeaderCarrierConfig: HeaderCarrier.Config =
@@ -81,7 +81,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   val requiredIfsHeaders: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer ifs-token",
     "Environment"       -> "ifs-environment",
-    "User-Agent"        -> "self-assessment-accounts-api",
+    "User-Agent"        -> "individuals-income-received-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
@@ -104,7 +104,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   val requiredRelease6Headers: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer release6-token",
     "Environment"       -> "release6-environment",
-    "User-Agent"        -> "self-assessment-accounts-api",
+    "User-Agent"        -> "individuals-income-received-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
@@ -112,7 +112,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   val requiredApi1651Headers: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer api1651-token",
     "Environment"       -> "api1651-environment",
-    "User-Agent"        -> "self-assessment-accounts-api",
+    "User-Agent"        -> "individuals-income-received-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )

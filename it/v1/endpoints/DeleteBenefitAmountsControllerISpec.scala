@@ -51,12 +51,12 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
   private trait NonTysTest extends Test {
     override def taxYear: String = "2020-21"
-//    def downstreamUri: String    = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
   }
 
   private trait TysIfsTest extends Test {
+    val tysYear: String = "23-24"
     override def taxYear: String = "2023-24"
-//    def downstreamUri: String    = s"/income-tax/income/state-benefits/$taxYear/$nino/$benefitId"
+    override def downstreamUri: String    = s"/income-tax/income/state-benefits/$tysYear/$nino/$benefitId"
   }
 
   "Calling the 'delete state benefit amounts' endpoint" should {
