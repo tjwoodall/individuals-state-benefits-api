@@ -19,7 +19,7 @@ package v1.services
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockDeleteBenefitAmountsConnector
 import v1.models.domain.{Nino, TaxYear}
-import v1.models.errors.{BenefitIdFormatError, DownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, TaxYearFormatError}
+import v1.models.errors.{BenefitIdFormatError, DownstreamErrorCode, DownstreamErrors, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, StandardDownstreamError, TaxYearFormatError}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequest
 
@@ -64,11 +64,11 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
         val errors = Seq(
           "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
           "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-          "INVALID_BENEFIT_ID"        -> BenefitIdFormatError
-          "INVALID_CORRELATIONID"     -> DownstreamError,
+          "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+          "INVALID_CORRELATIONID"     -> StandardDownstreamError,
           "NO_DATA_FOUND"             -> NotFoundError,
-          "SERVER_ERROR"              -> DownstreamError,
-          "SERVICE_UNAVAILABLE"       -> DownstreamError
+          "SERVER_ERROR"              -> StandardDownstreamError,
+          "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
         )
 
         val extraTysErrors = Seq(

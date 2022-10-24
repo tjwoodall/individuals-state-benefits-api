@@ -45,7 +45,7 @@ class DeleteBenefitAmountsValidatorSpec extends UnitSpec {
       .returns(DateTime.parse("2022-07-11", dateTimeFormatter))
       .anyNumberOfTimes()
 
-    MockAppConfig.minimumPermittedTaxYear returns 2021
+    MockedAppConfig.minimumPermittedTaxYear returns 2021
 
   }
 
@@ -64,8 +64,8 @@ class DeleteBenefitAmountsValidatorSpec extends UnitSpec {
     }
 
     "return TaxYearFormatError error" when {
-      "an invalid tax year is supplied" in new Test {
-        validator.validate(DeleteBenefitAmountsRawData(validNino, "20178", validBenefitId)) shouldBe
+      "an invalid taxYear is supplied" in new Test {
+        validator.validate(DeleteBenefitAmountsRawData(validNino, "201819", validBenefitId)) shouldBe
           List(TaxYearFormatError)
       }
     }

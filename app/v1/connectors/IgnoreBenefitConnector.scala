@@ -32,7 +32,7 @@ class IgnoreBenefitConnector @Inject() (val http: HttpClient, val appConfig: App
   def ignoreBenefit(
       request: IgnoreBenefitRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import v1.connectors.httpparsers.StandardDesHttpParser._
+    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
 
     implicit val successCode: SuccessCode = SuccessCode(Status.CREATED)
 

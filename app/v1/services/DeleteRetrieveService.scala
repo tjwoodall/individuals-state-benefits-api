@@ -66,8 +66,8 @@ class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) exten
     "INVALID_NINO"        -> NinoFormatError,
     "INVALID_TAX_YEAR"    -> TaxYearFormatError,
     "NOT_FOUND"           -> NotFoundError,
-    "SERVER_ERROR"        -> DownstreamError,
-    "SERVICE_UNAVAILABLE" -> DownstreamError
+    "SERVER_ERROR"        -> StandardDownstreamError,
+    "SERVICE_UNAVAILABLE" -> StandardDownstreamError
   )
 
 }

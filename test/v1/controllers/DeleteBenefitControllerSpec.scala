@@ -173,7 +173,7 @@ class DeleteBenefitControllerSpec
           (BenefitIdFormatError, BAD_REQUEST),
           (RuleDeleteForbiddenError, FORBIDDEN),
           (NotFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR)
+          (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))

@@ -24,13 +24,11 @@ import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
-import v1.connectors.DownstreamUri.DesUri
-import v1.controllers.requestParsers.{DeleteBenefitAmountsRequestParser, DeleteBenefitRequestParser}
+import v1.controllers.requestParsers.DeleteBenefitAmountsRequestParser
 import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import v1.models.errors._
-import v1.models.request.deleteBenefit.DeleteBenefitRawData
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRawData
-import v1.services.{AuditService, DeleteBenefitAmountsService, DeleteRetrieveService, EnrolmentsAuthService, MtdIdLookupService}
+import v1.services.{AuditService, DeleteBenefitAmountsService, EnrolmentsAuthService, MtdIdLookupService}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -123,7 +121,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
         BadRequest(Json.toJson(errorWrapper))
 
       case NotFoundError   => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
+      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 

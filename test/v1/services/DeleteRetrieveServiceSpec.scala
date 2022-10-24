@@ -67,7 +67,7 @@ class DeleteRetrieveServiceSpec extends ServiceSpec {
 
             MockDeleteRetrieveConnector
               .delete()
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(ifsErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
 
             await(service.delete()) shouldBe Left(ErrorWrapper(correlationId, error))
           }
@@ -76,8 +76,8 @@ class DeleteRetrieveServiceSpec extends ServiceSpec {
           ("INVALID_NINO", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("NOT_FOUND", NotFoundError),
-          ("SERVER_ERROR", DownstreamError),
-          ("SERVICE_UNAVAILABLE", DownstreamError)
+          ("SERVER_ERROR", StandardDownstreamError),
+          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )
 
         input.foreach(args => (serviceError _).tupled(args))
@@ -112,7 +112,7 @@ class DeleteRetrieveServiceSpec extends ServiceSpec {
 
             MockDeleteRetrieveConnector
               .retrieve[Data]()
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(ifsErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
 
             await(service.retrieve[Data]()) shouldBe Left(ErrorWrapper(correlationId, error))
           }
@@ -121,8 +121,8 @@ class DeleteRetrieveServiceSpec extends ServiceSpec {
           ("INVALID_NINO", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("NOT_FOUND", NotFoundError),
-          ("SERVER_ERROR", DownstreamError),
-          ("SERVICE_UNAVAILABLE", DownstreamError)
+          ("SERVER_ERROR", StandardDownstreamError),
+          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )
 
         input.foreach(args => (serviceError _).tupled(args))

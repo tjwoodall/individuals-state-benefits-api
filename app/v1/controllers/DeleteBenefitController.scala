@@ -123,7 +123,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
 
       case RuleDeleteForbiddenError => Forbidden(Json.toJson(errorWrapper))
       case NotFoundError            => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError          => InternalServerError(Json.toJson(errorWrapper))
+      case StandardDownstreamError          => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 
@@ -132,11 +132,11 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,
       "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID"     -> DownstreamError,
+      "INVALID_CORRELATIONID"     -> StandardDownstreamError,
       "DELETE_FORBIDDEN"          -> RuleDeleteForbiddenError,
       "NO_DATA_FOUND"             -> NotFoundError,
-      "SERVER_ERROR"              -> DownstreamError,
-      "SERVICE_UNAVAILABLE"       -> DownstreamError
+      "SERVER_ERROR"              -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
     )
 
   private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {

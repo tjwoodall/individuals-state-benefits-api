@@ -34,7 +34,7 @@ class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppC
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
-    import v1.connectors.httpparsers.StandardDesHttpParser._
+    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
     val nino    = request.nino.nino

@@ -51,11 +51,11 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
     "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,
     "INVALID_TAX_YEAR"                -> TaxYearFormatError,
     "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
-    "INVALID_CORRELATIONID"           -> DownstreamError,
-    "INVALID_PAYLOAD"                 -> DownstreamError,
+    "INVALID_CORRELATIONID"           -> StandardDownstreamError,
+    "INVALID_PAYLOAD"                 -> StandardDownstreamError,
     "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
-    "SERVER_ERROR"                    -> DownstreamError,
-    "SERVICE_UNAVAILABLE"             -> DownstreamError
+    "SERVER_ERROR"                    -> StandardDownstreamError,
+    "SERVICE_UNAVAILABLE"             -> StandardDownstreamError
   )
 
 }

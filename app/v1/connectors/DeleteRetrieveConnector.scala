@@ -34,7 +34,7 @@ class DeleteRetrieveConnector @Inject() (val http: HttpClient, val appConfig: Ap
       downstreamUri: DownstreamUri[Unit],
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import v1.connectors.httpparsers.StandardDesHttpParser._
+    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
 
     delete(uri = downstreamUri)
   }
@@ -45,7 +45,7 @@ class DeleteRetrieveConnector @Inject() (val http: HttpClient, val appConfig: Ap
       downstreamUri: DownstreamUri[Resp],
       correlationId: String): Future[DownstreamOutcome[Resp]] = {
 
-    import v1.connectors.httpparsers.StandardDesHttpParser._
+    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
     get(uri = downstreamUri)

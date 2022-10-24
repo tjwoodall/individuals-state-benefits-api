@@ -27,21 +27,27 @@ import javax.inject.{Inject, Singleton}
 class DeleteBenefitAmountsValidator @Inject()(implicit appConfig: AppConfig)
   extends Validator[DeleteBenefitAmountsRawData] {
 
-  private val validationSet = List(parameterValidation)
+  private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 
   override def validate(data: DeleteBenefitAmountsRawData): List[MtdError] = {
     run(validationSet, data).distinct
   }
 
-  private def parameterValidation: DeleteBenefitAmountsRawData => List[List[MtdError]] =
+  private def parameterFormatValidation: DeleteBenefitAmountsRawData => List[List[MtdError]] =
     (data: DeleteBenefitAmountsRawData) => {
-      implicit val minimumTaxYear: Int = appConfig.minimumPermittedTaxYear
 
       List(
         NinoValidation.validate(data.nino),
         TaxYearValidation.validate(data.taxYear),
-        TaxYearNotSupportedValidation.validate(data.taxYear),
         BenefitIdValidation.validate(data.benefitId)
+      )
+    }
+
+  private def parameterRuleValidation: DeleteBenefitAmountsRawData => List[List[MtdError]] =
+    (data: DeleteBenefitAmountsRawData) => {
+
+      List(
+        TaxYearNotSupportedValidation.validate(data.taxYear),
       )
     }
 }

@@ -40,43 +40,38 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
     protected val request: DeleteBenefitAmountsRequest =
       DeleteBenefitAmountsRequest(
         nino = Nino(nino),
-        taxYear = TaxYear(taxYear),
+        taxYear = taxYear,
         benefitId = benefitId
       )
 
   }
 
   "DeleteBenefitAmountsConnector" should {
-    "return a 200 result" when {
+    "return a 200 result on delete" when {
       "the downstream call is successful and not tax year specific" in new DesTest with Test {
-        def taxYear          = TaxYear.fromMtd("2017-18")
-        override val request = DeleteBenefitAmountsRequest(Nino(nino), taxYear, benefitId)
-        val outcome          = Right(ResponseWrapper(correlationId, ()))
+        def taxYear: TaxYear                               = TaxYear.fromMtd("2017-18")
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        val delete = willDelete(
-          s"$baseUrl/income-tax/income/state-benefits/${request.nino}/${request.taxYear.asMtd}/${request.benefitId}"
-        )
+        willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(outcome)
 
-        delete returns Future.successful(outcome)
+        val result = await(connector.deleteBenefitAmounts(request))
 
-        await(connector.deleteOtherEmploymentIncome(request)) shouldBe outcome
+        result shouldBe outcome
       }
 
       "the downstream call is successful and is tax year specific" in new TysIfsTest with Test {
-        def taxYear          = TaxYear.fromMtd("2023-24")
-        override val request = DeleteBenefitAmountsRequest(Nino(nino), taxYear, benefitId)
-        val outcome          = Right(ResponseWrapper(correlationId, ()))
+        def taxYear: TaxYear                               = TaxYear.fromMtd("2023-24")
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        val delete = willDelete(
-          s"$baseUrl/income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/${request.nino}/${request.benefitId}"
-        )
+        willDelete(s"$baseUrl/income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/$nino/${request.benefitId}") returns Future.successful(outcome)
 
-        delete returns Future.successful(outcome)
+        val result = await(connector.deleteBenefitAmounts(request))
 
-        await(connector.deleteOtherEmploymentIncome(request)) shouldBe outcome
+        result shouldBe outcome
       }
 
     }
+
   }
 
 }

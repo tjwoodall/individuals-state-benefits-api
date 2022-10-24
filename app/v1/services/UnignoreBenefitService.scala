@@ -50,12 +50,12 @@ class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) ext
     ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
     ("INVALID_TAX_YEAR", TaxYearFormatError),
     ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-    ("INVALID_CORRELATIONID", DownstreamError),
+    ("INVALID_CORRELATIONID", StandardDownstreamError),
     ("CUSTOMER_ADDED", RuleUnignoreForbiddenError),
     ("BEFORE_TAX_YEAR_ENDED", RuleTaxYearNotEndedError),
     ("NO_DATA_FOUND", NotFoundError),
-    ("SERVICE_ERROR", DownstreamError),
-    ("SERVICE_UNAVAILABLE", DownstreamError)
+    ("SERVICE_ERROR", StandardDownstreamError),
+    ("SERVICE_UNAVAILABLE", StandardDownstreamError)
   )
 
 }

@@ -18,15 +18,15 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
-import v1.mocks.requestParsers.MockDeleteBenefitRequestParser
-import v1.mocks.services.{MockAuditService, MockDeleteRetrieveService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import v1.mocks.requestParsers.MockDeleteBenefitAmountsRequestParser
+import v1.mocks.services.{MockAuditService, MockDeleteBenefitAmountsService, MockEnrolmentsAuthService, MockMtdIdLookupService}
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
-import v1.models.request.deleteBenefit.{DeleteBenefitRawData, DeleteBenefitRequest}
+import v1.models.request.deleteBenefitAmounts.{DeleteBenefitAmountsRawData, DeleteBenefitAmountsRequest}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,8 +36,8 @@ class DeleteBenefitAmountsControllerSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAuditService
-    with MockDeleteRetrieveService
-    with MockDeleteBenefitRequestParser
+    with MockDeleteBenefitAmountsService
+    with MockDeleteBenefitAmountsRequestParser
     with MockIdGenerator {
 
   val nino: String          = "AA123456A"
@@ -45,15 +45,15 @@ class DeleteBenefitAmountsControllerSpec
   val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   val correlationId: String = "a1e8057e-fbbc-47a8-a8b478d9f015c253"
 
-  val rawData: DeleteBenefitRawData = DeleteBenefitRawData(
+  val rawData: DeleteBenefitAmountsRawData = DeleteBenefitAmountsRawData(
     nino = nino,
     taxYear = taxYear,
     benefitId = benefitId
   )
 
-  val requestData: DeleteBenefitRequest = DeleteBenefitRequest(
+  val requestData: DeleteBenefitAmountsRequest = DeleteBenefitAmountsRequest(
     nino = Nino(nino),
-    taxYear = taxYear,
+    taxYear = TaxYear.fromMtd(taxYear),
     benefitId = benefitId
   )
 
@@ -77,8 +77,8 @@ class DeleteBenefitAmountsControllerSpec
     val controller = new DeleteBenefitAmountsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      requestParser = mockDeleteBenefitRequestParser,
-      service = mockDeleteRetrieveService,
+      requestParser = mockDeleteBenefitAmountsRequestParser,
+      service = mockDeleteBenefitAmountsService,
       auditService = mockAuditService,
       cc = cc,
       idGenerator = mockIdGenerator
@@ -93,12 +93,12 @@ class DeleteBenefitAmountsControllerSpec
     "return NO_content" when {
       "happy path" in new Test {
 
-        MockDeleteBenefitRequestParser
+        MockDeleteBenefitAmountsRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
-        MockDeleteRetrieveService
-          .delete()
+        MockDeleteBenefitAmountsService
+          .delete(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         val result: Future[Result] = controller.deleteBenefitAmounts(nino, taxYear, benefitId)(fakeDeleteRequest)
@@ -117,7 +117,7 @@ class DeleteBenefitAmountsControllerSpec
         def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
           s"a ${error.code} error is returned from the parser" in new Test {
 
-            MockDeleteBenefitRequestParser
+            MockDeleteBenefitAmountsRequestParser
               .parse(rawData)
               .returns(Left(ErrorWrapper(correlationId, error, None)))
 
@@ -148,12 +148,12 @@ class DeleteBenefitAmountsControllerSpec
         def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
           s"a $mtdError error is returned from the service" in new Test {
 
-            MockDeleteBenefitRequestParser
+            MockDeleteBenefitAmountsRequestParser
               .parse(rawData)
               .returns(Right(requestData))
 
-            MockDeleteRetrieveService
-              .delete()
+            MockDeleteBenefitAmountsService
+              .delete(requestData)
               .returns(Future.successful(Left(ErrorWrapper(correlationId, mtdError))))
 
             val result: Future[Result] = controller.deleteBenefitAmounts(nino, taxYear, benefitId)(fakeDeleteRequest)
@@ -172,7 +172,7 @@ class DeleteBenefitAmountsControllerSpec
           (TaxYearFormatError, BAD_REQUEST),
           (BenefitIdFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR)
+          (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))

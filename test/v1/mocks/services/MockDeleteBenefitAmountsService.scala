@@ -32,7 +32,7 @@ trait MockDeleteBenefitAmountsService extends MockFactory {
   val mockDeleteBenefitAmountsService: DeleteBenefitAmountsService =
     mock[DeleteBenefitAmountsService]
 
-  object MockDeleteOtherEmploymentIncomeService {
+  object MockDeleteBenefitAmountsService {
 
     def delete(requestData: DeleteBenefitAmountsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = (
       mockDeleteBenefitAmountsService

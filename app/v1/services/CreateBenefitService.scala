@@ -51,14 +51,14 @@ class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends
     Map(
       "INVALID_TAXABLE_ENTITY_ID"   -> NinoFormatError,
       "INVALID_TAX_YEAR"            -> TaxYearFormatError,
-      "INVALID_CORRELATIONID"       -> DownstreamError,
-      "INVALID_PAYLOAD"             -> DownstreamError,
+      "INVALID_CORRELATIONID"       -> StandardDownstreamError,
+      "INVALID_PAYLOAD"             -> StandardDownstreamError,
       "BENEFIT_TYPE_ALREADY_EXISTS" -> RuleBenefitTypeExists,
       "NOT_SUPPORTED_TAX_YEAR"      -> RuleTaxYearNotEndedError,
       "INVALID_START_DATE"          -> RuleStartDateAfterTaxYearEndError,
       "INVALID_CESSATION_DATE"      -> RuleEndDateBeforeTaxYearStartError,
-      "SERVER_ERROR"                -> DownstreamError,
-      "SERVICE_UNAVAILABLE"         -> DownstreamError
+      "SERVER_ERROR"                -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE"         -> StandardDownstreamError
     )
 
 }

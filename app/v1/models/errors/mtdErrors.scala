@@ -79,7 +79,7 @@ object RuleBenefitTypeExists extends MtdError("RULE_BENEFIT_TYPE_EXISTS", "A ben
 //Standard Errors
 object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching resource not found")
 
-object DownstreamError extends MtdError("INTERNAL_SERVER_ERROR", "An internal server error occurred")
+object StandardDownstreamError extends MtdError("INTERNAL_SERVER_ERROR", "An internal server error occurred")
 
 object BadRequestError extends MtdError("INVALID_REQUEST", "Invalid request")
 

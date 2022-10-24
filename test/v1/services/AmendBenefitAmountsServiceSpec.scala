@@ -72,7 +72,7 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
 
           MockUpdateBenefitAmountsConnector
             .updateBenefitAmounts(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
 
           await(service.updateBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
@@ -82,11 +82,11 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
         ("INVALID_TAX_YEAR", TaxYearFormatError),
         ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-        ("INVALID_CORRELATIONID", DownstreamError),
-        ("INVALID_PAYLOAD", DownstreamError),
+        ("INVALID_CORRELATIONID", StandardDownstreamError),
+        ("INVALID_PAYLOAD", StandardDownstreamError),
         ("INVALID_REQUEST_BEFORE_TAX_YEAR", RuleTaxYearNotEndedError),
-        ("SERVER_ERROR", DownstreamError),
-        ("SERVICE_UNAVAILABLE", DownstreamError)
+        ("SERVER_ERROR", StandardDownstreamError),
+        ("SERVICE_UNAVAILABLE", StandardDownstreamError)
       )
 
       input.foreach(args => (serviceError _).tupled(args))
@@ -96,7 +96,7 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
 
           MockUpdateBenefitAmountsConnector
             .updateBenefitAmounts(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(ifsErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
 
           await(service.updateBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
@@ -105,11 +105,11 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         ("INVALID_TAXABLE_ENTITY_ID ", NinoFormatError),
         (" INVALID_TAX_YEAR ", TaxYearFormatError),
         ("INVALID_BENEFIT_ID ", BenefitIdFormatError),
-        (" INVALID_CORRELATIONID", DownstreamError),
-        ("INVALID_PAYLOAD     ", DownstreamError),
+        (" INVALID_CORRELATIONID", StandardDownstreamError),
+        ("INVALID_PAYLOAD     ", StandardDownstreamError),
         ("   INVALID_REQUEST_BEFORE_TAX_YEAR       ", RuleTaxYearNotEndedError),
-        ("    SERVER_ERROR ", DownstreamError),
-        ("   SERVICE_UNAVAILABLE   ", DownstreamError)
+        ("    SERVER_ERROR ", StandardDownstreamError),
+        ("   SERVICE_UNAVAILABLE   ", StandardDownstreamError)
       )
 
       inputSpaced.foreach(args => (serviceErrorSpaced _).tupled(args))
