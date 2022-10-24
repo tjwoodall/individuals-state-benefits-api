@@ -38,10 +38,10 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedDesHeaders)
+    MockedAppConfig.ifsBaseUrl returns baseUrl
+    MockedAppConfig.ifsToken returns "ifs-token"
+    MockedAppConfig.ifsEnvironment returns "ifs-environment"
+    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedDesHeaders)
   }
 
   "UnignoreBenefitConnector" when {
@@ -49,7 +49,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
       "return a successful response" in new Test {
         private val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        MockHttpClient
+        MockedHttpClient
           .delete(
             url = s"$baseUrl/income-tax/state-benefits/$nino/$taxYear/ignore/$benefitId",
             config = dummyIfsHeaderCarrierConfig,

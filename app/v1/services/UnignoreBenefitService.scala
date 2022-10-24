@@ -26,12 +26,12 @@ import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
-import v1.support.DesResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) extends DesResponseMappingSupport with Logging {
+class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def unignoreBenefit(request: IgnoreBenefitRequest)(implicit
       hc: HeaderCarrier,
@@ -40,7 +40,7 @@ class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) ext
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.unignoreBenefit(request)).leftMap(mapDesErrors(desErrorMap))
+      desResponseWrapper <- EitherT(connector.unignoreBenefit(request)).leftMap(mapDownstreamErrors(desErrorMap))
     } yield desResponseWrapper
 
     result.value

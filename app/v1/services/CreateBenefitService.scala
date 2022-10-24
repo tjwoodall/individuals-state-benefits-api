@@ -27,12 +27,12 @@ import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.createBenefit.CreateBenefitRequest
 import v1.models.response.AddBenefitResponse
-import v1.support.DesResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends DesResponseMappingSupport with Logging {
+class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def addBenefit(request: CreateBenefitRequest)(implicit
       hc: HeaderCarrier,
@@ -41,7 +41,7 @@ class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[AddBenefitResponse]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.addBenefit(request)).leftMap(mapDesErrors(desErrorMap))
+      desResponseWrapper <- EitherT(connector.addBenefit(request)).leftMap(mapDownstreamErrors(desErrorMap))
     } yield desResponseWrapper
 
     result.value

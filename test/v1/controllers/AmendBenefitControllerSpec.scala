@@ -106,7 +106,7 @@ class AmendBenefitControllerSpec
 
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
-    MockAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
+    MockedAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
     MockIdGenerator.getCorrelationId.returns(correlationId)
   }
 

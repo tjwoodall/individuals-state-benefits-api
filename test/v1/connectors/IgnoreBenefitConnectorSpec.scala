@@ -39,10 +39,10 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
       appConfig = mockAppConfig
     )
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "release6-token"
-    MockAppConfig.ifsEnvironment returns "release6-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockedAppConfig.ifsBaseUrl returns baseUrl
+    MockedAppConfig.ifsToken returns "release6-token"
+    MockedAppConfig.ifsEnvironment returns "release6-environment"
+    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "IgnoreBenefitConnector" when {
@@ -50,7 +50,7 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
       "return a successful response" in new Test {
         private val outcome = Right(ResponseWrapper(correlationId, ()))
 
-        MockHttpClient
+        MockedHttpClient
           .put(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/ignore/$benefitId",
             config = dummyIfsHeaderCarrierConfig,

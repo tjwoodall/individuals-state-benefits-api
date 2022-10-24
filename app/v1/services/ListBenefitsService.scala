@@ -26,13 +26,13 @@ import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
-import v1.support.DesResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends DesResponseMappingSupport with Logging {
+class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def listBenefits(request: ListBenefitsRequest)(implicit
       hc: HeaderCarrier,
@@ -41,7 +41,7 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDesErrors(mappingDesToMtdError))
+      desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(mappingDesToMtdError))
     } yield desResponseWrapper.map(des => des)
 
     result.value

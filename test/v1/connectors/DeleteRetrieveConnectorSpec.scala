@@ -41,10 +41,10 @@ class DeleteRetrieveConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockedAppConfig.ifsBaseUrl returns baseUrl
+    MockedAppConfig.ifsToken returns "ifs-token"
+    MockedAppConfig.ifsEnvironment returns "ifs-environment"
+    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "DeleteRetrieveConnector" when {
@@ -54,7 +54,7 @@ class DeleteRetrieveConnectorSpec extends ConnectorSpec {
         val outcome                       = Right(ResponseWrapper(correlationId, ()))
         implicit val ifsUri: IfsUri[Unit] = IfsUri[Unit](s"some-placeholder/savings/$nino/$taxYear")
 
-        MockHttpClient
+        MockedHttpClient
           .delete(
             url = s"$baseUrl/some-placeholder/savings/$nino/$taxYear",
             config = dummyIfsHeaderCarrierConfig,
@@ -79,7 +79,7 @@ class DeleteRetrieveConnectorSpec extends ConnectorSpec {
         val outcome                       = Right(ResponseWrapper(correlationId, Data("value")))
         implicit val ifsUri: IfsUri[Data] = IfsUri[Data](s"some-placeholder/savings/$nino/$taxYear")
 
-        MockHttpClient
+        MockedHttpClient
           .get(
             url = s"$baseUrl/some-placeholder/savings/$nino/$taxYear",
             config = dummyIfsHeaderCarrierConfig,

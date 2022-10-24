@@ -18,8 +18,6 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
-
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -33,6 +31,7 @@ import v1.models.errors._
 import v1.models.request.deleteBenefit.DeleteBenefitRawData
 import v1.services.{AuditService, DeleteRetrieveService, EnrolmentsAuthService, MtdIdLookupService}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -112,10 +111,18 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
-          RuleTaxYearRangeInvalidError =>
+    errorWrapper.error match {
+      case _
+          if errorWrapper.containsAnyOf(
+            BadRequestError,
+            NinoFormatError,
+            TaxYearFormatError,
+            BenefitIdFormatError,
+            RuleTaxYearNotSupportedError,
+            RuleTaxYearRangeInvalidError
+          ) =>
         BadRequest(Json.toJson(errorWrapper))
+
       case NotFoundError   => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }

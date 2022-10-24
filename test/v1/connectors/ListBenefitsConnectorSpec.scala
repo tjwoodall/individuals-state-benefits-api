@@ -75,7 +75,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
 
     def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]],
                  queryParams: Seq[(String, String)]): Unit = {
-      MockHttpClient
+      MockedHttpClient
         .parameterGet(
           url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
           queryParams,
@@ -86,10 +86,10 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
         .returns(Future.successful(response))
     }
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "release6-token"
-    MockAppConfig.ifsEnvironment returns "release6-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockedAppConfig.ifsBaseUrl returns baseUrl
+    MockedAppConfig.ifsToken returns "release6-token"
+    MockedAppConfig.ifsEnvironment returns "release6-environment"
+    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "ListBenefitsConnector" when {

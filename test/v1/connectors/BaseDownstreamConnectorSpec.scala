@@ -18,6 +18,7 @@ package v1.connectors
 
 import config.AppConfig
 import mocks.MockAppConfig
+import play.api.Configuration
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads}
 import v1.connectors.DownstreamUri.{DesUri, IfsUri}
 import v1.mocks.MockHttpClient
@@ -47,10 +48,11 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
       val appConfig: AppConfig = mockAppConfig
     }
 
-    MockAppConfig.desBaseUrl returns baseUrl
-    MockAppConfig.desToken returns "des-token"
-    MockAppConfig.desEnvironment returns "des-environment"
-    MockAppConfig.desEnvironmentHeaders returns desEnvironmentHeaders
+    MockedAppConfig.desBaseUrl returns baseUrl
+    MockedAppConfig.desToken returns "des-token"
+    MockedAppConfig.desEnvironment returns "des-environment"
+    MockedAppConfig.desEnvironmentHeaders returns desEnvironmentHeaders
+    MockedAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> false)
   }
 
   "BaseDesConnector" when {
@@ -89,7 +91,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
     "complete the request successfully with the required headers" when {
       "GET" in new DesTest(desEnvironmentHeaders) {
-        MockHttpClient
+        MockedHttpClient
           .get(absoluteUrl, config, requiredHeaders, excludedHeaders)
           .returns(Future.successful(outcome))
 
@@ -98,18 +100,18 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
       "GET with query params" in new DesTest(desEnvironmentHeaders) {
         val params = Seq("param1" -> "value")
-        MockHttpClient
+        MockedHttpClient
           .parameterGet(absoluteUrl, params, config, requiredHeaders, excludedHeaders)
           .returns(Future.successful(outcome))
 
-        await(connector.getWithQueryParams(DesUri[Result](url), params)) shouldBe outcome
+        await(connector.get(DesUri[Result](url), params)) shouldBe outcome
       }
 
       "POST" in new DesTest(desEnvironmentHeaders) {
         implicit val hc: HeaderCarrier                 = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
-        MockHttpClient
+        MockedHttpClient
           .post(absoluteUrl, config, body, requiredHeadersPost, excludedHeaders)
           .returns(Future.successful(outcome))
 
@@ -120,7 +122,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         implicit val hc: HeaderCarrier                = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
-        MockHttpClient
+        MockedHttpClient
           .put(absoluteUrl, config, body, requiredHeadersPut, excludedHeaders)
           .returns(Future.successful(outcome))
 
@@ -128,7 +130,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
       }
 
       "DELETE" in new DesTest(desEnvironmentHeaders) {
-        MockHttpClient
+        MockedHttpClient
           .delete(absoluteUrl, config, requiredHeaders, excludedHeaders)
           .returns(Future.successful(outcome))
 
@@ -144,10 +146,11 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
       val appConfig: AppConfig = mockAppConfig
     }
 
-    MockAppConfig.ifsBaseUrl returns baseUrl
-    MockAppConfig.ifsToken returns "ifs-token"
-    MockAppConfig.ifsEnvironment returns "ifs-environment"
-    MockAppConfig.ifsEnvironmentHeaders returns ifsEnvironmentHeaders
+    MockedAppConfig.ifsBaseUrl returns baseUrl
+    MockedAppConfig.ifsToken returns "ifs-token"
+    MockedAppConfig.ifsEnvironment returns "ifs-environment"
+    MockedAppConfig.ifsEnvironmentHeaders returns ifsEnvironmentHeaders
+    MockedAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> false)
   }
 
   "BaseDownstreamConnector" when {
@@ -189,7 +192,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         implicit val hc: HeaderCarrier                 = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
-        MockHttpClient
+        MockedHttpClient
           .post(absoluteUrl, config, body, requiredHeadersPost, excludedHeaders)
           .returns(Future.successful(outcome))
 
@@ -198,7 +201,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
       "complete the request successfully with the required headers" when {
         "GET" in new IfsTest(ifsEnvironmentHeaders) {
-          MockHttpClient
+          MockedHttpClient
             .get(absoluteUrl, config, requiredHeaders, excludedHeaders)
             .returns(Future.successful(outcome))
 
@@ -207,18 +210,18 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
         "GET with query params" in new IfsTest(ifsEnvironmentHeaders) {
           val params = Seq("param1" -> "value")
-          MockHttpClient
+          MockedHttpClient
             .parameterGet(absoluteUrl, params, config, requiredHeaders, excludedHeaders)
             .returns(Future.successful(outcome))
 
-          await(connector.getWithQueryParams(IfsUri[Result](url), params)) shouldBe outcome
+          await(connector.get(IfsUri[Result](url), params)) shouldBe outcome
         }
 
         "PUT" in new IfsTest(ifsEnvironmentHeaders) {
           implicit val hc: HeaderCarrier                = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
           val requiredHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
-          MockHttpClient
+          MockedHttpClient
             .put(absoluteUrl, config, body, requiredHeadersPut, excludedHeaders)
             .returns(Future.successful(outcome))
 
@@ -226,7 +229,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         }
 
         "DELETE" in new IfsTest(ifsEnvironmentHeaders) {
-          MockHttpClient
+          MockedHttpClient
             .delete(absoluteUrl, config, requiredHeaders, excludedHeaders)
             .returns(Future.successful(outcome))
 

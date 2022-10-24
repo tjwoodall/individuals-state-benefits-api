@@ -17,34 +17,53 @@
 package config
 
 import com.typesafe.config.Config
-import javax.inject.{Inject, Singleton}
 import play.api.{ConfigLoader, Configuration}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import javax.inject.{Inject, Singleton}
+
 trait AppConfig {
+
+  def mtdIdBaseUrl: String
 
   def desBaseUrl: String
   def desEnv: String
   def desToken: String
   def desEnvironmentHeaders: Option[Seq[String]]
 
-  def mtdIdBaseUrl: String
+  lazy val desDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = desBaseUrl, env = desEnv, token = desToken, environmentHeaders = desEnvironmentHeaders)
 
   def ifsBaseUrl: String
   def ifsEnv: String
   def ifsToken: String
   def ifsEnvironmentHeaders: Option[Seq[String]]
 
+  lazy val ifsDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = ifsBaseUrl, env = ifsEnv, token = ifsToken, environmentHeaders = ifsEnvironmentHeaders)
+
+  // Tax Year Specific (TYS) IFS Config
+  def tysIfsBaseUrl: String
+  def tysIfsEnv: String
+  def tysIfsToken: String
+  def tysIfsEnvironmentHeaders: Option[Seq[String]]
+
+  lazy val taxYearSpecificIfsDownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = tysIfsBaseUrl, env = tysIfsEnv, token = tysIfsToken, environmentHeaders = tysIfsEnvironmentHeaders)
+
   def api1651BaseUrl: String
   def api1651Env: String
   def api1651Token: String
   def api1651EnvironmentHeaders: Option[Seq[String]]
 
+  lazy val api1651DownstreamConfig: DownstreamConfig =
+    DownstreamConfig(baseUrl = api1651BaseUrl, env = api1651Env, token = api1651Token, environmentHeaders = api1651EnvironmentHeaders)
+
   def apiGatewayContext: String
   def minimumPermittedTaxYear: Int
 
   def apiStatus(version: String): String
-  def featureSwitch: Option[Configuration]
+  def featureSwitches: Configuration
   def endpointsEnabled(version: String): Boolean
 
   def confidenceLevelConfig: ConfidenceLevelConfig
@@ -67,6 +86,12 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   val ifsToken: String                           = config.getString("microservice.services.ifs.token")
   val ifsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.ifs.environmentHeaders")
 
+  // Tax Year Specific (TYS) IFS Config
+  val tysIfsBaseUrl: String                         = config.baseUrl("tys-ifs")
+  val tysIfsEnv: String                             = config.getString("microservice.services.tys-ifs.env")
+  val tysIfsToken: String                           = config.getString("microservice.services.tys-ifs.token")
+  val tysIfsEnvironmentHeaders: Option[Seq[String]] = configuration.getOptional[Seq[String]]("microservice.services.tys-ifs.environmentHeaders")
+
   // API1651 config
   val api1651BaseUrl: String                         = config.baseUrl("api1651")
   val api1651Env: String                             = config.getString("microservice.services.api1651.env")
@@ -78,7 +103,7 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   // API Config
   val apiGatewayContext: String                  = config.getString("api.gateway.context")
   def apiStatus(version: String): String         = config.getString(s"api.$version.status")
-  def featureSwitch: Option[Configuration]       = configuration.getOptional[Configuration](s"feature-switch")
+  def featureSwitches: Configuration             = configuration.getOptional[Configuration](s"feature-switch").getOrElse(Configuration.empty)
   def endpointsEnabled(version: String): Boolean = config.getBoolean(s"api.$version.endpoints.enabled")
 
   val confidenceLevelConfig: ConfidenceLevelConfig = configuration.get[ConfidenceLevelConfig](s"api.confidence-level-check")

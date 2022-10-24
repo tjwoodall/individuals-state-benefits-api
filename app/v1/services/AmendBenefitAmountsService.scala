@@ -26,12 +26,12 @@ import v1.controllers.EndpointLogContext
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRequest
-import v1.support.DesResponseMappingSupport
+import v1.support.DownstreamResponseMappingSupport
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnector) extends DesResponseMappingSupport with Logging {
+class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def updateBenefitAmounts(request: AmendBenefitAmountsRequest)(implicit
       hc: HeaderCarrier,
@@ -40,7 +40,7 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.amendBenefitAmounts(request)).leftMap(mapDesErrors(ifsErrorMap))
+      desResponseWrapper <- EitherT(connector.amendBenefitAmounts(request)).leftMap(mapDownstreamErrors(ifsErrorMap))
     } yield desResponseWrapper
 
     result.value

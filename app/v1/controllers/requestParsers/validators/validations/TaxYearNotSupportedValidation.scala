@@ -17,15 +17,16 @@
 package v1.controllers.requestParsers.validators.validations
 
 import config.AppConfig
-import v1.models.domain.DesTaxYear
+import v1.models.domain.TaxYear
 import v1.models.errors.{MtdError, RuleTaxYearNotSupportedError}
 
 object TaxYearNotSupportedValidation {
 
-  // @param taxYear In format YYYY-YY
+  /** @param taxYear
+    *   taxYear in MTD format YYYY-YY
+    */
   def validate(taxYear: String)(implicit appConfig: AppConfig): List[MtdError] = {
-    val year = Integer.parseInt(DesTaxYear.fromMtd(taxYear).value)
-
+    val year = TaxYear.fromMtd(taxYear).year
     if (year < appConfig.minimumPermittedTaxYear) List(RuleTaxYearNotSupportedError) else NoValidationErrors
   }
 

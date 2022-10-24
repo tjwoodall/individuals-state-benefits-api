@@ -45,7 +45,7 @@ class DeleteBenefitValidatorSpec extends UnitSpec {
       .returns(DateTime.parse("2022-07-11", dateTimeFormatter))
       .anyNumberOfTimes()
 
-    MockAppConfig.minimumPermittedTaxYear
+    MockedAppConfig.minimumPermittedTaxYear
       .returns(2021)
 
   }

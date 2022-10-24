@@ -18,7 +18,7 @@ package v1.controllers.requestParsers.validators.validations
 
 import java.time.LocalDate
 
-import v1.models.domain.DesTaxYear
+import v1.models.domain.TaxYear
 import v1.models.errors._
 
 object StateBenefitsDateValidation {
@@ -26,7 +26,7 @@ object StateBenefitsDateValidation {
   def validate(startDate: String, endDate: Option[String], taxYear: String): List[MtdError] = {
 
     lazy val taxYearStartDate: LocalDate = LocalDate.parse(taxYear.take(4) + "-04-06", dateFormat)
-    lazy val taxYearEndDate: LocalDate   = LocalDate.parse(DesTaxYear.fromMtd(taxYear) + "-04-05", dateFormat)
+    lazy val taxYearEndDate: LocalDate   = LocalDate.parse(TaxYear.fromMtd(taxYear).year + "-04-05", dateFormat)
 
     val formatErrors: List[MtdError] = List(
       Some(DateFormatValidation.validate(startDate, StartDateFormatError)),

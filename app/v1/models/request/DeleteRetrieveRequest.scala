@@ -17,6 +17,6 @@
 package v1.models.request
 
 import v1.models.domain.Nino
-import v1.models.domain.DesTaxYear
+import v1.models.domain.TaxYear
 
-case class DeleteRetrieveRequest(nino: Nino, taxYear: DesTaxYear)
+case class DeleteRetrieveRequest(nino: Nino, taxYear: TaxYear)

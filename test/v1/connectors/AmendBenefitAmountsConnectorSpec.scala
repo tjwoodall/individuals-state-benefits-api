@@ -55,10 +55,10 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer ifs-token"
     )
 
-    MockAppConfig.api1651BaseUrl returns baseUrl
-    MockAppConfig.api1651Token returns "api1651-token"
-    MockAppConfig.api1651Environment returns "api1651-environment"
-    MockAppConfig.api1651EnvironmentHeaders returns Some(allowedIfsHeaders)
+    MockedAppConfig.api1651BaseUrl returns baseUrl
+    MockedAppConfig.api1651Token returns "api1651-token"
+    MockedAppConfig.api1651Environment returns "api1651-environment"
+    MockedAppConfig.api1651EnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "AmendBenefitAmountsConnector" when {
@@ -69,7 +69,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
         implicit val hc: HeaderCarrier                       = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredApi1651HeadersPut: Seq[(String, String)] = requiredApi1651Headers ++ Seq("Content-Type" -> "application/json")
 
-        MockHttpClient
+        MockedHttpClient
           .put(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/$benefitId",
             config = dummyIfsHeaderCarrierConfig,

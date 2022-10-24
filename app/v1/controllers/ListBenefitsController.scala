@@ -97,10 +97,19 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
     }
 
   private def errorResult(errorWrapper: ErrorWrapper) = {
-    (errorWrapper.error: @unchecked) match {
-      case BadRequestError | NinoFormatError | TaxYearFormatError | BenefitIdFormatError | RuleTaxYearNotSupportedError |
-          RuleTaxYearRangeInvalidError | CustomMtdError(RuleIncorrectOrEmptyBodyError.code) =>
+    errorWrapper.error match {
+      case _
+          if errorWrapper.containsAnyOf(
+            BadRequestError,
+            NinoFormatError,
+            TaxYearFormatError,
+            BenefitIdFormatError,
+            RuleTaxYearNotSupportedError,
+            RuleTaxYearRangeInvalidError,
+            RuleIncorrectOrEmptyBodyError
+          ) =>
         BadRequest(Json.toJson(errorWrapper))
+
       case NotFoundError   => NotFound(Json.toJson(errorWrapper))
       case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
