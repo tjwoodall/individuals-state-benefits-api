@@ -39,7 +39,7 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 
         MockDeleteBenefitAmountsConnector
-          .deleteOtherEmploymentIncome(request)
+          .deleteBenefitAmounts(request)
           .returns(Future.successful(outcome))
 
         val result = await(service.delete(request))
@@ -53,7 +53,7 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
 
           s"downstream returns $downstreamErrorCode" in new Test {
             MockDeleteBenefitAmountsConnector
-              .deleteOtherEmploymentIncome(request)
+              .deleteBenefitAmounts(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
             val result: Either[ErrorWrapper, ResponseWrapper[Unit]] = await(service.delete(request))

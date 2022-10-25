@@ -31,7 +31,7 @@ trait MockDeleteBenefitAmountsConnector extends MockFactory {
 
   object MockDeleteBenefitAmountsConnector {
 
-    def deleteOtherEmploymentIncome(request: DeleteBenefitAmountsRequest): CallHandler[Future[DownstreamOutcome[Unit]]] = {
+    def deleteBenefitAmounts(request: DeleteBenefitAmountsRequest): CallHandler[Future[DownstreamOutcome[Unit]]] = {
       (
         mockDeleteBenefitAmountsConnector
           .deleteBenefitAmounts(_: DeleteBenefitAmountsRequest)(
