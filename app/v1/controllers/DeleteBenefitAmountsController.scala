@@ -24,12 +24,11 @@ import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
-import v1.connectors.DownstreamUri.DesUri
-import v1.controllers.requestParsers.DeleteBenefitRequestParser
+import v1.controllers.requestParsers.DeleteBenefitAmountsRequestParser
 import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import v1.models.errors._
-import v1.models.request.deleteBenefit.DeleteBenefitRawData
-import v1.services.{AuditService, DeleteRetrieveService, EnrolmentsAuthService, MtdIdLookupService}
+import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRawData
+import v1.services.{AuditService, DeleteBenefitAmountsService, EnrolmentsAuthService, MtdIdLookupService}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,8 +36,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthService,
                                                 val lookupService: MtdIdLookupService,
-                                                requestParser: DeleteBenefitRequestParser,
-                                                service: DeleteRetrieveService,
+                                                requestParser: DeleteBenefitAmountsRequestParser,
+                                                service: DeleteBenefitAmountsService,
                                                 auditService: AuditService,
                                                 cc: ControllerComponents,
                                                 idGenerator: IdGenerator)(implicit ec: ExecutionContext)
@@ -58,18 +57,16 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
       logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
         s"with correlationId : $correlationId")
 
-      val rawData: DeleteBenefitRawData = DeleteBenefitRawData(
+      val rawData: DeleteBenefitAmountsRawData = DeleteBenefitAmountsRawData(
         nino = nino,
         taxYear = taxYear,
         benefitId = benefitId
       )
-      implicit val desUri: DesUri[Unit] = DesUri[Unit](
-        s"income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
-      )
+
       val result =
         for {
-          _               <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.delete(desErrorMap))
+          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          serviceResponse <- EitherT(service.delete(parsedRequest))
         } yield {
           logger.info(
             s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
@@ -124,20 +121,9 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
         BadRequest(Json.toJson(errorWrapper))
 
       case NotFoundError   => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError => InternalServerError(Json.toJson(errorWrapper))
+      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
-
-  private def desErrorMap: Map[String, MtdError] =
-    Map(
-      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID"     -> DownstreamError,
-      "NO_DATA_FOUND"             -> NotFoundError,
-      "SERVER_ERROR"              -> DownstreamError,
-      "SERVICE_UNAVAILABLE"       -> DownstreamError
-    )
 
   private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
     val event = AuditEvent("DeleteStateBenefitAmounts", "delete-state-benefit-amounts", details)

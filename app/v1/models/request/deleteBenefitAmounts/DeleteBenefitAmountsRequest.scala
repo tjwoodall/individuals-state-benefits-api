@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package v1
+package v1.models.request.deleteBenefitAmounts
 
-import v1.models.errors.{DownstreamError, MtdError}
-import v1.models.outcomes.ResponseWrapper
+import v1.models.domain.{Nino, TaxYear}
 
-package object connectors {
-  type MtdIdLookupOutcome   = Either[MtdError, String]
-  type DownstreamOutcome[A] = Either[ResponseWrapper[DownstreamError], ResponseWrapper[A]]
-}
+case class DeleteBenefitAmountsRequest(nino: Nino, taxYear: TaxYear, benefitId: String)

@@ -61,7 +61,7 @@ class IgnoreBenefitServiceSpec extends ServiceSpec {
 
             MockIgnoreBenefitConnector
               .ignoreBenefit(request)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
 
             await(service.ignoreBenefit(request)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
@@ -70,12 +70,12 @@ class IgnoreBenefitServiceSpec extends ServiceSpec {
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-          ("INVALID_CORRELATIONID", DownstreamError),
+          ("INVALID_CORRELATIONID", StandardDownstreamError),
           ("IGNORE_FORBIDDEN", RuleIgnoreForbiddenError),
           ("NOT_SUPPORTED_TAX_YEAR", RuleTaxYearNotEndedError),
           ("NO_DATA_FOUND", NotFoundError),
-          ("SERVER_ERROR", DownstreamError),
-          ("SERVICE_UNAVAILABLE", DownstreamError)
+          ("SERVER_ERROR", StandardDownstreamError),
+          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )
 
         input.foreach(args => (serviceError _).tupled(args))

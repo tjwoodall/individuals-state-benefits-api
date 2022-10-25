@@ -318,10 +318,10 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           (CONFLICT, "BENEFIT_TYPE_ALREADY_EXISTS", FORBIDDEN, RuleBenefitTypeExists),
           (BAD_REQUEST, "INVALID_START_DATE", BAD_REQUEST, RuleStartDateAfterTaxYearEndError),
           (BAD_REQUEST, "INVALID_CESSATION_DATE", BAD_REQUEST, RuleEndDateBeforeTaxYearStartError),
-          (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, DownstreamError),
-          (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, DownstreamError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, DownstreamError),
-          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, DownstreamError)
+          (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, StandardDownstreamError),
+          (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, StandardDownstreamError),
+          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, StandardDownstreamError),
+          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, StandardDownstreamError)
         )
 
         input.foreach(args => (serviceErrorTest _).tupled(args))

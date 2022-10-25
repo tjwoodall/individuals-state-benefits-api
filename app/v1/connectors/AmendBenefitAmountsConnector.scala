@@ -33,7 +33,7 @@ class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfi
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import v1.connectors.httpparsers.StandardDesHttpParser._
+    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
 
     val nino      = request.nino.nino
     val taxYear   = request.taxYear

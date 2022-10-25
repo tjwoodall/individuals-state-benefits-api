@@ -89,7 +89,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
 
             MockListBenefitsConnector
               .listBenefits(requestData)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
 
             await(service.listBenefits(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
@@ -98,12 +98,12 @@ class ListBenefitsServiceSpec extends ServiceSpec {
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-          ("INVALID_VIEW", DownstreamError),
-          ("INVALID_CORRELATIONID", DownstreamError),
+          ("INVALID_VIEW", StandardDownstreamError),
+          ("INVALID_CORRELATIONID", StandardDownstreamError),
           ("NO_DATA_FOUND", NotFoundError),
           ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
-          ("SERVER_ERROR", DownstreamError),
-          ("SERVICE_UNAVAILABLE", DownstreamError)
+          ("SERVER_ERROR", StandardDownstreamError),
+          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )
 
         input.foreach(args => (serviceError _).tupled(args))

@@ -14,26 +14,8 @@
  * limitations under the License.
  */
 
-package v1.models.errors
+package v1.models.request.deleteBenefitAmounts
 
-import play.api.libs.json.Json
-import support.UnitSpec
+import v1.models.request.RawData
 
-class DesErrorCodeSpec extends UnitSpec {
-
-  "reads" should {
-    val json = Json.parse(
-      """
-        |{
-        |   "code": "CODE",
-        |   "reason": "ignored"
-        |}
-      """.stripMargin
-    )
-
-    "generate the correct error code" in {
-      json.as[DesErrorCode] shouldBe DesErrorCode("CODE")
-    }
-  }
-
-}
+case class DeleteBenefitAmountsRawData(nino: String, taxYear: String, benefitId: String) extends RawData

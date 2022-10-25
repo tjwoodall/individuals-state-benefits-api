@@ -134,7 +134,7 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
 
       case RuleUpdateForbiddenError => Forbidden(Json.toJson(errorWrapper))
       case NotFoundError            => NotFound(Json.toJson(errorWrapper))
-      case DownstreamError          => InternalServerError(Json.toJson(errorWrapper))
+      case StandardDownstreamError          => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 

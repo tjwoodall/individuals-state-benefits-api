@@ -34,7 +34,7 @@ class CreateBenefitConnector @Inject() (val http: HttpClient, val appConfig: App
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[AddBenefitResponse]] = {
 
-    import v1.connectors.httpparsers.StandardDesHttpParser._
+    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
     val nino    = request.nino.nino

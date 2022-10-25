@@ -31,7 +31,7 @@ class AmendBenefitConnector @Inject() (val http: HttpClient, val appConfig: AppC
   def amendBenefit(
       request: AmendBenefitRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import v1.connectors.httpparsers.StandardDesHttpParser._
+    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.CREATED)
 
     val nino      = request.nino.nino

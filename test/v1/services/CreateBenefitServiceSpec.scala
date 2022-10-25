@@ -74,7 +74,7 @@ class CreateBenefitServiceSpec extends ServiceSpec {
 
             MockAddBenefitConnector
               .addBenefit(request)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DesErrors.single(DesErrorCode(desErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
 
             await(service.addBenefit(request)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
@@ -82,14 +82,14 @@ class CreateBenefitServiceSpec extends ServiceSpec {
         val input = Seq(
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
-          ("INVALID_CORRELATIONID", DownstreamError),
-          ("INVALID_PAYLOAD", DownstreamError),
+          ("INVALID_CORRELATIONID", StandardDownstreamError),
+          ("INVALID_PAYLOAD", StandardDownstreamError),
           ("BENEFIT_TYPE_ALREADY_EXISTS", RuleBenefitTypeExists),
           ("NOT_SUPPORTED_TAX_YEAR", RuleTaxYearNotEndedError),
           ("INVALID_START_DATE", RuleStartDateAfterTaxYearEndError),
           ("INVALID_CESSATION_DATE", RuleEndDateBeforeTaxYearStartError),
-          ("SERVER_ERROR", DownstreamError),
-          ("SERVICE_UNAVAILABLE", DownstreamError)
+          ("SERVER_ERROR", StandardDownstreamError),
+          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )
 
         input.foreach(args => (serviceError _).tupled(args))

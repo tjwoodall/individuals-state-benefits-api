@@ -216,7 +216,7 @@ class AmendBenefitControllerSpec
           (RuleEndDateBeforeTaxYearStartError, BAD_REQUEST),
           (RuleUpdateForbiddenError, FORBIDDEN),
           (NotFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR)
+          (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )
 
         input.foreach(args => (errorsFromParserTester _).tupled(args))
@@ -256,7 +256,7 @@ class AmendBenefitControllerSpec
           (RuleEndDateBeforeTaxYearStartError, BAD_REQUEST),
           (RuleUpdateForbiddenError, FORBIDDEN),
           (NotFoundError, NOT_FOUND),
-          (DownstreamError, INTERNAL_SERVER_ERROR)
+          (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )
 
         input.foreach(args => (serviceErrors _).tupled(args))
