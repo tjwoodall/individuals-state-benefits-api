@@ -94,7 +94,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
             await(service.listBenefits(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
-        val input = Seq(
+        val errors = Seq(
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("INVALID_BENEFIT_ID", BenefitIdFormatError),
@@ -106,7 +106,12 @@ class ListBenefitsServiceSpec extends ServiceSpec {
           ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )
 
-        input.foreach(args => (serviceError _).tupled(args))
+        val extraTysErrors = Seq(
+          ("INVALID_CORRELATION_ID", StandardDownstreamError),
+          ("NOT_FOUND", NotFoundError)
+        )
+
+        (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
       }
     }
   }
