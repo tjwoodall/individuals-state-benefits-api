@@ -61,50 +61,6 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     )
   )
 
-  trait Test extends MockHttpClient with MockAppConfig {
-
-    val connector: ListBenefitsConnector = new ListBenefitsConnector(
-      http = mockHttpClient,
-      appConfig = mockAppConfig
-    )
-
-    val ifsRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment"   -> "release6-environment",
-      "Authorization" -> s"Bearer release6-token"
-    )
-
-    def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]],
-                 queryParams: Seq[(String, String)]): Unit = {
-      MockedHttpClient
-        .parameterGet(
-          url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
-          queryParams,
-          config = dummyIfsHeaderCarrierConfig,
-          requiredHeaders = ifsRequestHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-        )
-        .returns(Future.successful(response))
-    }
-
-    def stubTysHttp(response: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]],
-                    queryParams: Seq[(String, String)]): Unit = {
-      MockedHttpClient
-        .parameterGet(
-          url = s"$baseUrl/income-tax/income/state-benefits/$taxYear/$nino/",
-          queryParams,
-          config = dummyIfsHeaderCarrierConfig,
-          requiredHeaders = ifsRequestHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-        )
-        .returns(Future.successful(response))
-    }
-
-    MockedAppConfig.ifsBaseUrl returns baseUrl
-    MockedAppConfig.ifsToken returns "release6-token"
-    MockedAppConfig.ifsEnvironment returns "release6-environment"
-    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
-  }
-
   "ListBenefitsConnector" when {
     "listBenefits" when {
       "a benefitId query param is provided" must {
@@ -146,6 +102,24 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
         }
       }
     }
+  }
+
+  trait Test extends MockHttpClient with MockAppConfig {
+
+    val connector: ListBenefitsConnector = new ListBenefitsConnector(
+      http = mockHttpClient,
+      appConfig = mockAppConfig
+    )
+
+    val ifsRequestHeaders: Seq[(String, String)] = Seq(
+      "Environment"   -> "release6-environment",
+      "Authorization" -> s"Bearer release6-token"
+    )
+
+    MockedAppConfig.ifsBaseUrl returns baseUrl
+    MockedAppConfig.ifsToken returns "release6-token"
+    MockedAppConfig.ifsEnvironment returns "release6-environment"
+    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
 }

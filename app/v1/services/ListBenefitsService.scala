@@ -41,15 +41,15 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
     val result = for {
-      desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(mappingDesToMtdError))
+      desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
     } yield desResponseWrapper.map(des => des)
 
     result.value
   }
 
-  private def mappingDesToMtdError: Map[String, MtdError] = {
+  private def downstreamErrorMap: Map[String, MtdError] = {
 
-    val ifsErrors = Map(
+    val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,
       "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
@@ -66,7 +66,7 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
       "NOT_FOUND"              -> NotFoundError
     )
 
-    ifsErrors ++ extraTysErrors
+    errors ++ extraTysErrors
   }
 
 }

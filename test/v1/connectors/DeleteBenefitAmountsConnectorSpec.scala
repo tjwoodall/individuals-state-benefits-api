@@ -27,25 +27,6 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
   val nino: String        = "AA123456A"
   val benefitId: String   = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  trait Test {
-    _: ConnectorTest =>
-    def taxYear: TaxYear
-
-    protected val connector: DeleteBenefitAmountsConnector =
-      new DeleteBenefitAmountsConnector(
-        http = mockHttpClient,
-        appConfig = mockAppConfig
-      )
-
-    protected val request: DeleteBenefitAmountsRequest =
-      DeleteBenefitAmountsRequest(
-        nino = Nino(nino),
-        taxYear = taxYear,
-        benefitId = benefitId
-      )
-
-  }
-
   "DeleteBenefitAmountsConnector" should {
     "return a 200 result on delete" when {
       "the downstream call is successful and not tax year specific" in new DesTest with Test {
@@ -71,6 +52,24 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
       }
 
     }
+
+  }
+  trait Test {
+    _: ConnectorTest =>
+    def taxYear: TaxYear
+
+    protected val connector: DeleteBenefitAmountsConnector =
+      new DeleteBenefitAmountsConnector(
+        http = mockHttpClient,
+        appConfig = mockAppConfig
+      )
+
+    protected val request: DeleteBenefitAmountsRequest =
+      DeleteBenefitAmountsRequest(
+        nino = Nino(nino),
+        taxYear = taxYear,
+        benefitId = benefitId
+      )
 
   }
 

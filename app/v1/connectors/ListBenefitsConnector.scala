@@ -38,13 +38,12 @@ class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppC
     import v1.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    val nino = request.nino.nino
-    import request.taxYear
+    import request._
 
     if (TaxYear.fromMtd(taxYear).useTaxYearSpecificApi) {
       get(
         TaxYearSpecificIfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](
-          s"income-tax/income/state-benefits/${TaxYear.fromMtd(taxYear).asTysDownstream}/$nino"),
+          s"income-tax/income/state-benefits/${TaxYear.fromMtd(taxYear).asTysDownstream}/${nino}"),
         queryParams = request.benefitId.map("benefitId" -> _).toSeq
       )
     } else {

@@ -34,9 +34,9 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
     val nino: String    = "AA123456A"
     val taxYear: String = "2020-21"
 
-    def uri: String = s"/$nino/$taxYear"
+    def uri: String
 
-    def desUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear"
+    def downstreamUri: String
 
     def setupStubs(): StubMapping
 
@@ -57,15 +57,28 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
   }
 
+  private trait NonTysTest extends Test {
+    def uri: String = s"/$nino/$taxYear"
+
+    def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear"
+  }
+
+  private trait TysIfsTest extends Test {
+    def uri: String = s"/$nino/$taxYear"
+
+    def downstreamUri: String = s"/income-tax/income/state-benefits/$taxYear/$nino"
+
+  }
+
   "Calling the sample endpoint" should {
     "return a 200 status code" when {
-      "any valid request is made" in new Test {
+      "any valid request is made" in new NonTysTest {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, desJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, desJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -73,16 +86,31 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
         response.json shouldBe mtdJson
         response.header("Content-Type") shouldBe Some("application/json")
       }
+
+      "any valid request is made for a TYS year" in new TysIfsTest {
+        override def setupStubs(): StubMapping = {
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, desJson)
+        }
+
+        val response: WSResponse = await(request(None).get())
+        response.status shouldBe OK
+        response.json shouldBe mtdJson
+        response.header("Content-Type") shouldBe Some("application/json")
+
+      }
     }
 
     "return a 200 status code with single state benefit" when {
-      "any valid request is made" in new Test {
+      "any valid request is made" in new NonTysTest {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, OK, singleStateBenefitDesJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, singleStateBenefitDesJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -93,13 +121,13 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
     }
 
     "return a 200 status code with state benefit with duplicate benefitId" when {
-      "any valid get request is made" in new Test {
+      "any valid get request is made" in new NonTysTest {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, singleStateBenefitDesJsonWithDuplicateId)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, singleStateBenefitDesJsonWithDuplicateId)
         }
 
         val response: WSResponse = await(request(queryBenefitId).get())
@@ -110,13 +138,13 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
     }
 
     "return a 200 status code with single state benefit" when {
-      "any valid request with benefitId is made" in new Test {
+      "any valid request with benefitId is made" in new NonTysTest {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, singleCustomerStateBenefitDesJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, singleCustomerStateBenefitDesJson)
         }
 
         val response: WSResponse = await(request(queryBenefitId).get())
@@ -127,13 +155,13 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
     }
 
     "return a 200 status code with single state benefit without amounts" when {
-      "a valid request is made" in new Test {
+      "a valid request is made" in new NonTysTest {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, desJsonWithNoAmounts)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, desJsonWithNoAmounts)
         }
 
         val response: WSResponse = await(request(queryBenefitId).get())
@@ -144,13 +172,13 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
     }
 
     "return a 200 status code with ignore hateoas link" when {
-      "a hmrc state benefit is not ignored yet" in new Test {
+      "a hmrc state benefit is not ignored yet" in new NonTysTest {
 
         override def setupStubs(): StubMapping = {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, desUri, Map("benefitId" -> benefitId), OK, desJsonWithNoDateIgnored)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, desJsonWithNoDateIgnored)
         }
 
         val response: WSResponse = await(request(queryBenefitId).get())
@@ -168,7 +196,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
                                 requestBenefitId: String,
                                 expectedStatus: Int,
                                 expectedBody: MtdError): Unit = {
-          s"validation fails with ${expectedBody.code} error" in new Test {
+          s"validation fails with ${expectedBody.code} error" in new NonTysTest {
 
             override val nino: String    = requestNino
             override val taxYear: String = requestTaxYear
@@ -199,26 +227,28 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
       "downstream service error" when {
         def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new Test {
-
+          trait HasTest { _:Test =>
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.GET, desUri, downstreamStatus, errorBody(downstreamCode))
+              DownstreamStub.onError(DownstreamStub.GET, downstreamUri, downstreamStatus, errorBody(downstreamCode))
             }
 
             val response: WSResponse = await(request(None).get())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
           }
+          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest with HasTest
+          s"TYS downstream returns an $downstreamCode error and status $downstreamStatus" in new TysIfsTest with HasTest
+
         }
 
         def errorBody(code: String): String =
           s"""
              |{
              |  "code": "$code",
-             |  "reason": "des message"
+             |  "reason": "error message"
              |}
             """.stripMargin
 
