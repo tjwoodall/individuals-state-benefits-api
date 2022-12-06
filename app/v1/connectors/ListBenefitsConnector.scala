@@ -19,7 +19,7 @@ package v1.connectors
 import config.AppConfig
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.IfsUri
+import v1.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
 import v1.models.request.listBenefits.ListBenefitsRequest
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
@@ -37,13 +37,17 @@ class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppC
     import v1.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    val nino    = request.nino.nino
-    val taxYear = request.taxYear
+    import request._
 
-    get(
-      IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/$nino/$taxYear"),
-      queryParams = request.benefitId.map("benefitId" -> _).toSeq
-    )
+    val downstreamUri = if (taxYear.useTaxYearSpecificApi) {
+        TaxYearSpecificIfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](
+          s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/${nino.nino}")
+    }else{
+      IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/${nino.nino}/${taxYear.asMtd}")
+    }
+
+    get(downstreamUri, queryParams = benefitId.map("benefitId" -> _).toSeq)
+
   }
 
 }

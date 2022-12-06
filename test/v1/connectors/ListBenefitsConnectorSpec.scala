@@ -18,7 +18,7 @@ package v1.connectors
 
 import mocks.MockAppConfig
 import v1.mocks.MockHttpClient
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
@@ -28,7 +28,7 @@ import scala.concurrent.Future
 class ListBenefitsConnectorSpec extends ConnectorSpec {
 
   val nino: String      = "AA111111A"
-  val taxYear: String   = "2019"
+  val taxYear: String   = "2019-20"
   private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
 
   private val validResponse = ListBenefitsResponse(
@@ -61,7 +61,51 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     )
   )
 
-  class Test extends MockHttpClient with MockAppConfig {
+  "ListBenefitsConnector" when {
+    "listBenefits" when {
+      "a benefitId query param is provided" must {
+        "return a 200 status for a success scenario" in new IfsTest with Test {
+          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2019-20"), Some(benefitId))
+          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+
+          willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear", parameters = Seq("benefitId" -> benefitId)) returns Future
+            .successful(outcome)
+
+          val result = await(connector.listBenefits(request))
+
+          result shouldBe outcome
+        }
+      }
+
+      "no benefitId query param is provided" must {
+        "return a 200 status for a success scenario" in new IfsTest with Test {
+          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2019-20"), None)
+          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+
+          willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear") returns Future.successful(outcome)
+
+          val result = await(connector.listBenefits(request))
+
+          result shouldBe outcome
+        }
+      }
+      "a benefitId is provided for a TYS tax year" must {
+        "return a 200 status for a success scenario" in new TysIfsTest with Test {
+
+          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2023-24"), Some(benefitId))
+          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+
+          willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino", parameters = Seq("benefitId" -> benefitId)) returns Future.successful(outcome)
+
+          val result = await(connector.listBenefits(request))
+
+          result shouldBe outcome
+        }
+      }
+    }
+  }
+
+  trait Test extends MockHttpClient with MockAppConfig {
 
     val connector: ListBenefitsConnector = new ListBenefitsConnector(
       http = mockHttpClient,
@@ -73,45 +117,6 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer release6-token"
     )
 
-    def stubHttp(response: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]],
-                 queryParams: Seq[(String, String)]): Unit = {
-      MockedHttpClient
-        .parameterGet(
-          url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear",
-          queryParams,
-          config = dummyIfsHeaderCarrierConfig,
-          requiredHeaders = ifsRequestHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-        )
-        .returns(Future.successful(response))
-    }
-
-    MockedAppConfig.ifsBaseUrl returns baseUrl
-    MockedAppConfig.ifsToken returns "release6-token"
-    MockedAppConfig.ifsEnvironment returns "release6-environment"
-    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
-  }
-
-  "ListBenefitsConnector" when {
-    "listBenefits" when {
-      "no benefitId query param is provided" must {
-        "return a 200 status for a success scenario" in new Test {
-          val outcome = Right(ResponseWrapper(correlationId, validResponse))
-          stubHttp(outcome, Seq("benefitId" -> benefitId))
-
-          await(connector.listBenefits(ListBenefitsRequest(Nino(nino), taxYear, Some(benefitId)))) shouldBe outcome
-        }
-      }
-
-      "a benefitId query param is provided" must {
-        "return a 200 status for a success scenario" in new Test {
-          val outcome = Right(ResponseWrapper(correlationId, validResponse))
-          stubHttp(outcome, queryParams = Nil)
-
-          await(connector.listBenefits(ListBenefitsRequest(Nino(nino), taxYear, None))) shouldBe outcome
-        }
-      }
-    }
   }
 
 }

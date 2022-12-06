@@ -17,7 +17,7 @@
 package v1.fixtures
 
 import play.api.libs.json.{JsValue, Json}
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.models.hateoas.Method.{DELETE, GET, POST, PUT}
 import v1.models.hateoas.{HateoasWrapper, Link}
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
@@ -43,7 +43,7 @@ object ListBenefitsFixture {
   val requestData: Option[String] => ListBenefitsRequest = reqBenefitId =>
     ListBenefitsRequest(
       nino = Nino(nino),
-      taxYear = taxYear,
+      taxYear = TaxYear.fromMtd(taxYear),
       benefitId = reqBenefitId
     )
 
@@ -663,7 +663,7 @@ object ListBenefitsFixture {
       |""".stripMargin
   )
 
-  val mtdJson: JsValue = Json.parse(s"""
+  def mtdJson(taxYear: String): JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -674,7 +674,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -686,7 +686,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -697,7 +697,7 @@ object ListBenefitsFixture {
       |		"startDate": "2019-01-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -710,7 +710,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -723,7 +723,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -735,7 +735,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -748,7 +748,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -760,7 +760,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -772,7 +772,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -784,7 +784,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -798,7 +798,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -810,7 +810,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -821,7 +821,7 @@ object ListBenefitsFixture {
       |		"startDate": "2019-01-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -834,7 +834,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -847,7 +847,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -860,7 +860,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -872,7 +872,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -884,17 +884,17 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
       |	}],
       |	"links": [{
-      |		"href": "/individuals/state-benefits/AA123456A/2020-21",
+      |		"href": "/individuals/state-benefits/AA123456A/$taxYear",
       |		"method": "POST",
       |		"rel": "create-state-benefit"
       |	}, {
-      |		"href": "/individuals/state-benefits/AA123456A/2020-21",
+      |		"href": "/individuals/state-benefits/AA123456A/$taxYear",
       |		"method": "GET",
       |		"rel": "self"
       |	}]
