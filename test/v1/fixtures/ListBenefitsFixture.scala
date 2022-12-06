@@ -663,7 +663,7 @@ object ListBenefitsFixture {
       |""".stripMargin
   )
 
-  val mtdJson: JsValue = Json.parse(s"""
+  def mtdJson(taxYear: String): JsValue = Json.parse(s"""
       |{
       |	"stateBenefits": [{
       |		"benefitType": "incapacityBenefit",
@@ -674,7 +674,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -686,7 +686,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -697,7 +697,7 @@ object ListBenefitsFixture {
       |		"startDate": "2019-01-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -710,7 +710,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -723,7 +723,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -735,7 +735,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -748,7 +748,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -760,7 +760,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -772,7 +772,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -784,7 +784,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -798,7 +798,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -810,7 +810,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 1000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -821,7 +821,7 @@ object ListBenefitsFixture {
       |		"startDate": "2019-01-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -834,7 +834,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -847,7 +847,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -860,7 +860,7 @@ object ListBenefitsFixture {
       |		"amount": 2000,
       |		"taxPaid": 2132.22,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -872,7 +872,7 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
@@ -884,260 +884,22 @@ object ListBenefitsFixture {
       |		"endDate": "2020-04-01",
       |		"amount": 2000,
       |		"links": [{
-      |			"href": "/individuals/state-benefits/AA123456A/2020-21?benefitId=$benefitId",
+      |			"href": "/individuals/state-benefits/AA123456A/$taxYear?benefitId=$benefitId",
       |			"method": "GET",
       |			"rel": "self"
       |		}]
       |	}],
       |	"links": [{
-      |		"href": "/individuals/state-benefits/AA123456A/2020-21",
+      |		"href": "/individuals/state-benefits/AA123456A/$taxYear",
       |		"method": "POST",
       |		"rel": "create-state-benefit"
       |	}, {
-      |		"href": "/individuals/state-benefits/AA123456A/2020-21",
+      |		"href": "/individuals/state-benefits/AA123456A/$taxYear",
       |		"method": "GET",
       |		"rel": "self"
       |	}]
       |}
       |""".stripMargin)
-
-  val mtdTysJson: JsValue = Json.parse(s"""
-       |{
-       |	"stateBenefits": [{
-       |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |		"startDate": "2020-03-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 1000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "statePension",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2019-01-01",
-       |		"amount": 2000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "statePensionLumpSum",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2019-01-01",
-       |		"endDate": "2019-01-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "employmentSupportAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "employmentSupportAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 1000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "jobSeekersAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "jobSeekersAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 1000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "bereavementAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "otherStateBenefits",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}],
-       |	"customerAddedStateBenefits": [{
-       |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |		"startDate": "2020-03-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 1000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=f0d83ac0-a10a-4d57-9e41-6d033832779g",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "statePension",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2019-01-01",
-       |		"amount": 2000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "statePensionLumpSum",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2019-01-01",
-       |		"endDate": "2019-01-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "employmentSupportAllowance",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "jobSeekersAllowance",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"taxPaid": 2132.22,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "bereavementAllowance",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}, {
-       |		"benefitType": "otherStateBenefits",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
-       |		"benefitId": "$benefitId",
-       |		"startDate": "2020-01-01",
-       |		"endDate": "2020-04-01",
-       |		"amount": 2000,
-       |		"links": [{
-       |			"href": "/individuals/state-benefits/AA123456A/2023-24?benefitId=$benefitId",
-       |			"method": "GET",
-       |			"rel": "self"
-       |		}]
-       |	}],
-       |	"links": [{
-       |		"href": "/individuals/state-benefits/AA123456A/2023-24",
-       |		"method": "POST",
-       |		"rel": "create-state-benefit"
-       |	}, {
-       |		"href": "/individuals/state-benefits/AA123456A/2023-24",
-       |		"method": "GET",
-       |		"rel": "self"
-       |	}]
-       |}
-       |""".stripMargin)
 
   val stateBenefits: HMRCStateBenefit = HMRCStateBenefit(
     benefitType = "incapacityBenefit",

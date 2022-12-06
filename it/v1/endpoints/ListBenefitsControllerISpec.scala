@@ -83,7 +83,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request(None).get())
         response.status shouldBe OK
-        response.json shouldBe mtdJson
+        response.json shouldBe mtdJson(taxYear)
         response.header("Content-Type") shouldBe Some("application/json")
       }
 
@@ -97,7 +97,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request(None).get())
         response.status shouldBe OK
-        response.json shouldBe mtdTysJson
+        response.json shouldBe mtdJson(taxYear)
         response.header("Content-Type") shouldBe Some("application/json")
 
       }
