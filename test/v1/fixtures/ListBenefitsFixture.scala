@@ -17,7 +17,7 @@
 package v1.fixtures
 
 import play.api.libs.json.{JsValue, Json}
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.models.hateoas.Method.{DELETE, GET, POST, PUT}
 import v1.models.hateoas.{HateoasWrapper, Link}
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
@@ -43,7 +43,7 @@ object ListBenefitsFixture {
   val requestData: Option[String] => ListBenefitsRequest = reqBenefitId =>
     ListBenefitsRequest(
       nino = Nino(nino),
-      taxYear = taxYear,
+      taxYear = TaxYear.fromMtd(taxYear),
       benefitId = reqBenefitId
     )
 

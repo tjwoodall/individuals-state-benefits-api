@@ -17,13 +17,13 @@
 package v1.controllers.requestParsers
 
 import javax.inject.Inject
-import v1.models.domain.{Nino}
+import v1.models.domain.{Nino, TaxYear}
 import v1.controllers.requestParsers.validators.ListBenefitsValidator
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
 
 class ListBenefitsRequestParser @Inject() (val validator: ListBenefitsValidator) extends RequestParser[ListBenefitsRawData, ListBenefitsRequest] {
 
   override protected def requestFor(data: ListBenefitsRawData): ListBenefitsRequest =
-    ListBenefitsRequest(Nino(data.nino), data.taxYear, data.benefitId)
+    ListBenefitsRequest(Nino(data.nino), TaxYear.fromMtd(data.taxYear), data.benefitId)
 
 }

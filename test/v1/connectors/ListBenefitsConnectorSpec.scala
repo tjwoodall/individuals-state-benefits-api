@@ -18,7 +18,7 @@ package v1.connectors
 
 import mocks.MockAppConfig
 import v1.mocks.MockHttpClient
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
@@ -65,10 +65,11 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     "listBenefits" when {
       "a benefitId query param is provided" must {
         "return a 200 status for a success scenario" in new IfsTest with Test {
-          val request = ListBenefitsRequest(Nino(nino),taxYear="2019-20",Some(benefitId))
+          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2019-20"), Some(benefitId))
           val outcome = Right(ResponseWrapper(correlationId, validResponse))
 
-          willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear") returns Future.successful(outcome)
+          willGetWithQParams(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear", parameters = Seq("benefitId" -> benefitId)) returns Future
+            .successful(outcome)
 
           val result = await(connector.listBenefits(request))
 
@@ -78,7 +79,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
 
       "no benefitId query param is provided" must {
         "return a 200 status for a success scenario" in new IfsTest with Test {
-          val request = ListBenefitsRequest(Nino(nino),taxYear="2019-20",None)
+          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2019-20"), None)
           val outcome = Right(ResponseWrapper(correlationId, validResponse))
 
           willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear") returns Future.successful(outcome)
@@ -91,7 +92,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       "a benefitId is provided for a TYS tax year" must {
         "return a 200 status for a success scenario" in new TysIfsTest with Test {
 
-          val request = ListBenefitsRequest(Nino(nino),taxYear="2023-24",Some(benefitId))
+          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2023-24"), Some(benefitId))
           val outcome = Right(ResponseWrapper(correlationId, validResponse))
 
           willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino") returns Future.successful(outcome)
@@ -116,10 +117,6 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       "Authorization" -> s"Bearer release6-token"
     )
 
-    MockedAppConfig.ifsBaseUrl returns baseUrl
-    MockedAppConfig.ifsToken returns "release6-token"
-    MockedAppConfig.ifsEnvironment returns "release6-environment"
-    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
 }
