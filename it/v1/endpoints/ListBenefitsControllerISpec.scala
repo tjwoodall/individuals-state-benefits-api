@@ -32,9 +32,9 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
   private trait Test {
 
     val nino: String    = "AA123456A"
-    val taxYear: String = "2020-21"
+    def taxYear: String
 
-    def uri: String
+    def mtdUri: String = s"/$nino/$taxYear"
 
     def downstreamUri: String
 
@@ -47,7 +47,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
             (k, v)
           }
       setupStubs()
-      buildRequest(uri)
+      buildRequest(mtdUri)
         .addQueryStringParameters(queryParams: _*)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
@@ -58,15 +58,15 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
   }
 
   private trait NonTysTest extends Test {
-    def uri: String = s"/$nino/$taxYear"
+    def taxYear:String = "2020-21"
 
     def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear"
   }
 
   private trait TysIfsTest extends Test {
-    def uri: String = s"/$nino/$taxYear"
+    def taxYear:String = "2023-24"
 
-    def downstreamUri: String = s"/income-tax/income/state-benefits/$taxYear/$nino"
+    def downstreamUri: String = s"/income-tax/income/state-benefits/23-24/$nino"
 
   }
 
@@ -97,7 +97,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
         val response: WSResponse = await(request(None).get())
         response.status shouldBe OK
-        response.json shouldBe mtdJson
+        response.json shouldBe mtdTysJson
         response.header("Content-Type") shouldBe Some("application/json")
 
       }
@@ -227,7 +227,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
       "downstream service error" when {
         def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          trait HasTest { _:Test =>
+          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest{
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
@@ -239,9 +239,6 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
           }
-          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest with HasTest
-          s"TYS downstream returns an $downstreamCode error and status $downstreamStatus" in new TysIfsTest with HasTest
-
         }
 
         def errorBody(code: String): String =

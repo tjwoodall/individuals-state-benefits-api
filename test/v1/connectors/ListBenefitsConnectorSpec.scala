@@ -68,7 +68,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2019-20"), Some(benefitId))
           val outcome = Right(ResponseWrapper(correlationId, validResponse))
 
-          willGetWithQParams(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear", parameters = Seq("benefitId" -> benefitId)) returns Future
+          willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear", parameters = Seq("benefitId" -> benefitId)) returns Future
             .successful(outcome)
 
           val result = await(connector.listBenefits(request))
@@ -95,7 +95,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2023-24"), Some(benefitId))
           val outcome = Right(ResponseWrapper(correlationId, validResponse))
 
-          willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino") returns Future.successful(outcome)
+          willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino", parameters = Seq("benefitId" -> benefitId)) returns Future.successful(outcome)
 
           val result = await(connector.listBenefits(request))
 

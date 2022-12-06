@@ -124,17 +124,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
 
     protected val requiredHeaders: Seq[(String, String)]
 
-    protected def willGet[T](url: String): CallHandler[Future[T]] = {
-      MockedHttpClient
-        .get(
-          url = url,
-          config = dummyHeaderCarrierConfig,
-          requiredHeaders = requiredHeaders,
-          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-        )
-    }
-
-    protected def willGetWithQParams[T](url: String, parameters:Seq[(String, String)]): CallHandler[Future[T]] = {
+    protected def willGet[T](url: String, parameters:Seq[(String, String)]=Seq()): CallHandler[Future[T]] = {
       MockedHttpClient
         .parameterGet(
           url = url,
@@ -144,6 +134,17 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
           excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
         )
     }
+
+//    protected def willGetWithQParams[T](url: String, parameters:Seq[(String, String)]): CallHandler[Future[T]] = {
+//      MockedHttpClient
+//        .parameterGet(
+//          url = url,
+//          parameters = parameters,
+//          config = dummyHeaderCarrierConfig,
+//          requiredHeaders = requiredHeaders,
+//          excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+//        )
+//    }
 
     protected def willPost[BODY, T](url: String, body: BODY): CallHandler[Future[T]] = {
       MockedHttpClient

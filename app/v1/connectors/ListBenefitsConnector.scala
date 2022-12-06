@@ -39,14 +39,14 @@ class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppC
 
     import request._
 
-    val downstreamUri = taxYear match {
-      case _ if (taxYear.useTaxYearSpecificApi) =>
+    val downstreamUri = if (taxYear.useTaxYearSpecificApi) {
         TaxYearSpecificIfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](
-          s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/${nino}")
-      case _ => IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}")
+          s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/${nino.nino}")
+    }else{
+      IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/${nino.nino}/${taxYear.asMtd}")
     }
 
-    get(downstreamUri, queryParams = request.benefitId.map("benefitId" -> _).toSeq)
+    get(downstreamUri, queryParams = benefitId.map("benefitId" -> _).toSeq)
 
   }
 

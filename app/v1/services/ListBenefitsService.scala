@@ -40,9 +40,7 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
       logContext: EndpointLogContext,
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
-    val result = for {
-      desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-    } yield desResponseWrapper.map(des => des)
+    val result = EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
 
     result.value
   }
