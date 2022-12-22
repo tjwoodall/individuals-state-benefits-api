@@ -19,12 +19,12 @@ package v1.controllers
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockIgnoreBenefitRequestParser
 import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService, MockUnignoreBenefitService}
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
+import v1.models.domain.Nino
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
@@ -196,7 +196,7 @@ class UnignoreBenefitControllerSpec
           (TaxYearFormatError, BAD_REQUEST),
           (BenefitIdFormatError, BAD_REQUEST),
           (RuleTaxYearNotEndedError, BAD_REQUEST),
-          (RuleUnignoreForbiddenError, FORBIDDEN),
+          (RuleUnignoreForbiddenError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )

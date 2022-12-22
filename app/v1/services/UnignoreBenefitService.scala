@@ -18,7 +18,6 @@ package v1.services
 
 import cats.data.EitherT
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.UnignoreBenefitConnector
@@ -28,6 +27,7 @@ import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 import v1.support.DownstreamResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

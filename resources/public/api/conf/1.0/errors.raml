@@ -204,7 +204,7 @@ traits:
                   code: RULE_DELETE_FORBIDDEN
   ruleIgnoreForbidden:
     responses:
-      403:
+      400:
         body:
           application/json:
             type: types.errorResponse
@@ -215,7 +215,7 @@ traits:
                   code: RULE_IGNORE_FORBIDDEN
   ruleUnignoreForbidden:
     responses:
-      403:
+      400:
         body:
           application/json:
             type: types.errorResponse
