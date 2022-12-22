@@ -122,13 +122,13 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
             BenefitIdFormatError,
             RuleTaxYearNotSupportedError,
             RuleTaxYearRangeInvalidError,
-            RuleTaxYearNotEndedError
+            RuleTaxYearNotEndedError,
+            RuleIgnoreForbiddenError
           ) =>
         BadRequest(Json.toJson(errorWrapper))
 
-      case RuleIgnoreForbiddenError => Forbidden(Json.toJson(errorWrapper))
-      case NotFoundError            => NotFound(Json.toJson(errorWrapper))
-      case StandardDownstreamError          => InternalServerError(Json.toJson(errorWrapper))
+      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
+      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 
