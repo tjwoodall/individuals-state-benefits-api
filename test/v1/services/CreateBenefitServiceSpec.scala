@@ -16,10 +16,9 @@
 
 package v1.services
 
-import v1.models.domain.Nino
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockCreateBenefitConnector
-import v1.models.domain.BenefitType
+import v1.models.domain.{BenefitType, Nino}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.createBenefit.{CreateBenefitRequest, CreateBenefitRequestBody}
