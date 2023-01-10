@@ -18,7 +18,7 @@ package v1.services
 
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockListBenefitsConnector
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
@@ -29,10 +29,10 @@ import scala.concurrent.Future
 class ListBenefitsServiceSpec extends ServiceSpec {
 
   private val nino      = "AA112233A"
-  private val taxYear   = "2019"
+  private val taxYear   = "2019-20"
   private val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
 
-  private val requestData = ListBenefitsRequest(Nino(nino), taxYear, benefitId)
+  private val requestData = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId)
 
   private val validResponse = ListBenefitsResponse(
     stateBenefits = Some(
@@ -94,7 +94,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
             await(service.listBenefits(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
-        val input = Seq(
+        val errors = Seq(
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("INVALID_BENEFIT_ID", BenefitIdFormatError),
@@ -106,7 +106,12 @@ class ListBenefitsServiceSpec extends ServiceSpec {
           ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )
 
-        input.foreach(args => (serviceError _).tupled(args))
+        val extraTysErrors = Seq(
+          ("INVALID_CORRELATION_ID", StandardDownstreamError),
+          ("NOT_FOUND", NotFoundError)
+        )
+
+        (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
       }
     }
   }

@@ -17,7 +17,7 @@
 package v1.controllers.requestParsers
 
 import support.UnitSpec
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.mocks.validators.MockListBenefitsValidator
 import v1.models.errors._
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
@@ -49,7 +49,7 @@ class ListBenefitsRequestParserSpec extends UnitSpec {
         MockListBenefitsValidator.validate(listBenefitsRawData).returns(Nil)
 
         parser.parseRequest(listBenefitsRawData) shouldBe
-          Right(ListBenefitsRequest(Nino(nino), taxYear, benefitId))
+          Right(ListBenefitsRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId))
       }
     }
 

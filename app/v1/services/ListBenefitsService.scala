@@ -40,23 +40,31 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
       logContext: EndpointLogContext,
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
-    val result = for {
-      desResponseWrapper <- EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(mappingDesToMtdError))
-    } yield desResponseWrapper.map(des => des)
+    val result = EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
 
     result.value
   }
 
-  private def mappingDesToMtdError: Map[String, MtdError] = Map(
-    "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-    "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-    "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-    "INVALID_VIEW"              -> StandardDownstreamError,
-    "INVALID_CORRELATIONID"     -> StandardDownstreamError,
-    "NO_DATA_FOUND"             -> NotFoundError,
-    "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
-    "SERVER_ERROR"              -> StandardDownstreamError,
-    "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
-  )
+  private def downstreamErrorMap: Map[String, MtdError] = {
+
+    val errors = Map(
+      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+      "INVALID_VIEW"              -> StandardDownstreamError,
+      "INVALID_CORRELATIONID"     -> StandardDownstreamError,
+      "NO_DATA_FOUND"             -> NotFoundError,
+      "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
+      "SERVER_ERROR"              -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
+    )
+
+    val extraTysErrors: Map[String, MtdError] = Map(
+      "INVALID_CORRELATION_ID" -> StandardDownstreamError,
+      "NOT_FOUND"              -> NotFoundError
+    )
+
+    errors ++ extraTysErrors
+  }
 
 }
