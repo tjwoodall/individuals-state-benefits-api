@@ -24,7 +24,7 @@ import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockIgnoreBenefitRequestParser
 import v1.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockIgnoreBenefitService, MockMtdIdLookupService}
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
@@ -75,7 +75,7 @@ class IgnoreBenefitControllerSpec
 
   val requestData: IgnoreBenefitRequest = IgnoreBenefitRequest(
     nino = Nino(nino),
-    taxYear = taxYear,
+    taxYear = TaxYear.fromMtd(taxYear),
     benefitId = benefitId
   )
 

@@ -17,7 +17,7 @@
 package v1.controllers.requestParsers
 
 import support.UnitSpec
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.mocks.validators.MockIgnoreBenefitValidator
 import v1.models.errors._
 import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
@@ -37,7 +37,7 @@ class IgnoreBenefitRequestParserSpec extends UnitSpec {
 
   private val ignoreBenefitRequest = IgnoreBenefitRequest(
     nino = Nino(nino),
-    taxYear = taxYear,
+    taxYear = TaxYear.fromMtd(taxYear),
     benefitId = benefitId
   )
 

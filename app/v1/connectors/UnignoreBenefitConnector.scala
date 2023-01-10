@@ -40,7 +40,7 @@ class UnignoreBenefitConnector @Inject() (val http: HttpClient, val appConfig: A
     val taxYear   = request.taxYear
     val benefitId = request.benefitId
 
-    delete(IfsUri[Unit](s"income-tax/state-benefits/$nino/$taxYear/ignore/$benefitId"))
+    delete(IfsUri[Unit](s"income-tax/state-benefits/$nino/${taxYear.asMtd}/ignore/$benefitId"))
   }
 
 }
