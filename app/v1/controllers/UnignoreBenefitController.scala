@@ -18,7 +18,7 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
-import config.AppConfig
+import config.{AppConfig, FeatureSwitches}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -63,7 +63,8 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
       val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(
         nino = nino,
         taxYear = taxYear,
-        benefitId = benefitId
+        benefitId = benefitId,
+        temporalValidationEnabled = FeatureSwitches()(appConfig).isTemporalValidationEnabled
       )
 
       val result =
