@@ -16,7 +16,6 @@
 
 package v1.services
 
-import cats.data.EitherT
 import cats.implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
@@ -39,23 +38,30 @@ class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) ext
       logContext: EndpointLogContext,
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
-    val result = for {
-      desResponseWrapper <- EitherT(connector.unignoreBenefit(request)).leftMap(mapDownstreamErrors(desErrorMap))
-    } yield desResponseWrapper
+    connector.unignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
-    result.value
   }
 
-  private def desErrorMap: Map[String, MtdError] = Map(
-    ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
-    ("INVALID_TAX_YEAR", TaxYearFormatError),
-    ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-    ("INVALID_CORRELATIONID", StandardDownstreamError),
-    ("CUSTOMER_ADDED", RuleUnignoreForbiddenError),
-    ("BEFORE_TAX_YEAR_ENDED", RuleTaxYearNotEndedError),
-    ("NO_DATA_FOUND", NotFoundError),
-    ("SERVICE_ERROR", StandardDownstreamError),
-    ("SERVICE_UNAVAILABLE", StandardDownstreamError)
-  )
+  private def downstreamErrorMap: Map[String, MtdError] = {
+    val errors = Map(
+      ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
+      ("INVALID_TAX_YEAR", TaxYearFormatError),
+      ("INVALID_BENEFIT_ID", BenefitIdFormatError),
+      ("INVALID_CORRELATIONID", StandardDownstreamError),
+      ("CUSTOMER_ADDED", RuleUnignoreForbiddenError),
+      ("BEFORE_TAX_YEAR_ENDED", RuleTaxYearNotEndedError),
+      ("NO_DATA_FOUND", NotFoundError),
+      ("SERVICE_ERROR", StandardDownstreamError),
+      ("SERVICE_UNAVAILABLE", StandardDownstreamError)
+    )
+
+    val extraTysErrors = Map(
+      ("INVALID_CORRELATION_ID", StandardDownstreamError),
+      ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
+    )
+
+    errors ++ extraTysErrors
+
+  }
 
 }

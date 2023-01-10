@@ -126,7 +126,6 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
             RuleUnignoreForbiddenError
           ) =>
         BadRequest(Json.toJson(errorWrapper))
-
       case NotFoundError           => NotFound(Json.toJson(errorWrapper))
       case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
