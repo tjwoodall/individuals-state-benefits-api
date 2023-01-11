@@ -16,7 +16,6 @@
 
 package v1.endpoints
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.http.HeaderNames.ACCEPT
@@ -34,10 +33,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
     "return a 200 status code" when {
       "any valid request is made" in new NonTysTest {
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
+        override def setupStubs() = {
           DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
         }
 
@@ -49,10 +45,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
 
       "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysIfsTest {
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
+        override def setupStubs() = {
           DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
         }
 
@@ -96,12 +89,6 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
             override val taxYear: String   = requestTaxYear
             override val benefitId: String = requestBenefitId
 
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
-            }
-
             val response: WSResponse = await(request().post(JsObject.empty))
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
@@ -124,10 +111,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
         def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
           s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest {
 
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
+            override def setupStubs() = {
               DownstreamStub.onError(DownstreamStub.DELETE, downstreamUri, downstreamStatus, errorBody(downstreamCode))
             }
 
@@ -190,9 +174,12 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
 
     def downstreamUri: String
 
-    def setupStubs(): StubMapping
+    def setupStubs(): Unit = {}
 
     def request(): WSRequest = {
+      AuditStub.audit()
+      AuthStub.authorised()
+      MtdIdLookupStub.ninoFound(nino)
       setupStubs()
       buildRequest(mtdUri)
         .withHttpHeaders(
