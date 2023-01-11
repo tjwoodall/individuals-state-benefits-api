@@ -27,14 +27,14 @@ class FeatureSwitchesSpec extends UnitSpec {
     "be true" when {
 
       "absent from the config" in {
-        val configuration   = Configuration.empty
+        val configuration = Configuration.empty
         val featureSwitches = FeatureSwitches(configuration)
 
         featureSwitches.isTaxYearSpecificApiEnabled shouldBe true
       }
 
       "enabled" in {
-        val configuration   = Configuration("tys-api.enabled" -> true)
+        val configuration = Configuration("tys-api.enabled" -> true)
         val featureSwitches = FeatureSwitches(configuration)
 
         featureSwitches.isTaxYearSpecificApiEnabled shouldBe true
@@ -44,7 +44,7 @@ class FeatureSwitchesSpec extends UnitSpec {
 
     "be false" when {
       "disabled" in {
-        val configuration   = Configuration("tys-api.enabled" -> false)
+        val configuration = Configuration("tys-api.enabled" -> false)
         val featureSwitches = FeatureSwitches(configuration)
 
         featureSwitches.isTaxYearSpecificApiEnabled shouldBe false

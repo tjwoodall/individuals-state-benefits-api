@@ -18,7 +18,7 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
-import config.AppConfig
+import config.{AppConfig, FeatureSwitches}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -36,15 +36,15 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
-                                         val lookupService: MtdIdLookupService,
-                                         appConfig: AppConfig,
-                                         requestParser: IgnoreBenefitRequestParser,
-                                         service: IgnoreBenefitService,
-                                         auditService: AuditService,
-                                         cc: ControllerComponents,
-                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
+class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
+                                        val lookupService: MtdIdLookupService,
+                                        appConfig: AppConfig,
+                                        requestParser: IgnoreBenefitRequestParser,
+                                        service: IgnoreBenefitService,
+                                        auditService: AuditService,
+                                        cc: ControllerComponents,
+                                        idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+  extends AuthorisedController(cc)
     with BaseController
     with Logging
     with IgnoreHateoasBody {
@@ -63,12 +63,13 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
       val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(
         nino = nino,
         taxYear = taxYear,
-        benefitId = benefitId
+        benefitId = benefitId,
+        temporalValidationEnabled = FeatureSwitches()(appConfig).isTemporalValidationEnabled
       )
 
       val result =
         for {
-          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.ignoreBenefit(parsedRequest))
         } yield {
           logger.info(
@@ -94,7 +95,7 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -115,19 +116,19 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
   private def errorResult(errorWrapper: ErrorWrapper) = {
     errorWrapper.error match {
       case _
-          if errorWrapper.containsAnyOf(
-            BadRequestError,
-            NinoFormatError,
-            TaxYearFormatError,
-            BenefitIdFormatError,
-            RuleTaxYearNotSupportedError,
-            RuleTaxYearRangeInvalidError,
-            RuleTaxYearNotEndedError,
-            RuleIgnoreForbiddenError
-          ) =>
+        if errorWrapper.containsAnyOf(
+          BadRequestError,
+          NinoFormatError,
+          TaxYearFormatError,
+          BenefitIdFormatError,
+          RuleTaxYearNotSupportedError,
+          RuleTaxYearRangeInvalidError,
+          RuleTaxYearNotEndedError,
+          RuleIgnoreForbiddenError
+        ) =>
         BadRequest(Json.toJson(errorWrapper))
 
-      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
+      case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }

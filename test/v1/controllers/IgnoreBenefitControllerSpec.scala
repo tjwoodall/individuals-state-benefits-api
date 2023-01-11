@@ -17,6 +17,7 @@
 package v1.controllers
 
 import mocks.MockAppConfig
+import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import uk.gov.hmrc.http.HeaderCarrier
@@ -33,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class IgnoreBenefitControllerSpec
-    extends ControllerBaseSpec
+  extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -42,9 +43,9 @@ class IgnoreBenefitControllerSpec
     with MockAuditService
     with MockIdGenerator {
 
-  val nino: String          = "AA123456A"
-  val taxYear: String       = "2019-20"
-  val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String = "AA123456A"
+  val taxYear: String = "2019-20"
+  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   trait Test {
@@ -61,6 +62,7 @@ class IgnoreBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
+    MockedAppConfig.featureSwitches.returns(Configuration("allowTemporalValidationSuspension.enabled" -> true)).anyNumberOfTimes()
     MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
     MockedEnrolmentsAuthService.authoriseUser()
     MockedAppConfig.apiGatewayContext.returns("baseUrl").anyNumberOfTimes()
@@ -81,20 +83,20 @@ class IgnoreBenefitControllerSpec
 
   val hateoasResponse: JsValue = Json.parse(
     s"""
-      |{
-      |   "links":[
-      |      {
-      |         "href":"/baseUrl/$nino/$taxYear?benefitId=$benefitId",
-      |         "rel":"self",
-      |         "method":"GET"
-      |      },
-      |      {
-      |         "href":"/baseUrl/$nino/$taxYear/$benefitId/unignore",
-      |         "rel":"unignore-state-benefit",
-      |         "method":"POST"
-      |      }
-      |   ]
-      |}
+       |{
+       |   "links":[
+       |      {
+       |         "href":"/baseUrl/$nino/$taxYear?benefitId=$benefitId",
+       |         "rel":"self",
+       |         "method":"GET"
+       |      },
+       |      {
+       |         "href":"/baseUrl/$nino/$taxYear/$benefitId/unignore",
+       |         "rel":"unignore-state-benefit",
+       |         "method":"POST"
+       |      }
+       |   ]
+       |}
     """.stripMargin
   )
 
