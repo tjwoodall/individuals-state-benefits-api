@@ -26,7 +26,7 @@ import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockAmendBenefitRequestParser
 import v1.mocks.services.{MockAmendBenefitService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.errors.{BadRequestError, BenefitIdFormatError, EndDateFormatError, NinoFormatError, RuleEndDateBeforeStartDateError, RuleEndDateBeforeTaxYearStartError, RuleIncorrectOrEmptyBodyError, RuleStartDateAfterTaxYearEndError, RuleTaxYearNotEndedError, RuleTaxYearNotSupportedError, RuleTaxYearRangeInvalidError, StartDateFormatError, TaxYearFormatError, _}
+import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest, AmendBenefitRequestBody}
 
