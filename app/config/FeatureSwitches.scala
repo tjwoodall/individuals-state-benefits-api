@@ -28,19 +28,18 @@ case class FeatureSwitches(featureSwitchConfig: Configuration) {
     val maybeVersion: Option[String] =
       version match {
         case versionRegex(v) => Some(v)
-        case _ => None
+        case _               => None
       }
 
     val enabled = for {
       validVersion <- maybeVersion
-      enabled <- featureSwitchConfig.getOptional[Boolean](s"version-$validVersion.enabled")
+      enabled      <- featureSwitchConfig.getOptional[Boolean](s"version-$validVersion.enabled")
     } yield enabled
 
     enabled.getOrElse(false)
   }
 
-  val isTaxYearNotEndedRuleEnabled: Boolean = isEnabled("taxYearNotEndedRule.enabled")
-  val isTaxYearSpecificApiEnabled: Boolean = isEnabled("tys-api.enabled")
+  val isTaxYearSpecificApiEnabled: Boolean  = isEnabled("tys-api.enabled")
 
   def isTemporalValidationEnabled(implicit request: Request[_]): Boolean = {
     if (isEnabled("allowTemporalValidationSuspension.enabled")) {

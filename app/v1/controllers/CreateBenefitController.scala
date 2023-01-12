@@ -18,6 +18,7 @@ package v1.controllers
 
 import cats.data.EitherT
 import cats.implicits._
+import config.{AppConfig, FeatureSwitches}
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
 import play.mvc.Http.MimeTypes
@@ -38,6 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          val lookupService: MtdIdLookupService,
+                                         appConfig: AppConfig,
                                          requestParser: CreateBenefitRequestParser,
                                          service: CreateBenefitService,
                                          auditService: AuditService,
@@ -63,8 +65,10 @@ class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
       val rawData: CreateBenefitRawData = CreateBenefitRawData(
         nino = nino,
         taxYear = taxYear,
-        body = AnyContentAsJson(request.body)
+        body = AnyContentAsJson(request.body),
+        temporalValidationEnabled = FeatureSwitches()(appConfig).isTemporalValidationEnabled
       )
+
       val result =
         for {
           parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))

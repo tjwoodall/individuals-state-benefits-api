@@ -16,12 +16,13 @@
 
 package v1.controllers.requestParsers.validators
 
-import config.{AppConfig, FeatureSwitches}
-import javax.inject.Inject
+import config.AppConfig
 import utils.CurrentDateTime
 import v1.controllers.requestParsers.validators.validations._
 import v1.models.errors.MtdError
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequestBody}
+
+import javax.inject.Inject
 
 class AmendBenefitValidator @Inject() (implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[AmendBenefitRawData] {
 
@@ -40,11 +41,9 @@ class AmendBenefitValidator @Inject() (implicit currentDateTime: CurrentDateTime
   }
 
   private def parameterRuleValidation: AmendBenefitRawData => List[List[MtdError]] = { data =>
-    val featureSwitch = FeatureSwitches(appConfig.featureSwitches)
-
     List(
       TaxYearNotSupportedValidation.validate(data.taxYear),
-      if (featureSwitch.isTaxYearNotEndedRuleEnabled) TaxYearNotEndedValidation.validate(data.taxYear) else List.empty[MtdError]
+      if (data.temporalValidationEnabled) TaxYearNotEndedValidation.validate(data.taxYear) else Nil
     )
   }
 
