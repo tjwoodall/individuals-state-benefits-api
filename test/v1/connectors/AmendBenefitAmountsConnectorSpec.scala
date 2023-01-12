@@ -16,10 +16,7 @@
 
 package v1.connectors
 
-import mocks.MockAppConfig
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.models.domain.Nino
-import v1.mocks.MockHttpClient
+import v1.models.domain.{Nino, TaxYear}
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRequest, AmendBenefitAmountsRequestBody}
 
@@ -27,61 +24,63 @@ import scala.concurrent.Future
 
 class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
-  val nino: String      = "AA123456A"
-  val taxYear: String   = "2021-22"
-  val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
+  "AmendBenefitAmountsConnector" should {
+    "return the expected response for a non-TYS request" when {
+      "a valid request is made" in new Api1651Test with Test {
+        def taxYear: TaxYear = TaxYear.fromMtd("2020-21")
 
-  val amendBenefitAmountsRequestBody: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
-    amount = 999.99,
-    taxPaid = Some(123.13)
-  )
+        val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-  val request: AmendBenefitAmountsRequest = AmendBenefitAmountsRequest(
-    nino = Nino(nino),
-    taxYear = taxYear,
-    benefitId = benefitId,
-    body = amendBenefitAmountsRequestBody
-  )
+        willPut(
+          url = s"$baseUrl/income-tax/income/state-benefits/$nino/2020-21/$benefitId",
+          body = body
+        ).returns(Future.successful(expectedOutcome))
 
-  class Test extends MockHttpClient with MockAppConfig {
+        val result: DownstreamOutcome[Unit] = await(connector.amendBenefitAmounts(request))
+        result shouldBe expectedOutcome
+      }
+    }
+
+    "return the expected response for a TYS request" when {
+      "a valid request is made" in new TysIfsTest with Test {
+        def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
+
+        val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
+
+        willPut(
+          url = s"$baseUrl/income-tax/23-24/income/state-benefits/$nino/$benefitId",
+          body = body
+        ).returns(Future.successful(expectedOutcome))
+
+        val result: DownstreamOutcome[Unit] = await(connector.amendBenefitAmounts(request))
+        result shouldBe expectedOutcome
+      }
+    }
+  }
+
+  trait Test { _: ConnectorTest =>
+    def taxYear: TaxYear
+
+    val nino: String      = "AA123456A"
+    val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
+
+    val body: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
+      amount = 999.99,
+      taxPaid = Some(123.13)
+    )
+
+    val request: AmendBenefitAmountsRequest = AmendBenefitAmountsRequest(
+      nino = Nino(nino),
+      taxYear = taxYear,
+      benefitId = benefitId,
+      body = body
+    )
 
     val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(
       http = mockHttpClient,
       appConfig = mockAppConfig
     )
 
-    val ifsRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment"   -> "ifs-environment",
-      "Authorization" -> s"Bearer ifs-token"
-    )
-
-    MockedAppConfig.api1651BaseUrl returns baseUrl
-    MockedAppConfig.api1651Token returns "api1651-token"
-    MockedAppConfig.api1651Environment returns "api1651-environment"
-    MockedAppConfig.api1651EnvironmentHeaders returns Some(allowedIfsHeaders)
-  }
-
-  "AmendBenefitAmountsConnector" when {
-    "amendBenefitAmounts" must {
-      "return a 204 status for a success scenario" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, ()))
-
-        implicit val hc: HeaderCarrier                       = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredApi1651HeadersPut: Seq[(String, String)] = requiredApi1651Headers ++ Seq("Content-Type" -> "application/json")
-
-        MockedHttpClient
-          .put(
-            url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/$benefitId",
-            config = dummyIfsHeaderCarrierConfig,
-            body = request.body,
-            requiredHeaders = requiredApi1651HeadersPut,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
-          )
-          .returns(Future.successful(outcome))
-
-        await(connector.amendBenefitAmounts(request)) shouldBe outcome
-      }
-    }
   }
 
 }

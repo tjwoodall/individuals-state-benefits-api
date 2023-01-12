@@ -20,8 +20,9 @@ import config.AppConfig
 
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.Api1651Uri
+import v1.connectors.DownstreamUri.{Api1651Uri, TaxYearSpecificIfsUri}
 import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRequest
+import v1.connectors.httpparsers.StandardDownstreamHttpParser._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,13 +34,16 @@ class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfi
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
+    import request._
 
-    val nino      = request.nino.nino
-    val taxYear   = request.taxYear
-    val benefitId = request.benefitId
+    val downstreamUri =
+      if (taxYear.useTaxYearSpecificApi) {
+        TaxYearSpecificIfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
+      } else {
+        Api1651Uri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
+      }
 
-    put(request.body, Api1651Uri[Unit](s"income-tax/income/state-benefits/$nino/$taxYear/$benefitId"))
+    put(body, downstreamUri)
   }
 
 }

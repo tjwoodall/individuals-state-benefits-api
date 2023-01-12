@@ -16,7 +16,6 @@
 
 package v1.services
 
-import cats.data.EitherT
 import cats.implicits._
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -39,23 +38,29 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
       logContext: EndpointLogContext,
       correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
-    val result = for {
-      desResponseWrapper <- EitherT(connector.amendBenefitAmounts(request)).leftMap(mapDownstreamErrors(ifsErrorMap))
-    } yield desResponseWrapper
+    connector.amendBenefitAmounts(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
-    result.value
   }
 
-  private def ifsErrorMap: Map[String, MtdError] = Map(
-    "INCOME_SOURCE_NOT_FOUND"         -> NotFoundError,
-    "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,
-    "INVALID_TAX_YEAR"                -> TaxYearFormatError,
-    "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
-    "INVALID_CORRELATIONID"           -> StandardDownstreamError,
-    "INVALID_PAYLOAD"                 -> StandardDownstreamError,
-    "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
-    "SERVER_ERROR"                    -> StandardDownstreamError,
-    "SERVICE_UNAVAILABLE"             -> StandardDownstreamError
-  )
+  private def downstreamErrorMap: Map[String, MtdError] = {
+    val errors = Map(
+      "INCOME_SOURCE_NOT_FOUND"         -> NotFoundError,
+      "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,
+      "INVALID_TAX_YEAR"                -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
+      "INVALID_CORRELATIONID"           -> StandardDownstreamError,
+      "INVALID_PAYLOAD"                 -> StandardDownstreamError,
+      "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
+      "SERVER_ERROR"                    -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE"             -> StandardDownstreamError
+    )
+
+    val extraTysErrors = Map(
+      "INVALID_CORRELATION_ID" -> StandardDownstreamError,
+      "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError
+    )
+
+    errors ++ extraTysErrors
+  }
 
 }

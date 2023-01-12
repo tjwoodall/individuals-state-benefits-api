@@ -16,7 +16,7 @@
 
 package v1.services
 
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockAmendBenefitAmountsConnector
 import v1.models.errors._
@@ -27,57 +27,33 @@ import scala.concurrent.Future
 
 class AmendBenefitAmountsServiceSpec extends ServiceSpec {
 
-  private val nino      = "AA123456A"
-  private val taxYear   = "2021-22"
-  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
-
-  val updateBenefitAmountsRequestBody: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
-    amount = 999.99,
-    taxPaid = Some(123.13)
-  )
-
-  val requestData: AmendBenefitAmountsRequest = AmendBenefitAmountsRequest(
-    nino = Nino(nino),
-    taxYear = taxYear,
-    benefitId = benefitId,
-    body = updateBenefitAmountsRequestBody
-  )
-
-  trait Test extends MockAmendBenefitAmountsConnector {
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    val service: AmendBenefitAmountsService = new AmendBenefitAmountsService(
-      connector = mockUpdateBenefitAmountsConnector
-    )
-
-  }
-
   "UpdateBenefitAmountsService" when {
     "UpdateBenefitAmounts" must {
       "return correct result for a success" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, ()))
+        val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         MockUpdateBenefitAmountsConnector
           .updateBenefitAmounts(requestData)
-          .returns(Future.successful(outcome))
+          .returns(Future.successful(expectedOutcome))
 
-        await(service.updateBenefitAmounts(requestData)) shouldBe outcome
+        val result: Either[ErrorWrapper, ResponseWrapper[Unit]] = await(service.updateBenefitAmounts(requestData))
+        result shouldBe expectedOutcome
       }
     }
 
     "map errors according to spec" when {
 
-      def serviceError(desErrorCode: String, error: MtdError): Unit =
-        s"a $desErrorCode error is returned from the service" in new Test {
+      def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
+        s"a $downstreamErrorCode error is returned from the service" in new Test {
 
           MockUpdateBenefitAmountsConnector
             .updateBenefitAmounts(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
+            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
           await(service.updateBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
-      val input = Seq(
+      val errors = List(
         ("INCOME_SOURCE_NOT_FOUND", NotFoundError),
         ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
         ("INVALID_TAX_YEAR", TaxYearFormatError),
@@ -89,31 +65,39 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         ("SERVICE_UNAVAILABLE", StandardDownstreamError)
       )
 
-      input.foreach(args => (serviceError _).tupled(args))
-
-      def serviceErrorSpaced(ifsErrorCode: String, error: MtdError): Unit =
-        s"a $ifsErrorCode error with empty spaces is returned from the service" in new Test {
-
-          MockUpdateBenefitAmountsConnector
-            .updateBenefitAmounts(requestData)
-            .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(ifsErrorCode))))))
-
-          await(service.updateBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
-        }
-
-      val inputSpaced = Seq(
-        ("INVALID_TAXABLE_ENTITY_ID ", NinoFormatError),
-        (" INVALID_TAX_YEAR ", TaxYearFormatError),
-        ("INVALID_BENEFIT_ID ", BenefitIdFormatError),
-        (" INVALID_CORRELATIONID", StandardDownstreamError),
-        ("INVALID_PAYLOAD     ", StandardDownstreamError),
-        ("   INVALID_REQUEST_BEFORE_TAX_YEAR       ", RuleTaxYearNotEndedError),
-        ("    SERVER_ERROR ", StandardDownstreamError),
-        ("   SERVICE_UNAVAILABLE   ", StandardDownstreamError)
+      val extraTysErrors = List(
+        ("INVALID_CORRELATION_ID", StandardDownstreamError),
+        ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
       )
 
-      inputSpaced.foreach(args => (serviceErrorSpaced _).tupled(args))
+      (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
+
     }
+  }
+
+  trait Test extends MockAmendBenefitAmountsConnector {
+    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
+
+    private val nino      = "AA123456A"
+    private val taxYear   = "2021-22"
+    private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
+
+    val body: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
+      amount = 999.99,
+      taxPaid = Some(123.13)
+    )
+
+    val requestData: AmendBenefitAmountsRequest = AmendBenefitAmountsRequest(
+      nino = Nino(nino),
+      taxYear = TaxYear.fromMtd(taxYear),
+      benefitId = benefitId,
+      body = body
+    )
+
+    val service: AmendBenefitAmountsService = new AmendBenefitAmountsService(
+      connector = mockUpdateBenefitAmountsConnector
+    )
+
   }
 
 }

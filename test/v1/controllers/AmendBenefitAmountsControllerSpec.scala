@@ -19,7 +19,7 @@ package v1.controllers
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
-import v1.models.domain.Nino
+import v1.models.domain.{Nino, TaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockAmendBenefitAmountsRequestParser
@@ -90,7 +90,7 @@ class AmendBenefitAmountsControllerSpec
 
   val requestData: AmendBenefitAmountsRequest = AmendBenefitAmountsRequest(
     nino = Nino(nino),
-    taxYear = taxYear,
+    taxYear = TaxYear.fromMtd(taxYear),
     benefitId = benefitId,
     body = updateBenefitAmountsRequestBody
   )
@@ -215,10 +215,12 @@ class AmendBenefitAmountsControllerSpec
         }
 
         val input = Seq(
-          (NinoFormatError, BAD_REQUEST),
           (TaxYearFormatError, BAD_REQUEST),
-          (RuleTaxYearNotEndedError, BAD_REQUEST),
+          (NinoFormatError, BAD_REQUEST),
+          (BenefitIdFormatError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
+          (RuleTaxYearNotSupportedError, BAD_REQUEST),
+          (RuleTaxYearNotEndedError, BAD_REQUEST),
           (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )
 

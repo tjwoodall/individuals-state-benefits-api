@@ -16,7 +16,6 @@
 
 package v1.endpoints
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -28,48 +27,48 @@ import v1.stubs._
 
 class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
-  private trait Test {
-
-    val nino: String          = "AA123456A"
-    val taxYear: String       = "2019-20"
-    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-    val correlationId: String = "X-123"
-
-    val requestBodyJson: JsValue = Json.parse(
-      """
-        |{
-        |  "amount": 2050.45,
-        |  "taxPaid": 1095.55
-        |}
-      """.stripMargin
-    )
-
-    def uri: String = s"/$nino/$taxYear/$benefitId/amounts"
-
-    def Api1651Uri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/$benefitId"
-
-    def setupStubs(): StubMapping
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-  }
-
   "Calling the 'amend benefit amounts' endpoint" should {
     "return a 200 status code" when {
-      "any valid request is made" in new Test {
+      "any valid request is made" in new NonTysTest {
 
-        override def setupStubs(): StubMapping = {
-          AuditStub.audit()
-          AuthStub.authorised()
-          MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.PUT, Api1651Uri, NO_CONTENT)
+        override def setupStubs(): Unit = {
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, NO_CONTENT)
+        }
+
+        val hateoasResponse: JsValue = Json.parse(
+          s"""
+             |{
+             |   "links":[
+             |      {
+             |         "href":"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+             |         "rel":"self",
+             |         "method":"GET"
+             |      },
+             |      {
+             |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
+             |         "rel": "amend-state-benefit-amounts",
+             |         "method":"PUT"
+             |      },
+             |      {
+             |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
+             |         "rel": "delete-state-benefit-amounts",
+             |         "method":"DELETE"
+             |      }
+             |   ]
+             |}
+           """.stripMargin
+        )
+
+        val response: WSResponse = await(request().put(requestBodyJson))
+        response.status shouldBe OK
+        response.body[JsValue] shouldBe hateoasResponse
+        response.header("Content-Type") shouldBe Some("application/json")
+      }
+
+      "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysIfsTest {
+
+        override def setupStubs(): Unit = {
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, NO_CONTENT)
         }
 
         val hateoasResponse: JsValue = Json.parse(
@@ -169,18 +168,12 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
                                 expectedStatus: Int,
                                 expectedBody: ErrorWrapper,
                                 scenario: Option[String]): Unit = {
-          s"validation fails with ${expectedBody.error} error ${scenario.getOrElse("")}" in new Test {
+          s"validation fails with ${expectedBody.error} error ${scenario.getOrElse("")}" in new NonTysTest {
 
             override val nino: String             = requestNino
             override val taxYear: String          = requestTaxYear
             override val benefitId: String        = requestBenefitId
             override val requestBodyJson: JsValue = requestBody
-
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
-            }
 
             val response: WSResponse = await(request().put(requestBodyJson))
             response.status shouldBe expectedStatus
@@ -188,7 +181,7 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
           }
         }
 
-        val input = Seq(
+        val input = List(
           ("AA1123A", validTaxYear, validBenefitId, validRequestJson, BAD_REQUEST, ErrorWrapper("X-123", NinoFormatError, None), None),
           (validNino, "20199", validBenefitId, validRequestJson, BAD_REQUEST, ErrorWrapper("X-123", TaxYearFormatError, None), None),
           (validNino, validTaxYear, "ABCDE12345FG", validRequestJson, BAD_REQUEST, ErrorWrapper("X-123", BenefitIdFormatError, None), None),
@@ -224,15 +217,12 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
-      "ifs service error" when {
-        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
+      "downstream service error" when {
+        def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest {
 
-            override def setupStubs(): StubMapping = {
-              AuditStub.audit()
-              AuthStub.authorised()
-              MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.PUT, Api1651Uri, ifsStatus, errorBody(ifsCode))
+            override def setupStubs(): Unit = {
+              DownstreamStub.onError(DownstreamStub.PUT, downstreamUri, downstreamStatus, errorBody(downstreamCode))
             }
 
             val response: WSResponse = await(request().put(requestBodyJson))
@@ -241,15 +231,7 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
           }
         }
 
-        def errorBody(code: String): String =
-          s"""
-             |{
-             |   "code": "$code",
-             |   "reason": "ifs message"
-             |}
-            """.stripMargin
-
-        val input = Seq(
+        val errors = List(
           (NOT_FOUND, "INCOME_SOURCE_NOT_FOUND", NOT_FOUND, NotFoundError),
           (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
@@ -261,9 +243,69 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, StandardDownstreamError)
         )
 
-        input.foreach(args => (serviceErrorTest _).tupled(args))
+        val extraTysErrors = List(
+          (BAD_REQUEST, "INVALID_CORRELATION_ID", INTERNAL_SERVER_ERROR, StandardDownstreamError),
+          (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError)
+        )
+
+        (errors ++ extraTysErrors).foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
+  }
+
+  private trait Test {
+
+    val nino: String          = "AA123456A"
+    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val correlationId: String = "X-123"
+
+    def taxYear: String
+
+    val requestBodyJson: JsValue = Json.parse(
+      """
+        |{
+        |  "amount": 2050.45,
+        |  "taxPaid": 1095.55
+        |}
+      """.stripMargin
+    )
+
+    def mtdUri: String = s"/$nino/$taxYear/$benefitId/amounts"
+
+    def downstreamUri: String
+
+    def setupStubs(): Unit = {}
+
+    def request(): WSRequest = {
+      AuditStub.audit()
+      AuthStub.authorised()
+      MtdIdLookupStub.ninoFound(nino)
+      setupStubs()
+      buildRequest(mtdUri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
+    def errorBody(code: String): String =
+      s"""
+         |{
+         |   "code": "$code",
+         |   "reason": "downstream message"
+         |}
+            """.stripMargin
+
+  }
+
+  private trait NonTysTest extends Test {
+    def taxYear: String       = "2019-20"
+    def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/2019-20/$benefitId"
+  }
+
+  private trait TysIfsTest extends Test {
+    def taxYear: String       = "2023-24"
+    def downstreamUri: String = s"/income-tax/23-24/income/state-benefits/$nino/$benefitId"
   }
 
 }

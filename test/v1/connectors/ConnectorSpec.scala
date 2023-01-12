@@ -124,7 +124,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
 
     protected val requiredHeaders: Seq[(String, String)]
 
-    protected def willGet[T](url: String, parameters:Seq[(String, String)]=Seq()): CallHandler[Future[T]] = {
+    protected def willGet[T](url: String, parameters: Seq[(String, String)] = Seq()): CallHandler[Future[T]] = {
       MockedHttpClient
         .parameterGet(
           url = url,
@@ -199,8 +199,8 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     protected lazy val requiredHeaders: Seq[(String, String)] = requiredApi1651Headers
 
     MockedAppConfig.api1651BaseUrl returns baseUrl
-    MockedAppConfig.api1651Token returns "api1661-token"
-    MockedAppConfig.api1651Environment returns "release6-environment"
+    MockedAppConfig.api1651Token returns "api1651-token"
+    MockedAppConfig.api1651Environment returns "api1651-environment"
     MockedAppConfig.api1651EnvironmentHeaders returns Some(allowedIfsHeaders)
 
     MockedAppConfig.featureSwitches returns Configuration("tys-api.enabled" -> false)
