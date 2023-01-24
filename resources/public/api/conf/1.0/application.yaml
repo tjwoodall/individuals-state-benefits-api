@@ -47,4 +47,12 @@ components:
 
 paths:
   /individuals/state-benefits/{nino}/{taxYear}:
-      $ref: "./benefit_endpoints.yaml"
+    $ref: "./benefit_endpoints.yaml"
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}:
+    $ref: "./benefit_id_endpoints.yaml"
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/amounts:
+    $ref: "./benefit_amounts_endpoints.yaml"
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/ignore:
+    $ref: "./benefit_ignore.yaml"
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/unignore:
+    $ref: "./benefit_unignore.yaml"
