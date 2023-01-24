@@ -198,7 +198,7 @@ traits:
           application/json:
             type: types.errorResponse
             examples:
-              ruleUpdateForbidden:
+              ruleDeleteForbidden:
                 description: 'A deletion for a HMRC held state benefit is not permitted.'
                 value:
                   code: RULE_DELETE_FORBIDDEN
@@ -226,7 +226,7 @@ traits:
                   code: RULE_UNIGNORE_FORBIDDEN
   ruleBenefitTypeExists:
     responses:
-      403:
+      400:
         body:
           application/json:
             type: types.errorResponse

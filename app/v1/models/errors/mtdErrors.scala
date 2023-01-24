@@ -47,10 +47,7 @@ object BenefitTypeFormatError extends MtdError("FORMAT_BENEFIT_TYPE", "The provi
 object ValueFormatError extends MtdError("FORMAT_VALUE", "")
 
 // Rule Errors
-object RuleTaxYearNotSupportedError
-    extends MtdError(
-      "RULE_TAX_YEAR_NOT_SUPPORTED",
-      "The tax year specified does not lie within the supported range")
+object RuleTaxYearNotSupportedError extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "The tax year specified does not lie within the supported range")
 
 object RuleTaxYearRangeInvalidError
     extends MtdError(code = "RULE_TAX_YEAR_RANGE_INVALID", message = "Tax year range invalid. A tax year range of one year is required")
@@ -88,7 +85,7 @@ object BVRError extends MtdError("BUSINESS_ERROR", "Business validation error")
 object ServiceUnavailableError extends MtdError("SERVICE_UNAVAILABLE", "Internal server error")
 
 //Authorisation Errors
-object UnauthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised")
+object UnauthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client or agent is not authorised")
 
 object InvalidBearerTokenError extends MtdError("UNAUTHORIZED", "Bearer token is missing or not authorized")
 

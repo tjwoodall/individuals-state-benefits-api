@@ -123,7 +123,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
 
       case RuleDeleteForbiddenError => Forbidden(Json.toJson(errorWrapper))
       case NotFoundError            => NotFound(Json.toJson(errorWrapper))
-      case StandardDownstreamError          => InternalServerError(Json.toJson(errorWrapper))
+      case StandardDownstreamError  => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 
