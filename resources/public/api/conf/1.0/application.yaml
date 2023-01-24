@@ -47,23 +47,4 @@ components:
 
 paths:
   /individuals/state-benefits/{nino}/{taxYear}:
-    post:
-      $ref: "./benefit_create.yaml"
-    get:
-      $ref: "./benefits_list.yaml"
-  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}:
-    put:
-      $ref: "./benefit_amend.yaml"
-    delete:
-      $ref: "./benefit_delete.yaml"
-  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/amounts:
-    put:
-      $ref: "./benefit_amounts_amend.yaml"
-    delete:
-      $ref: "./benefit_amounts_delete.yaml"
-  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/ignore:
-    post:
-      $ref: "./benefit_ignore.yaml"
-  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/unignore:
-    post:
-      $ref: "./benefit_unignore.yaml"
+      $ref: "./benefit_endpoints.yaml"
