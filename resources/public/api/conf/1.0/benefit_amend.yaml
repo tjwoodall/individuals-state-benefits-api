@@ -30,13 +30,13 @@ description: |
   </table>
 
 parameters:
-  - $ref: '../common/pathParameters.yaml#/components/parameters/nino'
-  - $ref: '../common/pathParameters.yaml#/components/parameters/taxYear'
-  - $ref: '../common/pathParameters.yaml#/components/parameters/benefitId'
-  - $ref: '../common/headers.yaml#/components/parameters/acceptHeader'
-  - $ref: '../common/headers.yaml#/components/parameters/contentTypeJson'
-  - $ref: '../common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
-  - $ref: '../common/headers.yaml#/components/parameters/testScenarioHeader'
+  - $ref: './common/pathParameters.yaml#/components/parameters/nino'
+  - $ref: './common/pathParameters.yaml#/components/parameters/taxYear'
+  - $ref: './common/pathParameters.yaml#/components/parameters/benefitId'
+  - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+  - $ref: './common/headers.yaml#/components/parameters/contentTypeJson'
+  - $ref: './common/headers.yaml#/components/parameters/authorizationWriteScopeHeader'
+  - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
 
 security:
   - User-Restricted:
@@ -46,79 +46,79 @@ requestBody:
   content:
     application/json:
       schema:
-        $ref: '../schemas/amend_benefit_request.json'
+        $ref: './schemas/amend_benefit_request.json'
       examples:
         example-1:
           description: Default Example
           value:
-            $ref: '../examples/amendBenefit/request.json'
+            $ref: './examples/amendBenefit/request.json'
 
 responses:
   "200":
     description: Success
     headers:
       X-CorrelationId:
-        $ref: '../common/headers.yaml#/components/parameters/correlationId'
+        $ref: './common/headers.yaml#/components/parameters/correlationId'
     content:
       application/json:
         schema:
-          $ref: '../schemas/amend_benefit_response.json'
+          $ref: './schemas/amend_benefit_response.json'
         examples:
           example-response:
             description: Example Response
             value:
-              $ref: '../examples/amendBenefit/response.json'
+              $ref: './examples/amendBenefit/response.json'
 
   "400":
     description: Bad request
     content:
       application/json:
         schema:
-          $ref: '../schemas/error_response.yaml'
+          $ref: './schemas/error_response.yaml'
         examples:
           FORMAT_NINO:
-            $ref: '../common/errors.yaml#/components/examples/formatNino'
+            $ref: './common/errors.yaml#/components/examples/formatNino'
           FORMAT_TAX_YEAR:
-            $ref: '../common/errors.yaml#/components/examples/formatTaxYear'
+            $ref: './common/errors.yaml#/components/examples/formatTaxYear'
           FORMAT_BENEFIT_ID:
-            $ref: '../common/errors.yaml#/components/examples/formatBenefitId'
+            $ref: './common/errors.yaml#/components/examples/formatBenefitId'
           FORMAT_START_DATE:
-            $ref: '../common/errors.yaml#/components/examples/formatStartDate'
+            $ref: './common/errors.yaml#/components/examples/formatStartDate'
           FORMAT_END_DATE:
-            $ref: '../common/errors.yaml#/components/examples/formatEndDate'
+            $ref: './common/errors.yaml#/components/examples/formatEndDate'
           RULE_TAX_YEAR_RANGE_INVALID:
-            $ref: '../common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
+            $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
           RULE_TAX_YEAR_NOT_SUPPORTED:
-            $ref: '../common/errors.yaml#/components/examples/ruleTaxYearNotSupported'
+            $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotSupported'
           RULE_TAX_YEAR_NOT_ENDED:
-            $ref: '../common/errors.yaml#/components/examples/ruleTaxYearNotEnded'
+            $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotEnded'
           RULE_END_DATE_BEFORE_START_DATE:
-            $ref: '../common/errors.yaml#/components/examples/ruleEndDateBeforeStartDate'
+            $ref: './common/errors.yaml#/components/examples/ruleEndDateBeforeStartDate'
           RULE_START_DATE_AFTER_TAX_YEAR_END:
-            $ref: '../common/errors.yaml#/components/examples/ruleStartDateAfterTaxYearEnd'
+            $ref: './common/errors.yaml#/components/examples/ruleStartDateAfterTaxYearEnd'
           RULE_END_DATE_BEFORE_TAX_YEAR_START:
-            $ref: '../common/errors.yaml#/components/examples/ruleEndDateBeforeTaxYearStart'
+            $ref: './common/errors.yaml#/components/examples/ruleEndDateBeforeTaxYearStart'
           RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
-            $ref: '../common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBody'
+            $ref: './common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBody'
 
   "403":
     description: Forbidden
     content:
       application/json:
         schema:
-          $ref: '../schemas/error_response.yaml'
+          $ref: './schemas/error_response.yaml'
         examples:
           CLIENT_OR_AGENT_NOT_AUTHORISED:
-            $ref: '../common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+            $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
           RULE_UPDATE_FORBIDDEN:
-            $ref: '../common/errors.yaml#/components/examples/ruleUpdateForbidden'
+            $ref: './common/errors.yaml#/components/examples/ruleUpdateForbidden'
 
   "404":
     description: Not Found
     content:
       application/json:
         schema:
-          $ref: '../schemas/error_response.yaml'
+          $ref: './schemas/error_response.yaml'
         examples:
           MATCHING_RESOURCE_NOT_FOUND:
-            $ref: '../common/errors.yaml#/components/examples/notFound'
+            $ref: './common/errors.yaml#/components/examples/notFound'
