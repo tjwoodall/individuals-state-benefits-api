@@ -105,17 +105,6 @@ components:
         code: RULE_BENEFIT_TYPE_EXISTS
         message: A benefit of this type has already been created
 
-    # 403
-
-    clientOrAgentNotAuthorised:
-      description: |
-        The client or agent is not authorised. This is because:
-        the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
-        or the client has not authorised the agent to act on their behalf.
-      value:
-        code: CLIENT_OR_AGENT_NOT_AUTHORISED
-        message: The client or agent is not authorised
-
     ruleUpdateForbidden:
       description: An update for a HMRC held benefit is not permitted.
       value:
@@ -127,6 +116,17 @@ components:
       value:
         code: RULE_DELETE_FORBIDDEN
         message: A deletion of a HMRC held state benefit is not permitted
+
+    # 403
+
+    clientOrAgentNotAuthorised:
+      description: |
+        The client or agent is not authorised. This is because:
+        the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+        or the client has not authorised the agent to act on their behalf.
+      value:
+        code: CLIENT_OR_AGENT_NOT_AUTHORISED
+        message: The client or agent is not authorised
 
     # 404
 

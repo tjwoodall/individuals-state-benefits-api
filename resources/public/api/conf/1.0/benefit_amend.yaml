@@ -100,6 +100,8 @@ responses:
             $ref: './common/errors.yaml#/components/examples/ruleEndDateBeforeTaxYearStart'
           RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
             $ref: './common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBody'
+          RULE_UPDATE_FORBIDDEN:
+            $ref: './common/errors.yaml#/components/examples/ruleUpdateForbidden'
 
   "403":
     description: Forbidden
@@ -110,8 +112,6 @@ responses:
         examples:
           CLIENT_OR_AGENT_NOT_AUTHORISED:
             $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
-          RULE_UPDATE_FORBIDDEN:
-            $ref: './common/errors.yaml#/components/examples/ruleUpdateForbidden'
 
   "404":
     description: Not Found

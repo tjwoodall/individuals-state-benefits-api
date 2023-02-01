@@ -117,13 +117,13 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
             TaxYearFormatError,
             BenefitIdFormatError,
             RuleTaxYearNotSupportedError,
-            RuleTaxYearRangeInvalidError
+            RuleTaxYearRangeInvalidError,
+            RuleDeleteForbiddenError
           ) =>
         BadRequest(Json.toJson(errorWrapper))
 
-      case RuleDeleteForbiddenError => Forbidden(Json.toJson(errorWrapper))
-      case NotFoundError            => NotFound(Json.toJson(errorWrapper))
-      case StandardDownstreamError  => InternalServerError(Json.toJson(errorWrapper))
+      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
+      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 

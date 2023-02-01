@@ -182,7 +182,7 @@ traits:
                   code: RULE_END_DATE_BEFORE_TAX_YEAR_START
   ruleUpdateForbidden:
     responses:
-      403:
+      400:
         body:
           application/json:
             type: types.errorResponse
@@ -193,7 +193,7 @@ traits:
                   code: RULE_UPDATE_FORBIDDEN
   ruleDeleteForbidden:
     responses:
-      403:
+      400:
         body:
           application/json:
             type: types.errorResponse

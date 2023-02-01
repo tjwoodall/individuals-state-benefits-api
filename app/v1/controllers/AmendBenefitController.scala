@@ -129,13 +129,13 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
             EndDateFormatError,
             RuleEndDateBeforeStartDateError,
             RuleStartDateAfterTaxYearEndError,
-            RuleEndDateBeforeTaxYearStartError
+            RuleEndDateBeforeTaxYearStartError,
+            RuleUpdateForbiddenError
           ) =>
         BadRequest(Json.toJson(errorWrapper))
 
-      case RuleUpdateForbiddenError => Forbidden(Json.toJson(errorWrapper))
-      case NotFoundError            => NotFound(Json.toJson(errorWrapper))
-      case StandardDownstreamError          => InternalServerError(Json.toJson(errorWrapper))
+      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
+      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
 

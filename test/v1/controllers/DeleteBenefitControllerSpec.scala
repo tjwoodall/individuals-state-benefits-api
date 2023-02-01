@@ -18,12 +18,12 @@ package v1.controllers
 
 import play.api.libs.json.Json
 import play.api.mvc.Result
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockDeleteBenefitRequestParser
 import v1.mocks.services.{MockAuditService, MockDeleteRetrieveService, MockEnrolmentsAuthService, MockMtdIdLookupService}
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
+import v1.models.domain.Nino
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteBenefit.{DeleteBenefitRawData, DeleteBenefitRequest}
@@ -171,7 +171,7 @@ class DeleteBenefitControllerSpec
           (NinoFormatError, BAD_REQUEST),
           (TaxYearFormatError, BAD_REQUEST),
           (BenefitIdFormatError, BAD_REQUEST),
-          (RuleDeleteForbiddenError, FORBIDDEN),
+          (RuleDeleteForbiddenError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )

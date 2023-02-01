@@ -20,12 +20,12 @@ import mocks.MockAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
-import v1.models.domain.Nino
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockAmendBenefitRequestParser
 import v1.mocks.services.{MockAmendBenefitService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
 import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
+import v1.models.domain.Nino
 import v1.models.errors._
 import v1.models.outcomes.ResponseWrapper
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest, AmendBenefitRequestBody}
@@ -201,7 +201,6 @@ class AmendBenefitControllerSpec
           (RuleEndDateBeforeStartDateError, BAD_REQUEST),
           (RuleStartDateAfterTaxYearEndError, BAD_REQUEST),
           (RuleEndDateBeforeTaxYearStartError, BAD_REQUEST),
-          (RuleUpdateForbiddenError, FORBIDDEN),
           (NotFoundError, NOT_FOUND),
           (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )
@@ -241,7 +240,7 @@ class AmendBenefitControllerSpec
           (RuleTaxYearNotEndedError, BAD_REQUEST),
           (RuleStartDateAfterTaxYearEndError, BAD_REQUEST),
           (RuleEndDateBeforeTaxYearStartError, BAD_REQUEST),
-          (RuleUpdateForbiddenError, FORBIDDEN),
+          (RuleUpdateForbiddenError, BAD_REQUEST),
           (NotFoundError, NOT_FOUND),
           (StandardDownstreamError, INTERNAL_SERVER_ERROR)
         )
