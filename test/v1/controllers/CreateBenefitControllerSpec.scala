@@ -16,29 +16,31 @@
 
 package v1.controllers
 
+import api.controllers.ControllerBaseSpec
+import api.hateoas.HateoasLinks
+import api.mocks.MockIdGenerator
+import api.mocks.hateoas.MockHateoasFactory
+import api.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.{BenefitType, Nino}
+import api.models.errors._
+import api.models.hateoas.{HateoasWrapper, Link}
+import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.hateoas.HateoasLinks
-import v1.mocks.MockIdGenerator
-import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockCreateBenefitRequestParser
-import v1.mocks.services.{MockAuditService, MockCreateBenefitService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.domain.{BenefitType, Nino}
-import v1.models.errors._
-import v1.models.hateoas.{HateoasWrapper, Link}
-import v1.models.outcomes.ResponseWrapper
+import v1.mocks.services.MockCreateBenefitService
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequest, CreateBenefitRequestBody}
-import v1.models.response.{AddBenefitHateoasData, AddBenefitResponse}
+import v1.models.response.createBenefit.{AddBenefitHateoasData, AddBenefitResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CreateBenefitControllerSpec
-    extends ControllerBaseSpec
+  extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -49,12 +51,12 @@ class CreateBenefitControllerSpec
     with HateoasLinks
     with MockIdGenerator {
 
-  val nino: String          = "AA123456A"
-  val taxYear: String       = "2019-20"
-  val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String = "AA123456A"
+  val taxYear: String = "2019-20"
+  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  val startDate             = "2020-08-03"
-  val endDate               = "2020-12-03"
+  val startDate = "2020-08-03"
+  val endDate = "2020-12-03"
 
   trait Test {
     val hc: HeaderCarrier = HeaderCarrier()
@@ -147,10 +149,11 @@ class CreateBenefitControllerSpec
       detail = GenericAuditDetail(
         userType = "Individual",
         agentReferenceNumber = None,
-        params = Map("nino" -> nino, "taxYear" -> taxYear),
-        request = Some(requestBodyJson),
+        pathParams = Map("nino" -> nino, "taxYear" -> taxYear),
+        queryParams = None,
+        requestBody = Some(requestBodyJson),
         `X-CorrelationId` = correlationId,
-        response = auditResponse
+        auditResponse = auditResponse
       )
     )
 

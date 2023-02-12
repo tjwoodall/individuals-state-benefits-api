@@ -16,27 +16,27 @@
 
 package v1.services
 
+import api.controllers.EndpointLogContext
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.support.DownstreamResponseMappingSupport
 import cats.implicits._
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.AmendBenefitAmountsConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRequest
-import v1.support.DownstreamResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnector) extends DownstreamResponseMappingSupport with Logging {
+class AmendBenefitAmountsService @Inject()(connector: AmendBenefitAmountsConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def updateBenefitAmounts(request: AmendBenefitAmountsRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+                                                                hc: HeaderCarrier,
+                                                                ec: ExecutionContext,
+                                                                logContext: EndpointLogContext,
+                                                                correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     connector.amendBenefitAmounts(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
@@ -44,15 +44,15 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
 
   private def downstreamErrorMap: Map[String, MtdError] = {
     val errors = Map(
-      "INCOME_SOURCE_NOT_FOUND"         -> NotFoundError,
-      "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,
-      "INVALID_TAX_YEAR"                -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID"           -> StandardDownstreamError,
-      "INVALID_PAYLOAD"                 -> StandardDownstreamError,
+      "INCOME_SOURCE_NOT_FOUND" -> NotFoundError,
+      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+      "INVALID_TAX_YEAR" -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
+      "INVALID_CORRELATIONID" -> StandardDownstreamError,
+      "INVALID_PAYLOAD" -> StandardDownstreamError,
       "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
-      "SERVER_ERROR"                    -> StandardDownstreamError,
-      "SERVICE_UNAVAILABLE"             -> StandardDownstreamError
+      "SERVER_ERROR" -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE" -> StandardDownstreamError
     )
 
     val extraTysErrors = Map(

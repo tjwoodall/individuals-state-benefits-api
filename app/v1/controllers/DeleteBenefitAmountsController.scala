@@ -16,6 +16,10 @@
 
 package v1.controllers
 
+import api.controllers.{AuthorisedController, EndpointLogContext}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.errors._
+import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import cats.data.EitherT
 import cats.implicits._
 import play.api.libs.json.Json
@@ -25,23 +29,21 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.DeleteBenefitAmountsRequestParser
-import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.errors._
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRawData
-import v1.services.{AuditService, DeleteBenefitAmountsService, EnrolmentsAuthService, MtdIdLookupService}
+import v1.services.DeleteBenefitAmountsService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthService,
-                                                val lookupService: MtdIdLookupService,
-                                                requestParser: DeleteBenefitAmountsRequestParser,
-                                                service: DeleteBenefitAmountsService,
-                                                auditService: AuditService,
-                                                cc: ControllerComponents,
-                                                idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
+class DeleteBenefitAmountsController @Inject()(val authService: EnrolmentsAuthService,
+                                               val lookupService: MtdIdLookupService,
+                                               requestParser: DeleteBenefitAmountsRequestParser,
+                                               service: DeleteBenefitAmountsService,
+                                               auditService: AuditService,
+                                               cc: ControllerComponents,
+                                               idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+  extends AuthorisedController(cc)
     with BaseController
     with Logging {
 
@@ -65,7 +67,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
 
       val result =
         for {
-          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.delete(parsedRequest))
         } yield {
           logger.info(
@@ -76,6 +78,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
             GenericAuditDetail(
               request.userDetails,
               Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+              None,
               None,
               serviceResponse.correlationId,
               AuditResponse(httpStatus = NO_CONTENT, response = Right(None))
@@ -88,7 +91,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -97,6 +100,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
           GenericAuditDetail(
             request.userDetails,
             Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+            None,
             None,
             correlationId,
             AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
@@ -110,17 +114,17 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
   private def errorResult(errorWrapper: ErrorWrapper) = {
     errorWrapper.error match {
       case _
-          if errorWrapper.containsAnyOf(
-            BadRequestError,
-            NinoFormatError,
-            TaxYearFormatError,
-            BenefitIdFormatError,
-            RuleTaxYearNotSupportedError,
-            RuleTaxYearRangeInvalidError
-          ) =>
+        if errorWrapper.containsAnyOf(
+          BadRequestError,
+          NinoFormatError,
+          TaxYearFormatError,
+          BenefitIdFormatError,
+          RuleTaxYearNotSupportedError,
+          RuleTaxYearRangeInvalidError
+        ) =>
         BadRequest(Json.toJson(errorWrapper))
 
-      case NotFoundError   => NotFound(Json.toJson(errorWrapper))
+      case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }

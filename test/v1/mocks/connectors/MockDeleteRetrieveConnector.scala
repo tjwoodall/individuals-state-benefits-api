@@ -16,12 +16,12 @@
 
 package v1.mocks.connectors
 
+import api.connectors.{DownstreamOutcome, DownstreamUri}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.Reads
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.DownstreamUri
-import v1.connectors.{DeleteRetrieveConnector, DownstreamOutcome}
+import v1.connectors.DeleteRetrieveConnector
 
 import scala.concurrent.{ExecutionContext, Future}
 

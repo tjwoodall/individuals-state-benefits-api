@@ -16,12 +16,12 @@
 
 package v1.models.response.listBenefits
 
+import api.hateoas.{HateoasLinks, HateoasListLinksFactory2}
+import api.models.hateoas.{HateoasData, Link}
 import cats._
 import config.AppConfig
 import play.api.libs.json._
 import utils.JsonUtils
-import v1.hateoas.{HateoasLinks, HateoasListLinksFactory2}
-import v1.models.hateoas.{HateoasData, Link}
 
 case class ListBenefitsResponse[H, C](stateBenefits: Option[Seq[H]], customerAddedStateBenefits: Option[Seq[C]])
 

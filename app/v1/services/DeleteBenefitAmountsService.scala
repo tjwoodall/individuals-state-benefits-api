@@ -16,30 +16,29 @@
 
 package v1.services
 
+import api.controllers.EndpointLogContext
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.support.DownstreamResponseMappingSupport
 import cats.data.EitherT
-
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.DeleteBenefitAmountsConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors.{BenefitIdFormatError, StandardDownstreamError, ErrorWrapper, MtdError, NinoFormatError, NotFoundError, RuleTaxYearNotSupportedError, TaxYearFormatError}
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequest
-import v1.support.DownstreamResponseMappingSupport
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteBenefitAmountsService @Inject() (connector: DeleteBenefitAmountsConnector)
+class DeleteBenefitAmountsService @Inject()(connector: DeleteBenefitAmountsConnector)
   extends DownstreamResponseMappingSupport
     with Logging {
 
   def delete(request: DeleteBenefitAmountsRequest)(implicit
-                                                          hc: HeaderCarrier,
-                                                          ec: ExecutionContext,
-                                                          logContext: EndpointLogContext,
-                                                          correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+                                                   hc: HeaderCarrier,
+                                                   ec: ExecutionContext,
+                                                   logContext: EndpointLogContext,
+                                                   correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     val result = EitherT(connector.deleteBenefitAmounts(request)).leftMap(mapDownstreamErrors(errorMap))
 
@@ -49,12 +48,12 @@ class DeleteBenefitAmountsService @Inject() (connector: DeleteBenefitAmountsConn
   private def errorMap: Map[String, MtdError] = {
     val errorMap = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID"     -> StandardDownstreamError,
-      "NO_DATA_FOUND"             -> NotFoundError,
-      "SERVER_ERROR"              -> StandardDownstreamError,
-      "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
+      "INVALID_TAX_YEAR" -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
+      "INVALID_CORRELATIONID" -> StandardDownstreamError,
+      "NO_DATA_FOUND" -> NotFoundError,
+      "SERVER_ERROR" -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE" -> StandardDownstreamError
     )
 
     val extraTysErrors = Map(

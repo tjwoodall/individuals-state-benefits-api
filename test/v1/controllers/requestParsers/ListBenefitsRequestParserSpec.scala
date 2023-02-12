@@ -16,17 +16,17 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TaxYearFormatError}
 import support.UnitSpec
-import v1.models.domain.{Nino, TaxYear}
 import v1.mocks.validators.MockListBenefitsValidator
-import v1.models.errors._
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
 
 class ListBenefitsRequestParserSpec extends UnitSpec {
 
-  val nino: String           = "AA123456B"
-  val taxYear: String        = "2020-21"
-  val benefitId              = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
+  val nino: String = "AA123456B"
+  val taxYear: String = "2020-21"
+  val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
   implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val listBenefitsRawData: ListBenefitsRawData = ListBenefitsRawData(

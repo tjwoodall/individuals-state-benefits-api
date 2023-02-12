@@ -16,6 +16,6 @@
 
 package v1.models.request.listBenefits
 
-import v1.models.request.RawData
+import api.models.request.RawData
 
 case class ListBenefitsRawData(nino: String, taxYear: String, benefitId: Option[String]) extends RawData

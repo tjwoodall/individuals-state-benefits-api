@@ -16,18 +16,18 @@
 
 package v1.services
 
+import api.controllers.EndpointLogContext
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.services.ServiceSpec
 import play.api.libs.json.{Format, Json}
-import v1.connectors.DownstreamUri.IfsUri
-import v1.controllers.EndpointLogContext
 import v1.mocks.connectors.MockDeleteRetrieveConnector
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 
 import scala.concurrent.Future
 
 class DeleteRetrieveServiceSpec extends ServiceSpec {
 
-  val nino: String    = "AA112233A"
+  val nino: String = "AA112233A"
   val taxYear: String = "2019"
 
   trait Test extends MockDeleteRetrieveConnector {
@@ -39,8 +39,8 @@ class DeleteRetrieveServiceSpec extends ServiceSpec {
     }
 
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-    implicit val deleteIfsUri: IfsUri[Unit]     = IfsUri[Unit](s"some-placeholder/savings/$nino/$taxYear")
-    implicit val retrieveIfsUri: IfsUri[Data]   = IfsUri[Data](s"some-placeholder/savings/$nino/$taxYear")
+    implicit val deleteIfsUri: IfsUri[Unit] = IfsUri[Unit](s"some-placeholder/savings/$nino/$taxYear")
+    implicit val retrieveIfsUri: IfsUri[Data] = IfsUri[Data](s"some-placeholder/savings/$nino/$taxYear")
 
     val service: DeleteRetrieveService = new DeleteRetrieveService(
       connector = mockDeleteRetrieveConnector

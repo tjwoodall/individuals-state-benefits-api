@@ -16,29 +16,29 @@
 
 package v1.services
 
+import api.controllers.EndpointLogContext
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.support.DownstreamResponseMappingSupport
 import cats.data.EitherT
 import cats.implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.ListBenefitsConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
-import v1.support.DownstreamResponseMappingSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends DownstreamResponseMappingSupport with Logging {
+class ListBenefitsService @Inject()(connector: ListBenefitsConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def listBenefits(request: ListBenefitsRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
+                                                 hc: HeaderCarrier,
+                                                 ec: ExecutionContext,
+                                                 logContext: EndpointLogContext,
+                                                 correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
 
     val result = EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
 
@@ -49,19 +49,19 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends D
 
     val errors = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-      "INVALID_VIEW"              -> StandardDownstreamError,
-      "INVALID_CORRELATIONID"     -> StandardDownstreamError,
-      "NO_DATA_FOUND"             -> NotFoundError,
-      "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
-      "SERVER_ERROR"              -> StandardDownstreamError,
-      "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
+      "INVALID_TAX_YEAR" -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
+      "INVALID_VIEW" -> StandardDownstreamError,
+      "INVALID_CORRELATIONID" -> StandardDownstreamError,
+      "NO_DATA_FOUND" -> NotFoundError,
+      "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError,
+      "SERVER_ERROR" -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE" -> StandardDownstreamError
     )
 
     val extraTysErrors: Map[String, MtdError] = Map(
       "INVALID_CORRELATION_ID" -> StandardDownstreamError,
-      "NOT_FOUND"              -> NotFoundError
+      "NOT_FOUND" -> NotFoundError
     )
 
     errors ++ extraTysErrors

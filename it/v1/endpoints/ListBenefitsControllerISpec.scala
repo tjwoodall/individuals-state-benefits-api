@@ -16,6 +16,7 @@
 
 package v1.endpoints
 
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
@@ -24,14 +25,14 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.fixtures.ListBenefitsFixture._
-import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String    = "AA123456A"
+    val nino: String = "AA123456A"
+
     def taxYear: String
 
     def mtdUri: String = s"/$nino/$taxYear"
@@ -46,6 +47,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           .collect { case (k, Some(v)) =>
             (k, v)
           }
+
       setupStubs()
       buildRequest(mtdUri)
         .addQueryStringParameters(queryParams: _*)
@@ -58,13 +60,13 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
   }
 
   private trait NonTysTest extends Test {
-    def taxYear:String = "2020-21"
+    def taxYear: String = "2020-21"
 
     def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear"
   }
 
   private trait TysIfsTest extends Test {
-    def taxYear:String = "2023-24"
+    def taxYear: String = "2023-24"
 
     def downstreamUri: String = s"/income-tax/income/state-benefits/23-24/$nino"
 
@@ -198,7 +200,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
                                 expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new NonTysTest {
 
-            override val nino: String    = requestNino
+            override val nino: String = requestNino
             override val taxYear: String = requestTaxYear
 
             override def setupStubs(): StubMapping = {
@@ -227,7 +229,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
       "downstream service error" when {
         def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest{
+          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest {
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()

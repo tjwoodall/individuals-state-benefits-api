@@ -16,27 +16,27 @@
 
 package v1.services
 
+import api.controllers.EndpointLogContext
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.support.DownstreamResponseMappingSupport
 import cats.implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.UnignoreBenefitConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
-import v1.support.DownstreamResponseMappingSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
+class UnignoreBenefitService @Inject()(connector: UnignoreBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def unignoreBenefit(request: IgnoreBenefitRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+                                                     hc: HeaderCarrier,
+                                                     ec: ExecutionContext,
+                                                     logContext: EndpointLogContext,
+                                                     correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     connector.unignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 

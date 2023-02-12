@@ -16,19 +16,20 @@
 
 package v1.services
 
-import v1.models.domain.Nino
-import v1.controllers.EndpointLogContext
+import api.controllers.EndpointLogContext
+import api.models.domain.Nino
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.services.ServiceSpec
 import v1.mocks.connectors.MockAmendBenefitConnector
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.AmendBenefit.{AmendBenefitRequest, AmendBenefitRequestBody}
 
 import scala.concurrent.Future
 
 class AmendBenefitServiceSpec extends ServiceSpec {
 
-  private val nino      = "AA123456A"
-  private val taxYear   = "2021-22"
+  private val nino = "AA123456A"
+  private val taxYear = "2021-22"
   private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
   val updateBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody(

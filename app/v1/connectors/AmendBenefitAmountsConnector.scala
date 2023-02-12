@@ -16,23 +16,23 @@
 
 package v1.connectors
 
+import api.connectors.DownstreamUri._
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRequest
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.{Api1651Uri, TaxYearSpecificIfsUri}
-import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRequest
-import v1.connectors.httpparsers.StandardDownstreamHttpParser._
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class AmendBenefitAmountsConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def amendBenefitAmounts(request: AmendBenefitAmountsRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      correlationId: String): Future[DownstreamOutcome[Unit]] = {
+                                                               hc: HeaderCarrier,
+                                                               ec: ExecutionContext,
+                                                               correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import request._
 

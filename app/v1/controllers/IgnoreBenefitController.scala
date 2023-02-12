@@ -16,6 +16,10 @@
 
 package v1.controllers
 
+import api.controllers.{AuthorisedController, EndpointLogContext}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.errors._
+import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import cats.data.EitherT
 import cats.implicits._
 import config.{AppConfig, FeatureSwitches}
@@ -27,10 +31,8 @@ import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.IgnoreBenefitRequestParser
 import v1.hateoas.IgnoreHateoasBody
-import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.errors._
 import v1.models.request.ignoreBenefit.IgnoreBenefitRawData
-import v1.services.{AuditService, EnrolmentsAuthService, IgnoreBenefitService, MtdIdLookupService}
+import v1.services.IgnoreBenefitService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -83,6 +85,7 @@ class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
               request.userDetails,
               Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
               None,
+              None,
               serviceResponse.correlationId,
               AuditResponse(httpStatus = OK, response = Right(Some(Json.toJson(hateoasResponse))))
             )
@@ -103,6 +106,7 @@ class IgnoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
           GenericAuditDetail(
             request.userDetails,
             Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+            None,
             None,
             correlationId,
             AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))

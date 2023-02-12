@@ -16,13 +16,15 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.controllers.requestParsers.validators.Validator
+import api.controllers.requestParsers.validators.validations.{NinoValidation, TaxYearNotSupportedValidation, TaxYearValidation}
+import api.models.errors.MtdError
 import config.AppConfig
-import javax.inject.Inject
-import v1.controllers.requestParsers.validators.validations.{NinoValidation, TaxYearNotSupportedValidation, TaxYearValidation}
-import v1.models.errors.MtdError
-import v1.models.request.DeleteRetrieveRawData
+import v1.models.request.deleteRetrieve.DeleteRetrieveRawData
 
-class DeleteRetrieveValidator @Inject() (implicit appConfig: AppConfig) extends Validator[DeleteRetrieveRawData] {
+import javax.inject.Inject
+
+class DeleteRetrieveValidator @Inject()(implicit appConfig: AppConfig) extends Validator[DeleteRetrieveRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 

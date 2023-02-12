@@ -16,24 +16,26 @@
 
 package v1.controllers
 
+import api.controllers.ControllerBaseSpec
+import api.mocks.MockIdGenerator
+import api.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
-import v1.models.domain.{Nino, TaxYear}
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockAmendBenefitAmountsRequestParser
-import v1.mocks.services.{MockAmendBenefitAmountsService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
+import v1.mocks.services.MockAmendBenefitAmountsService
 import v1.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRawData, AmendBenefitAmountsRequest, AmendBenefitAmountsRequestBody}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AmendBenefitAmountsControllerSpec
-    extends ControllerBaseSpec
+  extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -42,9 +44,9 @@ class AmendBenefitAmountsControllerSpec
     with MockAuditService
     with MockIdGenerator {
 
-  val nino: String          = "AA123456A"
-  val taxYear: String       = "2019-20"
-  val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String = "AA123456A"
+  val taxYear: String = "2019-20"
+  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   val correlationId: String = "X-123"
 
   trait Test {
@@ -97,25 +99,25 @@ class AmendBenefitAmountsControllerSpec
 
   val hateoasResponse: JsValue = Json.parse(
     s"""
-      |{
-      |   "links":[
-      |      {
-      |         "href":"/baseUrl/$nino/$taxYear?benefitId=$benefitId",
-      |         "rel":"self",
-      |         "method":"GET"
-      |      },
-      |      {
-      |         "href": "/baseUrl/$nino/$taxYear/$benefitId/amounts",
-      |         "method": "PUT",
-      |         "rel": "amend-state-benefit-amounts"
-      |      },
-      |      {
-      |         "href": "/baseUrl/$nino/$taxYear/$benefitId/amounts",
-      |         "method": "DELETE",
-      |         "rel": "delete-state-benefit-amounts"
-      |      }
-      |   ]
-      |}
+       |{
+       |   "links":[
+       |      {
+       |         "href":"/baseUrl/$nino/$taxYear?benefitId=$benefitId",
+       |         "rel":"self",
+       |         "method":"GET"
+       |      },
+       |      {
+       |         "href": "/baseUrl/$nino/$taxYear/$benefitId/amounts",
+       |         "method": "PUT",
+       |         "rel": "amend-state-benefit-amounts"
+       |      },
+       |      {
+       |         "href": "/baseUrl/$nino/$taxYear/$benefitId/amounts",
+       |         "method": "DELETE",
+       |         "rel": "delete-state-benefit-amounts"
+       |      }
+       |   ]
+       |}
     """.stripMargin
   )
 
@@ -126,10 +128,11 @@ class AmendBenefitAmountsControllerSpec
       detail = GenericAuditDetail(
         userType = "Individual",
         agentReferenceNumber = None,
-        params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-        request = Some(requestBodyJson),
+        pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+        queryParams = None,
+        requestBody = Some(requestBodyJson),
         `X-CorrelationId` = correlationId,
-        response = auditResponse
+        auditResponse = auditResponse
       )
     )
 

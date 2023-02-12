@@ -16,6 +16,10 @@
 
 package v1.controllers
 
+import api.controllers.{AuthorisedController, EndpointLogContext}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.errors._
+import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import cats.data.EitherT
 import cats.implicits._
 import config.{AppConfig, FeatureSwitches}
@@ -27,24 +31,22 @@ import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.IgnoreBenefitRequestParser
 import v1.hateoas.IgnoreHateoasBody
-import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.errors._
 import v1.models.request.ignoreBenefit.IgnoreBenefitRawData
-import v1.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService, UnignoreBenefitService}
+import v1.services.UnignoreBenefitService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
-                                           val lookupService: MtdIdLookupService,
-                                           appConfig: AppConfig,
-                                           requestParser: IgnoreBenefitRequestParser,
-                                           service: UnignoreBenefitService,
-                                           auditService: AuditService,
-                                           cc: ControllerComponents,
-                                           idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
+class UnignoreBenefitController @Inject()(val authService: EnrolmentsAuthService,
+                                          val lookupService: MtdIdLookupService,
+                                          appConfig: AppConfig,
+                                          requestParser: IgnoreBenefitRequestParser,
+                                          service: UnignoreBenefitService,
+                                          auditService: AuditService,
+                                          cc: ControllerComponents,
+                                          idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+  extends AuthorisedController(cc)
     with BaseController
     with Logging
     with IgnoreHateoasBody {
@@ -69,7 +71,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
 
       val result =
         for {
-          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.unignoreBenefit(parsedRequest))
         } yield {
           logger.info(
@@ -83,6 +85,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
               request.userDetails,
               Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
               None,
+              None,
               serviceResponse.correlationId,
               AuditResponse(httpStatus = OK, response = Right(Some(Json.toJson(hateoasResponse))))
             )
@@ -95,7 +98,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -103,6 +106,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
           GenericAuditDetail(
             request.userDetails,
             Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+            None,
             None,
             correlationId,
             AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
@@ -116,18 +120,18 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
   private def errorResult(errorWrapper: ErrorWrapper) = {
     errorWrapper.error match {
       case _
-          if errorWrapper.containsAnyOf(
-            BadRequestError,
-            NinoFormatError,
-            TaxYearFormatError,
-            BenefitIdFormatError,
-            RuleTaxYearNotSupportedError,
-            RuleTaxYearRangeInvalidError,
-            RuleTaxYearNotEndedError,
-            RuleUnignoreForbiddenError
-          ) =>
+        if errorWrapper.containsAnyOf(
+          BadRequestError,
+          NinoFormatError,
+          TaxYearFormatError,
+          BenefitIdFormatError,
+          RuleTaxYearNotSupportedError,
+          RuleTaxYearRangeInvalidError,
+          RuleTaxYearNotEndedError,
+          RuleUnignoreForbiddenError
+        ) =>
         BadRequest(Json.toJson(errorWrapper))
-      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
+      case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }

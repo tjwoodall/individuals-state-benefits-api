@@ -18,6 +18,7 @@ package v1.models.response
 
 import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
+import v1.models.response.createBenefit.AddBenefitResponse
 
 class CreateBenefitResponseSpec extends UnitSpec {
 

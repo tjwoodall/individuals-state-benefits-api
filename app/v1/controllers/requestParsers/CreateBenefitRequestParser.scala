@@ -16,8 +16,10 @@
 
 package v1.controllers.requestParsers
 
+import api.controllers.requestParsers.RequestParser
+import api.models.domain.Nino
+
 import javax.inject.{Inject, Singleton}
-import v1.models.domain.Nino
 import v1.controllers.requestParsers.validators.CreateBenefitValidator
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequest, CreateBenefitRequestBody}
 

@@ -16,47 +16,48 @@
 
 package v1.services
 
+import api.connectors.DownstreamUri
+import api.controllers.EndpointLogContext
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.support.DownstreamResponseMappingSupport
 import cats.implicits._
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
-import v1.connectors.{DeleteRetrieveConnector, DownstreamUri}
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
-import v1.support.DownstreamResponseMappingSupport
+import v1.connectors.DeleteRetrieveConnector
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteRetrieveService @Inject() (connector: DeleteRetrieveConnector) extends DownstreamResponseMappingSupport with Logging {
+class DeleteRetrieveService @Inject()(connector: DeleteRetrieveConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def delete(downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      downstreamUri: DownstreamUri[Unit],
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+                                                                                    hc: HeaderCarrier,
+                                                                                    ec: ExecutionContext,
+                                                                                    logContext: EndpointLogContext,
+                                                                                    downstreamUri: DownstreamUri[Unit],
+                                                                                    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
     connector.delete().map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
   def retrieve[Resp: Format](downstreamErrorMap: Map[String, MtdError] = defaultDownstreamErrorMap)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      downstreamUri: DownstreamUri[Resp],
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
+                                                                                                    hc: HeaderCarrier,
+                                                                                                    ec: ExecutionContext,
+                                                                                                    logContext: EndpointLogContext,
+                                                                                                    downstreamUri: DownstreamUri[Resp],
+                                                                                                    correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Resp]]] = {
 
     connector.retrieve[Resp]().map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
   private val defaultDownstreamErrorMap: Map[String, MtdError] = Map(
-    "INVALID_NINO"        -> NinoFormatError,
-    "INVALID_TAX_YEAR"    -> TaxYearFormatError,
-    "NOT_FOUND"           -> NotFoundError,
-    "SERVER_ERROR"        -> StandardDownstreamError,
+    "INVALID_NINO" -> NinoFormatError,
+    "INVALID_TAX_YEAR" -> TaxYearFormatError,
+    "NOT_FOUND" -> NotFoundError,
+    "SERVER_ERROR" -> StandardDownstreamError,
     "SERVICE_UNAVAILABLE" -> StandardDownstreamError
   )
 

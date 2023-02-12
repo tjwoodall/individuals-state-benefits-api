@@ -16,13 +16,13 @@
 
 package v1.endpoints
 
+import api.models.errors._
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.models.errors._
 import v1.stubs._
 
 class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
@@ -104,8 +104,8 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
 
-      val validNino: String      = "AA123456A"
-      val validTaxYear: String   = "2019-20"
+      val validNino: String = "AA123456A"
+      val validTaxYear: String = "2019-20"
       val validBenefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
       val validRequestJson: JsValue = Json.parse(
@@ -170,9 +170,9 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.error} error ${scenario.getOrElse("")}" in new NonTysTest {
 
-            override val nino: String             = requestNino
-            override val taxYear: String          = requestTaxYear
-            override val benefitId: String        = requestBenefitId
+            override val nino: String = requestNino
+            override val taxYear: String = requestTaxYear
+            override val benefitId: String = requestBenefitId
             override val requestBodyJson: JsValue = requestBody
 
             val response: WSResponse = await(request().put(requestBodyJson))
@@ -255,8 +255,8 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String          = "AA123456A"
-    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String = "AA123456A"
+    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     def taxYear: String
@@ -299,12 +299,14 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
   }
 
   private trait NonTysTest extends Test {
-    def taxYear: String       = "2019-20"
+    def taxYear: String = "2019-20"
+
     def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/2019-20/$benefitId"
   }
 
   private trait TysIfsTest extends Test {
-    def taxYear: String       = "2023-24"
+    def taxYear: String = "2023-24"
+
     def downstreamUri: String = s"/income-tax/23-24/income/state-benefits/$nino/$benefitId"
   }
 

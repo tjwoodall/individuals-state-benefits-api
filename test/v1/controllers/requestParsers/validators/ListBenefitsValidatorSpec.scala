@@ -16,26 +16,26 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.mocks.MockCurrentDateTime
+import api.models.errors._
 import config.AppConfig
 import mocks.MockAppConfig
 import org.joda.time.DateTime
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import support.UnitSpec
 import utils.CurrentDateTime
-import v1.mocks.MockCurrentDateTime
-import v1.models.errors._
 import v1.models.request.listBenefits.ListBenefitsRawData
 
 class ListBenefitsValidatorSpec extends UnitSpec {
 
-  private val validNino    = "AA123456A"
+  private val validNino = "AA123456A"
   private val validTaxYear = "2020-21"
-  private val benefitId    = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
+  private val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
 
   class Test extends MockCurrentDateTime with MockAppConfig {
 
     implicit val dateTimeProvider: CurrentDateTime = mockCurrentDateTime
-    val dateTimeFormatter: DateTimeFormatter       = DateTimeFormat.forPattern("yyyy-MM-dd")
+    val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
 

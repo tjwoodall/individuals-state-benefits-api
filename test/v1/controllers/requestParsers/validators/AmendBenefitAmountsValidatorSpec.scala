@@ -16,6 +16,9 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.controllers.requestParsers.validators.validations.DecimalValueValidation._
+import api.mocks.MockCurrentDateTime
+import api.models.errors._
 import config.AppConfig
 import mocks.MockAppConfig
 import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
@@ -23,15 +26,12 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.AnyContentAsJson
 import support.UnitSpec
 import utils.CurrentDateTime
-import v1.controllers.requestParsers.validators.validations.ValueFormatErrorMessages
-import v1.mocks.MockCurrentDateTime
-import v1.models.errors._
 import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRawData
 
-class AmendBenefitAmountsValidatorSpec extends UnitSpec with ValueFormatErrorMessages {
+class AmendBenefitAmountsValidatorSpec extends UnitSpec {
 
-  private val validNino      = "AA123456A"
-  private val validTaxYear   = "2020-21"
+  private val validNino = "AA123456A"
+  private val validTaxYear = "2020-21"
   private val validBenefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validRequestJson: JsValue = Json.parse(
@@ -71,16 +71,16 @@ class AmendBenefitAmountsValidatorSpec extends UnitSpec with ValueFormatErrorMes
     """.stripMargin
   )
 
-  private val validRawBody                        = AnyContentAsJson(validRequestJson)
-  private val emptyRawBody                        = AnyContentAsJson(emptyRequestJson)
+  private val validRawBody = AnyContentAsJson(validRequestJson)
+  private val emptyRawBody = AnyContentAsJson(emptyRequestJson)
   private val missingMandatoryFieldRawRequestBody = AnyContentAsJson(missingMandatoryFieldJson)
-  private val incorrectFormatRawBody              = AnyContentAsJson(incorrectFormatRequestJson)
-  private val allInvalidValueRawRequestBody       = AnyContentAsJson(allInvalidValueRequestBodyJson)
+  private val incorrectFormatRawBody = AnyContentAsJson(incorrectFormatRequestJson)
+  private val allInvalidValueRawRequestBody = AnyContentAsJson(allInvalidValueRequestBodyJson)
 
   class Test extends MockCurrentDateTime with MockAppConfig {
 
     implicit val dateTimeProvider: CurrentDateTime = mockCurrentDateTime
-    val dateTimeFormatter: DateTimeFormatter       = DateTimeFormat.forPattern("yyyy-MM-dd")
+    val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
 

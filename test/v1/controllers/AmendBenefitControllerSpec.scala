@@ -16,25 +16,27 @@
 
 package v1.controllers
 
+import api.controllers.ControllerBaseSpec
+import api.mocks.MockIdGenerator
+import api.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
+import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.Nino
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.mocks.MockIdGenerator
 import v1.mocks.requestParsers.MockAmendBenefitRequestParser
-import v1.mocks.services.{MockAmendBenefitService, MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.domain.Nino
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
+import v1.mocks.services.MockAmendBenefitService
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest, AmendBenefitRequestBody}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class AmendBenefitControllerSpec
-    extends ControllerBaseSpec
+  extends ControllerBaseSpec
     with MockEnrolmentsAuthService
     with MockMtdIdLookupService
     with MockAppConfig
@@ -43,10 +45,10 @@ class AmendBenefitControllerSpec
     with MockAuditService
     with MockIdGenerator {
 
-  private val nino: String    = "AA123456B"
+  private val nino: String = "AA123456B"
   private val taxYear: String = "2020-21"
-  private val benefitId       = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
-  val correlationId: String   = "X-123"
+  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+  val correlationId: String = "X-123"
 
   val requestBodyJson: JsValue = Json.parse(
     """
@@ -99,30 +101,30 @@ class AmendBenefitControllerSpec
 
   val responseJson: JsValue = Json.parse(
     s"""
-      |{
-      |  "links": [
-      |    {
-      |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
-      |      "method": "PUT",
-      |      "rel": "amend-state-benefit"
-      |    },
-      |    {
-      |      "href": "/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
-      |      "method": "GET",
-      |      "rel": "self"
-      |    },
-      |    {
-      |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
-      |      "method": "DELETE",
-      |      "rel": "delete-state-benefit"
-      |    },
-      |    {
-      |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
-      |      "method": "PUT",
-      |      "rel": "amend-state-benefit-amounts"
-      |    }
-      |  ]
-      |}
+       |{
+       |  "links": [
+       |    {
+       |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+       |      "method": "PUT",
+       |      "rel": "amend-state-benefit"
+       |    },
+       |    {
+       |      "href": "/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+       |      "method": "GET",
+       |      "rel": "self"
+       |    },
+       |    {
+       |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+       |      "method": "DELETE",
+       |      "rel": "delete-state-benefit"
+       |    },
+       |    {
+       |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
+       |      "method": "PUT",
+       |      "rel": "amend-state-benefit-amounts"
+       |    }
+       |  ]
+       |}
     """.stripMargin
   )
 
@@ -133,10 +135,11 @@ class AmendBenefitControllerSpec
       detail = GenericAuditDetail(
         userType = "Individual",
         agentReferenceNumber = None,
-        params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-        request = Some(requestBodyJson),
+        pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+        queryParams = None,
+        requestBody = Some(requestBodyJson),
         `X-CorrelationId` = correlationId,
-        response = auditResponse
+        auditResponse = auditResponse
       )
     )
 

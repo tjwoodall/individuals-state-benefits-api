@@ -16,6 +16,10 @@
 
 package v1.controllers
 
+import api.controllers.{AuthorisedController, EndpointLogContext}
+import api.hateoas.HateoasFactory
+import api.models.errors._
+import api.services.{EnrolmentsAuthService, MtdIdLookupService}
 import cats.data.EitherT
 import cats.implicits._
 import config.AppConfig
@@ -24,26 +28,24 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import play.mvc.Http.MimeTypes
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.ListBenefitsRequestParser
-import v1.hateoas.HateoasFactory
-import v1.models.errors._
 import v1.models.request.listBenefits.ListBenefitsRawData
 import v1.models.response.listBenefits.ListBenefitsResponse.ListBenefitsLinksFactory
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData, ListBenefitsResponse}
-import v1.services.{EnrolmentsAuthService, ListBenefitsService, MtdIdLookupService}
+import v1.services.ListBenefitsService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
-                                        val lookupService: MtdIdLookupService,
-                                        appConfig: AppConfig,
-                                        requestParser: ListBenefitsRequestParser,
-                                        service: ListBenefitsService,
-                                        hateoasFactory: HateoasFactory,
-                                        cc: ControllerComponents,
-                                        idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
+class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
+                                       val lookupService: MtdIdLookupService,
+                                       appConfig: AppConfig,
+                                       requestParser: ListBenefitsRequestParser,
+                                       service: ListBenefitsService,
+                                       hateoasFactory: HateoasFactory,
+                                       cc: ControllerComponents,
+                                       idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+  extends AuthorisedController(cc)
     with BaseController
     with Logging {
 
@@ -66,7 +68,7 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
 
       val result =
         for {
-          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.listBenefits(parsedRequest))
           hateoasResponse <- EitherT.fromEither[Future](
             hateoasFactory
@@ -87,7 +89,7 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
 
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -99,18 +101,18 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
   private def errorResult(errorWrapper: ErrorWrapper) = {
     errorWrapper.error match {
       case _
-          if errorWrapper.containsAnyOf(
-            BadRequestError,
-            NinoFormatError,
-            TaxYearFormatError,
-            BenefitIdFormatError,
-            RuleTaxYearNotSupportedError,
-            RuleTaxYearRangeInvalidError,
-            RuleIncorrectOrEmptyBodyError
-          ) =>
+        if errorWrapper.containsAnyOf(
+          BadRequestError,
+          NinoFormatError,
+          TaxYearFormatError,
+          BenefitIdFormatError,
+          RuleTaxYearNotSupportedError,
+          RuleTaxYearRangeInvalidError,
+          RuleIncorrectOrEmptyBodyError
+        ) =>
         BadRequest(Json.toJson(errorWrapper))
 
-      case NotFoundError   => NotFound(Json.toJson(errorWrapper))
+      case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }

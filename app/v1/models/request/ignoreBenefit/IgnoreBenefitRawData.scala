@@ -16,6 +16,6 @@
 
 package v1.models.request.ignoreBenefit
 
-import v1.models.request.RawData
+import api.models.request.RawData
 
 case class IgnoreBenefitRawData(nino: String, taxYear: String, benefitId: String, temporalValidationEnabled: Boolean = true) extends RawData

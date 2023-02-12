@@ -16,10 +16,11 @@
 
 package v1.connectors
 
+import api.connectors.ConnectorSpec
+import api.mocks.MockHttpClient
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
-import v1.mocks.MockHttpClient
-import v1.models.domain.{Nino, TaxYear}
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 

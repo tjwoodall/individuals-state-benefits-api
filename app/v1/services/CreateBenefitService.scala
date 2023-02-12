@@ -16,29 +16,29 @@
 
 package v1.services
 
+import api.controllers.EndpointLogContext
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.support.DownstreamResponseMappingSupport
 import cats.data.EitherT
 import cats.implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.Logging
 import v1.connectors.CreateBenefitConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.createBenefit.CreateBenefitRequest
-import v1.models.response.AddBenefitResponse
-import v1.support.DownstreamResponseMappingSupport
+import v1.models.response.createBenefit.AddBenefitResponse
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
+class CreateBenefitService @Inject()(connector: CreateBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
 
   def addBenefit(request: CreateBenefitRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[AddBenefitResponse]]] = {
+                                                hc: HeaderCarrier,
+                                                ec: ExecutionContext,
+                                                logContext: EndpointLogContext,
+                                                correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[AddBenefitResponse]]] = {
 
     val result = for {
       desResponseWrapper <- EitherT(connector.addBenefit(request)).leftMap(mapDownstreamErrors(desErrorMap))
@@ -49,16 +49,16 @@ class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends
 
   private def desErrorMap: Map[String, MtdError] =
     Map(
-      "INVALID_TAXABLE_ENTITY_ID"   -> NinoFormatError,
-      "INVALID_TAX_YEAR"            -> TaxYearFormatError,
-      "INVALID_CORRELATIONID"       -> StandardDownstreamError,
-      "INVALID_PAYLOAD"             -> StandardDownstreamError,
+      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+      "INVALID_TAX_YEAR" -> TaxYearFormatError,
+      "INVALID_CORRELATIONID" -> StandardDownstreamError,
+      "INVALID_PAYLOAD" -> StandardDownstreamError,
       "BENEFIT_TYPE_ALREADY_EXISTS" -> RuleBenefitTypeExists,
-      "NOT_SUPPORTED_TAX_YEAR"      -> RuleTaxYearNotEndedError,
-      "INVALID_START_DATE"          -> RuleStartDateAfterTaxYearEndError,
-      "INVALID_CESSATION_DATE"      -> RuleEndDateBeforeTaxYearStartError,
-      "SERVER_ERROR"                -> StandardDownstreamError,
-      "SERVICE_UNAVAILABLE"         -> StandardDownstreamError
+      "NOT_SUPPORTED_TAX_YEAR" -> RuleTaxYearNotEndedError,
+      "INVALID_START_DATE" -> RuleStartDateAfterTaxYearEndError,
+      "INVALID_CESSATION_DATE" -> RuleEndDateBeforeTaxYearStartError,
+      "SERVER_ERROR" -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE" -> StandardDownstreamError
     )
 
 }

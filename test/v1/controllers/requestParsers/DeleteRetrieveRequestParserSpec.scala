@@ -16,17 +16,17 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TaxYearFormatError}
 import support.UnitSpec
-import v1.models.domain.Nino
 import v1.mocks.validators.MockDeleteRetrieveValidator
-import v1.models.domain.TaxYear
-import v1.models.errors._
-import v1.models.request.{DeleteRetrieveRawData, DeleteRetrieveRequest}
+import v1.models.request.deleteRetrieve
+import v1.models.request.deleteRetrieve.DeleteRetrieveRawData
 
 class DeleteRetrieveRequestParserSpec extends UnitSpec {
 
-  val nino: String           = "AA123456B"
-  val taxYear: String        = "2017-18"
+  val nino: String = "AA123456B"
+  val taxYear: String = "2017-18"
   implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val deleteRetrieveSavingsRawData: DeleteRetrieveRawData = DeleteRetrieveRawData(
@@ -48,7 +48,7 @@ class DeleteRetrieveRequestParserSpec extends UnitSpec {
         MockDeleteRetrieveValidator.validate(deleteRetrieveSavingsRawData).returns(Nil)
 
         parser.parseRequest(deleteRetrieveSavingsRawData) shouldBe
-          Right(DeleteRetrieveRequest(Nino(nino), TaxYear("2018")))
+          Right(deleteRetrieve.DeleteRetrieveRequest(Nino(nino), TaxYear("2018")))
       }
     }
 

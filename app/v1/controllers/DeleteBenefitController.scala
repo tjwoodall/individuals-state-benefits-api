@@ -16,6 +16,11 @@
 
 package v1.controllers
 
+import api.connectors.DownstreamUri._
+import api.controllers.{AuthorisedController, EndpointLogContext}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.errors._
+import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import cats.data.EitherT
 import cats.implicits._
 import play.api.libs.json.Json
@@ -24,25 +29,22 @@ import play.mvc.Http.MimeTypes
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
-import v1.connectors.DownstreamUri.IfsUri
 import v1.controllers.requestParsers.DeleteBenefitRequestParser
-import v1.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.errors._
 import v1.models.request.deleteBenefit.DeleteBenefitRawData
-import v1.services.{AuditService, DeleteRetrieveService, EnrolmentsAuthService, MtdIdLookupService}
+import v1.services.DeleteRetrieveService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
-                                         val lookupService: MtdIdLookupService,
-                                         requestParser: DeleteBenefitRequestParser,
-                                         service: DeleteRetrieveService,
-                                         auditService: AuditService,
-                                         cc: ControllerComponents,
-                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
+class DeleteBenefitController @Inject()(val authService: EnrolmentsAuthService,
+                                        val lookupService: MtdIdLookupService,
+                                        requestParser: DeleteBenefitRequestParser,
+                                        service: DeleteRetrieveService,
+                                        auditService: AuditService,
+                                        cc: ControllerComponents,
+                                        idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+  extends AuthorisedController(cc)
     with BaseController
     with Logging {
 
@@ -67,7 +69,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
       )
       val result =
         for {
-          _               <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
+          _ <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
           serviceResponse <- EitherT(service.delete(ifsErrorMap))
         } yield {
           logger.info(
@@ -79,6 +81,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
               request.userDetails,
               Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
               None,
+              None,
               serviceResponse.correlationId,
               AuditResponse(httpStatus = NO_CONTENT, response = Right(None))
             )
@@ -89,7 +92,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
         }
       result.leftMap { errorWrapper =>
         val resCorrelationId = errorWrapper.correlationId
-        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
+        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
         logger.warn(
           s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
             s"Error response received with CorrelationId: $resCorrelationId")
@@ -98,6 +101,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
           GenericAuditDetail(
             request.userDetails,
             Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+            None,
             None,
             correlationId,
             AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
@@ -111,18 +115,18 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
   private def errorResult(errorWrapper: ErrorWrapper) = {
     errorWrapper.error match {
       case _
-          if errorWrapper.containsAnyOf(
-            BadRequestError,
-            NinoFormatError,
-            TaxYearFormatError,
-            BenefitIdFormatError,
-            RuleTaxYearNotSupportedError,
-            RuleTaxYearRangeInvalidError,
-            RuleDeleteForbiddenError
-          ) =>
+        if errorWrapper.containsAnyOf(
+          BadRequestError,
+          NinoFormatError,
+          TaxYearFormatError,
+          BenefitIdFormatError,
+          RuleTaxYearNotSupportedError,
+          RuleTaxYearRangeInvalidError,
+          RuleDeleteForbiddenError
+        ) =>
         BadRequest(Json.toJson(errorWrapper))
 
-      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
+      case NotFoundError => NotFound(Json.toJson(errorWrapper))
       case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
     }
   }
@@ -130,13 +134,13 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
   private def ifsErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID"     -> StandardDownstreamError,
-      "DELETE_FORBIDDEN"          -> RuleDeleteForbiddenError,
-      "NO_DATA_FOUND"             -> NotFoundError,
-      "SERVER_ERROR"              -> StandardDownstreamError,
-      "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
+      "INVALID_TAX_YEAR" -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
+      "INVALID_CORRELATIONID" -> StandardDownstreamError,
+      "DELETE_FORBIDDEN" -> RuleDeleteForbiddenError,
+      "NO_DATA_FOUND" -> NotFoundError,
+      "SERVER_ERROR" -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE" -> StandardDownstreamError
     )
 
   private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
