@@ -16,13 +16,11 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
+import api.controllers.RequestContext
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.support.DownstreamResponseMappingSupport
-import cats.data.EitherT
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
+import api.services.BaseService
+import cats.implicits._
 import v1.connectors.DeleteBenefitAmountsConnector
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequest
 
@@ -30,30 +28,25 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DeleteBenefitAmountsService @Inject()(connector: DeleteBenefitAmountsConnector)
-  extends DownstreamResponseMappingSupport
-    with Logging {
+class DeleteBenefitAmountsService @Inject() (connector: DeleteBenefitAmountsConnector) extends BaseService {
 
   def delete(request: DeleteBenefitAmountsRequest)(implicit
-                                                   hc: HeaderCarrier,
-                                                   ec: ExecutionContext,
-                                                   logContext: EndpointLogContext,
-                                                   correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+      ctx: RequestContext,
+      ec: ExecutionContext): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
 
-    val result = EitherT(connector.deleteBenefitAmounts(request)).leftMap(mapDownstreamErrors(errorMap))
+    connector.deleteBenefitAmounts(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
-    result.value
   }
 
-  private def errorMap: Map[String, MtdError] = {
+  private def downstreamErrorMap: Map[String, MtdError] = {
     val errorMap = Map(
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-      "INVALID_TAX_YEAR" -> TaxYearFormatError,
-      "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID" -> StandardDownstreamError,
-      "NO_DATA_FOUND" -> NotFoundError,
-      "SERVER_ERROR" -> StandardDownstreamError,
-      "SERVICE_UNAVAILABLE" -> StandardDownstreamError
+      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+      "INVALID_CORRELATIONID"     -> StandardDownstreamError,
+      "NO_DATA_FOUND"             -> NotFoundError,
+      "SERVER_ERROR"              -> StandardDownstreamError,
+      "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
     )
 
     val extraTysErrors = Map(

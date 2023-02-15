@@ -16,35 +16,26 @@
 
 package v1.controllers
 
-import api.controllers.{AuthorisedController, EndpointLogContext}
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import api.models.errors._
+import api.controllers._
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import cats.data.EitherT
-import cats.implicits._
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import play.mvc.Http.MimeTypes
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.audit.http.connector.AuditResult
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.DeleteBenefitAmountsRequestParser
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRawData
 import v1.services.DeleteBenefitAmountsService
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class DeleteBenefitAmountsController @Inject()(val authService: EnrolmentsAuthService,
-                                               val lookupService: MtdIdLookupService,
-                                               requestParser: DeleteBenefitAmountsRequestParser,
-                                               service: DeleteBenefitAmountsService,
-                                               auditService: AuditService,
-                                               cc: ControllerComponents,
-                                               idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc)
-    with BaseController
+class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthService,
+                                                val lookupService: MtdIdLookupService,
+                                                parser: DeleteBenefitAmountsRequestParser,
+                                                service: DeleteBenefitAmountsService,
+                                                auditService: AuditService,
+                                                cc: ControllerComponents,
+                                                idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+    extends AuthorisedController(cc)
     with Logging {
 
   implicit val endpointLogContext: EndpointLogContext =
@@ -55,9 +46,7 @@ class DeleteBenefitAmountsController @Inject()(val authService: EnrolmentsAuthSe
 
   def deleteBenefitAmounts(nino: String, taxYear: String, benefitId: String): Action[AnyContent] =
     authorisedAction(nino).async { implicit request =>
-      implicit val correlationId: String = idGenerator.getCorrelationId
-      logger.info(message = s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] " +
-        s"with correlationId : $correlationId")
+      implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
       val rawData: DeleteBenefitAmountsRawData = DeleteBenefitAmountsRawData(
         nino = nino,
@@ -65,73 +54,20 @@ class DeleteBenefitAmountsController @Inject()(val authService: EnrolmentsAuthSe
         benefitId = benefitId
       )
 
-      val result =
-        for {
-          parsedRequest <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-          serviceResponse <- EitherT(service.delete(parsedRequest))
-        } yield {
-          logger.info(
-            s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-              s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
+      val requestHandler = RequestHandler
+        .withParser(parser)
+        .withService(service.delete)
+        .withAuditing(AuditHandler(
+          auditService = auditService,
+          auditType = "DeleteStateBenefitAmounts",
+          transactionName = "delete-state-benefit-amounts",
+          pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          queryParams = None,
+          requestBody = None
+        ))
 
-          auditSubmission(
-            GenericAuditDetail(
-              request.userDetails,
-              Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-              None,
-              None,
-              serviceResponse.correlationId,
-              AuditResponse(httpStatus = NO_CONTENT, response = Right(None))
-            )
-          )
-          NoContent
-            .withApiHeaders(serviceResponse.correlationId)
-            .as(MimeTypes.JSON)
-        }
+      requestHandler.handleRequest(rawData)
 
-      result.leftMap { errorWrapper =>
-        val resCorrelationId = errorWrapper.correlationId
-        val result = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
-        logger.warn(
-          s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-            s"Error response received with CorrelationId: $resCorrelationId")
-
-        auditSubmission(
-          GenericAuditDetail(
-            request.userDetails,
-            Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-            None,
-            None,
-            correlationId,
-            AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
-          )
-        )
-
-        result
-      }.merge
     }
-
-  private def errorResult(errorWrapper: ErrorWrapper) = {
-    errorWrapper.error match {
-      case _
-        if errorWrapper.containsAnyOf(
-          BadRequestError,
-          NinoFormatError,
-          TaxYearFormatError,
-          BenefitIdFormatError,
-          RuleTaxYearNotSupportedError,
-          RuleTaxYearRangeInvalidError
-        ) =>
-        BadRequest(Json.toJson(errorWrapper))
-
-      case NotFoundError => NotFound(Json.toJson(errorWrapper))
-      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
-    }
-  }
-
-  private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
-    val event = AuditEvent("DeleteStateBenefitAmounts", "delete-state-benefit-amounts", details)
-    auditService.auditEvent(event)
-  }
 
 }

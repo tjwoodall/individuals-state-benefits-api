@@ -17,6 +17,7 @@
 package v1.hateoas
 
 import api.hateoas.HateoasLinks
+import api.models.hateoas.HateoasData
 import config.AppConfig
 import play.api.libs.json.{JsValue, Json}
 
@@ -26,7 +27,7 @@ trait AmendHateoasBodies extends HateoasLinks {
 
     val links = Seq(
       updateBenefit(appConfig, nino, taxYear, benefitId),
-      retrieveSingleBenefit(appConfig, nino, taxYear, benefitId),
+      listSingleBenefit(appConfig, nino, taxYear, benefitId),
       deleteBenefit(appConfig, nino, taxYear, benefitId),
       updateBenefitAmounts(appConfig, nino, taxYear, benefitId)
     )
@@ -37,7 +38,7 @@ trait AmendHateoasBodies extends HateoasLinks {
   def amendBenefitAmountsHateoasBody(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): JsValue = {
 
     val links = Seq(
-      retrieveSingleBenefit(appConfig, nino, taxYear, benefitId),
+      listSingleBenefit(appConfig, nino, taxYear, benefitId),
       updateBenefitAmounts(appConfig, nino, taxYear, benefitId),
       deleteBenefitAmounts(appConfig, nino, taxYear, benefitId)
     )

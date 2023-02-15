@@ -72,7 +72,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
             forAll(Table("benefit", benefitNotIgnored, benefitIgnored)) { benefit =>
               hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefit) should
                 contain theSameElementsAs Seq(
-                  retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
+                  listSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
                 )
             }
           }
@@ -86,7 +86,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include ignore link" in new Test {
             hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitNotIgnored) should
               contain theSameElementsAs Seq(
-                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
                 ignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
               )
@@ -97,7 +97,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include unignore link" in new Test {
             hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitIgnored) should
               contain theSameElementsAs Seq(
-                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
                 unignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
               )
@@ -132,7 +132,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
                   ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds),
                   benefit) should
                   contain theSameElementsAs Seq(
-                    retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
+                    listSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
                   )
             }
           }
@@ -147,7 +147,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include update and delete links" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq("otherBenefitId")), benefit) should
               contain theSameElementsAs Seq(
-                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefit(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
@@ -159,7 +159,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "not include update and delete links" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq(benefitId)), benefit) should
               contain theSameElementsAs Seq(
-                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
               )
           }
@@ -169,7 +169,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include delete amount link" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithAmount) should
               contain theSameElementsAs Seq(
-                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefit(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
@@ -182,7 +182,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           "include delete amount link" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithTaxPaid) should
               contain theSameElementsAs Seq(
-                retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
+                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefit(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
                 updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),

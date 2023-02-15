@@ -34,7 +34,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
 
       import data._
 
-      lazy val retrieveLink: Link      = retrieveSingleBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
+      lazy val retrieveLink: Link      = listSingleBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val updateAmountsLink: Link = updateBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val deleteAmountsLink: Link = deleteBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val deleteLink: Link        = deleteBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)

@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package v1.models.response.createBenefit
+package v1.models.response.amendBenefit
 
 import api.hateoas.{HateoasLinks, HateoasLinksFactory}
 import api.models.hateoas.{HateoasData, Link}
 import config.AppConfig
-import play.api.libs.json.{Json, OFormat}
 
-case class AddBenefitResponse(benefitId: String)
+object AmendBenefitResponse extends HateoasLinks {
 
-object AddBenefitResponse extends HateoasLinks {
+  implicit object AmendBenefitLinksFactory extends HateoasLinksFactory[Unit, AmendBenefitHateoasData] {
 
-  implicit val format: OFormat[AddBenefitResponse] = Json.format[AddBenefitResponse]
-
-  implicit object AddBenefitLinksFactory extends HateoasLinksFactory[AddBenefitResponse, AddBenefitHateoasData] {
-
-    override def links(appConfig: AppConfig, data: AddBenefitHateoasData): Seq[Link] = {
+    override def links(appConfig: AppConfig, data: AmendBenefitHateoasData): Seq[Link] = {
       import data._
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),
@@ -42,4 +37,4 @@ object AddBenefitResponse extends HateoasLinks {
 
 }
 
-case class AddBenefitHateoasData(nino: String, taxYear: String, benefitId: String) extends HateoasData
+case class AmendBenefitHateoasData(nino: String, taxYear: String, benefitId: String) extends HateoasData

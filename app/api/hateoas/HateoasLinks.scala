@@ -65,7 +65,7 @@ trait HateoasLinks {
       rel = SELF
     )
 
-  def retrieveSingleBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def listSingleBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = baseUriWithBenefitIdParam(appConfig, nino, taxYear, benefitId),
       method = GET,
