@@ -16,7 +16,7 @@
 
 package v1.controllers
 
-import api.controllers.{AuthorisedController, EndpointLogContext, RequestContext, RequestHandler}
+import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{EnrolmentsAuthService, MtdIdLookupService}
 import config.AppConfig
@@ -61,7 +61,8 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
       val requestHandler = RequestHandler
         .withParser(parser)
         .withService(service.listBenefits)
-        .withHateoasResultFrom(hateoasFactory)((_, response) => ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(response)))
+        .withResultCreator(ResultCreator.hateoasListWrapping2(hateoasFactory)((_, response) =>
+          ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(response))))
 
       requestHandler.handleRequest(rawData)
 

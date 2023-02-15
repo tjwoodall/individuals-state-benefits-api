@@ -16,31 +16,25 @@
 
 package v1.mocks.connectors
 
-import api.connectors.{DownstreamOutcome, DownstreamUri}
+import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import play.api.libs.json.Reads
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.DeleteRetrieveConnector
+import v1.connectors.DeleteBenefitConnector
+import v1.models.request.deleteBenefit.DeleteBenefitRequest
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockDeleteRetrieveConnector extends MockFactory {
+trait MockDeleteBenefitConnector extends MockFactory {
 
-  val mockDeleteRetrieveConnector: DeleteRetrieveConnector = mock[DeleteRetrieveConnector]
+  val mockDeleteBenefitConnector: DeleteBenefitConnector = mock[DeleteBenefitConnector]
 
-  object MockDeleteRetrieveConnector {
+  object MockDeleteBenefitConnector {
 
-    def delete(): CallHandler[Future[DownstreamOutcome[Unit]]] = {
-      (mockDeleteRetrieveConnector
-        .delete()(_: HeaderCarrier, _: ExecutionContext, _: DownstreamUri[Unit], _: String))
-        .expects(*, *, *, *)
-    }
-
-    def retrieve[Resp: Reads](): CallHandler[Future[DownstreamOutcome[Resp]]] = {
-      (mockDeleteRetrieveConnector
-        .retrieve[Resp]()(_: Reads[Resp], _: HeaderCarrier, _: ExecutionContext, _: DownstreamUri[Resp], _: String))
-        .expects(*, *, *, *, *)
+    def deleteBenefit(request: DeleteBenefitRequest): CallHandler[Future[DownstreamOutcome[Unit]]] = {
+      (mockDeleteBenefitConnector
+        .deleteBenefit(_: DeleteBenefitRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
+        .expects(request, *, *, *)
     }
 
   }

@@ -17,7 +17,6 @@
 package v1.hateoas
 
 import api.hateoas.HateoasLinks
-import api.models.hateoas.HateoasData
 import config.AppConfig
 import play.api.libs.json.{JsValue, Json}
 

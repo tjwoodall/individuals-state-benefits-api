@@ -22,7 +22,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.DeleteBenefitRequestParser
 import v1.models.request.deleteBenefit.DeleteBenefitRawData
-import v1.services.DeleteRetrieveService
+import v1.services.DeleteBenefitService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext
 class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          val lookupService: MtdIdLookupService,
                                          parser: DeleteBenefitRequestParser,
-                                         service: DeleteRetrieveService,
+                                         service: DeleteBenefitService,
                                          auditService: AuditService,
                                          cc: ControllerComponents,
                                          idGenerator: IdGenerator)(implicit ec: ExecutionContext)
@@ -56,7 +56,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
 
       val requestHandler = RequestHandler
         .withParser(parser)
-        .withService(service.delete)
+        .withService(service.deleteBenefit)
         .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "DeleteStateBenefit",
@@ -67,89 +67,6 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
         ))
 
       requestHandler.handleRequest(rawData)
-
-//      implicit val desUri: IfsUri[Unit] = IfsUri[Unit](
-//        s"income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
-//      )
-//      val result =
-//        for {
-//          _               <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-//          serviceResponse <- EitherT(service.delete(ifsErrorMap))
-//        } yield {
-//          logger.info(
-//            s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-//              s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
-//
-//          auditSubmission(
-//            GenericAuditDetail(
-//              request.userDetails,
-//              Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-//              None,
-//              None,
-//              serviceResponse.correlationId,
-//              AuditResponse(httpStatus = NO_CONTENT, response = Right(None))
-//            )
-//          )
-//          NoContent
-//            .withApiHeaders(serviceResponse.correlationId)
-//            .as(MimeTypes.JSON)
-//        }
-//      result.leftMap { errorWrapper =>
-//        val resCorrelationId = errorWrapper.correlationId
-//        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
-//        logger.warn(
-//          s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-//            s"Error response received with CorrelationId: $resCorrelationId")
-//
-//        auditSubmission(
-//          GenericAuditDetail(
-//            request.userDetails,
-//            Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-//            None,
-//            None,
-//            correlationId,
-//            AuditResponse(httpStatus = result.header.status, response = Left(errorWrapper.auditErrors))
-//          )
-//        )
-//
-//        result
-//      }.merge
-//    }
-//
-//  private def errorResult(errorWrapper: ErrorWrapper) = {
-//    errorWrapper.error match {
-//      case _
-//          if errorWrapper.containsAnyOf(
-//            BadRequestError,
-//            NinoFormatError,
-//            TaxYearFormatError,
-//            BenefitIdFormatError,
-//            RuleTaxYearNotSupportedError,
-//            RuleTaxYearRangeInvalidError,
-//            RuleDeleteForbiddenError
-//          ) =>
-//        BadRequest(Json.toJson(errorWrapper))
-//
-//      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
-//      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
-//    }
-//  }
-//
-//  private def ifsErrorMap: Map[String, MtdError] =
-//    Map(
-//      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-//      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-//      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-//      "INVALID_CORRELATIONID"     -> StandardDownstreamError,
-//      "DELETE_FORBIDDEN"          -> RuleDeleteForbiddenError,
-//      "NO_DATA_FOUND"             -> NotFoundError,
-//      "SERVER_ERROR"              -> StandardDownstreamError,
-//      "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
-//    )
-//
-//  private def auditSubmission(details: GenericAuditDetail)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[AuditResult] = {
-//    val event = AuditEvent("DeleteStateBenefit", "delete-state-benefit", details)
-//    auditService.auditEvent(event)
     }
 
 }

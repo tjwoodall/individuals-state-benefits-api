@@ -18,7 +18,6 @@ package v1.services
 
 import api.controllers.RequestContext
 import api.models.errors._
-import api.models.outcomes.ResponseWrapper
 import api.services.BaseService
 import cats.implicits._
 import v1.connectors.AmendBenefitConnector
@@ -30,8 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AmendBenefitService @Inject() (connector: AmendBenefitConnector) extends BaseService {
 
-  def updateBenefit(
-      request: AmendBenefitRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+  def updateBenefit(request: AmendBenefitRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[AmendBenefitServiceOutcome] = {
 
     connector.amendBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }

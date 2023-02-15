@@ -21,22 +21,25 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.models.request.listBenefits.ListBenefitsRequest
-import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
-import v1.services.ListBenefitsService
+import v1.models.request.deleteBenefit.DeleteBenefitRequest
+import v1.services.DeleteBenefitService
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockListBenefitsService extends MockFactory {
+trait MockDeleteBenefitService extends MockFactory {
 
-  val mockListBenefitsService: ListBenefitsService = mock[ListBenefitsService]
+  val mockDeleteBenefitService: DeleteBenefitService = mock[DeleteBenefitService]
 
-  object MockListBenefitsService {
+  object MockDeleteBenefitService {
 
-    def listBenefits(requestData: ListBenefitsRequest)
-        : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]]] = {
-      (mockListBenefitsService
-        .listBenefits(_: ListBenefitsRequest)(_: RequestContext, _: ExecutionContext))
+    def deleteBenefit(requestData: DeleteBenefitRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
+      (
+        mockDeleteBenefitService
+          .deleteBenefit(_: DeleteBenefitRequest)(
+            _: RequestContext,
+            _: ExecutionContext
+          )
+        )
         .expects(requestData, *, *)
     }
 

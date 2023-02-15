@@ -19,7 +19,6 @@ package v1.models.response.amendBenefitAmounts
 import api.hateoas.{HateoasLinks, HateoasLinksFactory}
 import api.models.hateoas.{HateoasData, Link}
 import config.AppConfig
-import v1.models.response.createBenefit.AddBenefitResponse.listSingleBenefit
 
 object AmendBenefitAmountsResponse extends HateoasLinks {
 
