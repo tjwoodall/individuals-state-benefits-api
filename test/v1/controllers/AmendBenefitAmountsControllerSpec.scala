@@ -22,6 +22,9 @@ import api.mocks.services.MockAuditService
 import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
+import api.models.hateoas
+import api.models.hateoas.HateoasWrapper
+import api.models.hateoas.Method.{DELETE, GET, PUT}
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
@@ -29,6 +32,7 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import v1.mocks.requestParsers.MockAmendBenefitAmountsRequestParser
 import v1.mocks.services.MockAmendBenefitAmountsService
 import v1.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRawData, AmendBenefitAmountsRequest, AmendBenefitAmountsRequestBody}
+import v1.models.response.amendBenefitAmounts.AmendBenefitAmountsHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -73,22 +77,28 @@ class AmendBenefitAmountsControllerSpec
     body = updateBenefitAmountsRequestBody
   )
 
+  private val testHateoasLinks = Seq(
+    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
+    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", method = PUT, rel = "amend-state-benefit-amounts"),
+    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", method = DELETE, rel = "delete-state-benefit-amounts")
+  )
+
   val hateoasResponse: JsValue = Json.parse(
     s"""
        |{
        |   "links":[
        |      {
-       |         "href":"/baseUrl/$nino/$taxYear?benefitId=$benefitId",
+       |         "href":"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
        |         "rel":"self",
        |         "method":"GET"
        |      },
        |      {
-       |         "href": "/baseUrl/$nino/$taxYear/$benefitId/amounts",
+       |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
        |         "method": "PUT",
        |         "rel": "amend-state-benefit-amounts"
        |      },
        |      {
-       |         "href": "/baseUrl/$nino/$taxYear/$benefitId/amounts",
+       |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
        |         "method": "DELETE",
        |         "rel": "delete-state-benefit-amounts"
        |      }
@@ -100,7 +110,6 @@ class AmendBenefitAmountsControllerSpec
   "UpdateBenefitAmountsController" should {
     "return a successful response with status 200 (OK)" when {
       "the request received is valid" in new Test {
-
         MockAmendBenefitAmountsRequestParser
           .parse(rawData)
           .returns(Right(requestData))
@@ -108,6 +117,10 @@ class AmendBenefitAmountsControllerSpec
         MockUpdateBenefitAmountsService
           .updateBenefitAmounts(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
+
+        MockHateoasFactory
+          .wrap((), AmendBenefitAmountsHateoasData(nino, taxYear, benefitId))
+          .returns(HateoasWrapper((), testHateoasLinks))
 
         runOkTestWithAudit(
           expectedStatus = OK,
@@ -156,7 +169,7 @@ class AmendBenefitAmountsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    protected def callController(): Future[Result] = controller.amendBenefitAmounts(nino, taxYear, benefitId)(fakePostRequest(requestBodyJson))
+    protected def callController(): Future[Result] = controller.amendBenefitAmounts(nino, taxYear, benefitId)(fakePutRequest(requestBodyJson))
 
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(

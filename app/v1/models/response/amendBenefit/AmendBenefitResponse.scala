@@ -29,7 +29,8 @@ object AmendBenefitResponse extends HateoasLinks {
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),
         updateBenefit(appConfig, nino, taxYear, benefitId),
-        deleteBenefit(appConfig, nino, taxYear, benefitId)
+        deleteBenefit(appConfig, nino, taxYear, benefitId),
+        updateBenefitAmounts(appConfig, nino, taxYear, benefitId)
       )
     }
 

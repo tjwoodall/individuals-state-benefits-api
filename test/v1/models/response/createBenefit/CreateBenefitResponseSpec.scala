@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package v1.models.response
+package v1.models.response.createBenefit
 
 import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
-import v1.models.response.createBenefit.AddBenefitResponse
 
 class CreateBenefitResponseSpec extends UnitSpec {
 

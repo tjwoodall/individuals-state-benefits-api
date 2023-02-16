@@ -33,7 +33,7 @@ trait MockDeleteBenefitAmountsService extends MockFactory {
 
   object MockDeleteBenefitAmountsService {
 
-    def delete(requestData: DeleteBenefitAmountsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = (
+    def deleteBenefitAmounts(requestData: DeleteBenefitAmountsRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = (
       mockDeleteBenefitAmountsService
         .delete(_: DeleteBenefitAmountsRequest)(
           _: RequestContext,

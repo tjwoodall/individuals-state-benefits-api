@@ -51,7 +51,7 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
       endpointName = "amendBenefitAmounts"
     )
 
-  def amend(nino: String, taxYear: String, benefitId: String): Action[JsValue] =
+  def amendBenefit(nino: String, taxYear: String, benefitId: String): Action[JsValue] =
     authorisedAction(nino).async(parse.json) { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
