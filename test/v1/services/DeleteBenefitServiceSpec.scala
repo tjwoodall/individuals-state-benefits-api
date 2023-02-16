@@ -58,9 +58,12 @@ class DeleteBenefitServiceSpec extends ServiceSpec {
           }
 
         val input = Seq(
-          ("INVALID_NINO", NinoFormatError),
+          ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
-          ("NOT_FOUND", NotFoundError),
+          ("INVALID_BENEFIT_ID", BenefitIdFormatError),
+          ("DELETE_FORBIDDEN", RuleDeleteForbiddenError),
+          ("INVALID_CORRELATIONID", StandardDownstreamError),
+          ("NO_DATA_FOUND", NotFoundError),
           ("SERVER_ERROR", StandardDownstreamError),
           ("SERVICE_UNAVAILABLE", StandardDownstreamError)
         )

@@ -78,7 +78,6 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
         val response: WSResponse = await(request().delete)
         response.status shouldBe NO_CONTENT
         response.body shouldBe ""
-        response.header("Content-Type") shouldBe Some("application/json")
       }
     }
 
@@ -94,7 +93,6 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
       val response: WSResponse = await(request().delete)
       response.status shouldBe NO_CONTENT
       response.body shouldBe ""
-      response.header("Content-Type") shouldBe Some("application/json")
     }
 
     "return error according to spec" when {

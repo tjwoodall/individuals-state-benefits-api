@@ -47,15 +47,15 @@ class ListBenefitsControllerSpec
     "return OK with full HATEOAS" when {
       "happy path" in new Test {
         MockListBenefitsRequestParser
-          .parse(rawData(None))
-          .returns(Right(requestData(None)))
+          .parse(rawData(queryBenefitId))
+          .returns(Right(requestData(queryBenefitId)))
 
         MockListBenefitsService
-          .listBenefits(requestData(None))
+          .listBenefits(requestData(queryBenefitId))
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData))))
 
         MockHateoasFactory
-          .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Seq(benefitId)))
+          .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Seq(benefitId)))
           .returns(hateoasResponse)
 
         runOkTest(
@@ -90,17 +90,17 @@ class ListBenefitsControllerSpec
       "only HMRC state benefits returned" in new Test {
 
         MockListBenefitsRequestParser
-          .parse(rawData(None))
-          .returns(Right(requestData(None)))
+          .parse(rawData(queryBenefitId))
+          .returns(Right(requestData(queryBenefitId)))
 
         MockListBenefitsService
-          .listBenefits(requestData(None))
+          .listBenefits(requestData(queryBenefitId))
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(customerAddedStateBenefits = None)))))
 
         MockHateoasFactory
           .wrapList(
             responseData.copy(customerAddedStateBenefits = Option.empty[Seq[CustomerStateBenefit]]),
-            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Seq(benefitId))
+            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Seq(benefitId))
           )
           .returns(hmrcOnlyHateoasResponse)
 
@@ -114,17 +114,17 @@ class ListBenefitsControllerSpec
     "return OK with only CUSTOM state benefit HATEOAS" when {
       "only CUSTOM state benefits returned" in new Test {
         MockListBenefitsRequestParser
-          .parse(rawData(None))
-          .returns(Right(requestData(None)))
+          .parse(rawData(queryBenefitId))
+          .returns(Right(requestData(queryBenefitId)))
 
         MockListBenefitsService
-          .listBenefits(requestData(None))
+          .listBenefits(requestData(queryBenefitId))
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
         MockHateoasFactory
           .wrapList(
             responseData.copy(stateBenefits = Option.empty[Seq[HMRCStateBenefit]]),
-            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Nil))
+            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Nil))
           .returns(customOnlyHateoasResponse)
 
         runOkTest(

@@ -35,11 +35,14 @@ class DeleteBenefitService @Inject() (connector: DeleteBenefitConnector) extends
   }
 
   private val downstreamErrorMap: Map[String, MtdError] = Map(
-    "INVALID_NINO"        -> NinoFormatError,
-    "INVALID_TAX_YEAR"    -> TaxYearFormatError,
-    "NOT_FOUND"           -> NotFoundError,
-    "SERVER_ERROR"        -> StandardDownstreamError,
-    "SERVICE_UNAVAILABLE" -> StandardDownstreamError
+    "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+    "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+    "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+    "DELETE_FORBIDDEN"          -> RuleDeleteForbiddenError,
+    "INVALID_CORRELATIONID"     -> StandardDownstreamError,
+    "NO_DATA_FOUND"             -> NotFoundError,
+    "SERVER_ERROR"              -> StandardDownstreamError,
+    "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
   )
 
 }

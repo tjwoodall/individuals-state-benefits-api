@@ -30,9 +30,9 @@ class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String          = "AA123456A"
+    val taxYear: String       = "2019-20"
+    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     def uri: String = s"/$nino/$taxYear/$benefitId"
@@ -66,7 +66,6 @@ class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
         val response: WSResponse = await(request().delete)
         response.status shouldBe NO_CONTENT
         response.body shouldBe ""
-        response.header("Content-Type") shouldBe Some("application/json")
       }
     }
 
@@ -80,8 +79,8 @@ class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
                                 expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
+            override val nino: String      = requestNino
+            override val taxYear: String   = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             override def setupStubs(): StubMapping = {

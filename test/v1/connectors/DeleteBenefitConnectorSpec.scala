@@ -37,7 +37,7 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
 
         MockedHttpClient
           .delete(
-            url = s"$baseUrl/some-placeholder/savings/$nino/$taxYear",
+            url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
             config = dummyIfsHeaderCarrierConfig,
             requiredHeaders = requiredIfsHeaders,
             excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")

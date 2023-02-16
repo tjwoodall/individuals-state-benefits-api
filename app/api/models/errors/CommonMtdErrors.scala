@@ -34,21 +34,25 @@ object BenefitTypeFormatError extends MtdError("FORMAT_BENEFIT_TYPE", "The provi
 object ValueFormatError extends MtdError("FORMAT_VALUE", "", BAD_REQUEST)
 
 // Rule Errors
-object RuleTaxYearNotSupportedError extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "The tax year specified does not lie within the supported range", BAD_REQUEST)
+object RuleTaxYearNotSupportedError
+    extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "The tax year specified does not lie within the supported range", BAD_REQUEST)
 
 object RuleTaxYearRangeInvalidError
-  extends MtdError(code = "RULE_TAX_YEAR_RANGE_INVALID", message = "Tax year range invalid. A tax year range of one year is required", BAD_REQUEST)
+    extends MtdError(code = "RULE_TAX_YEAR_RANGE_INVALID", message = "Tax year range invalid. A tax year range of one year is required", BAD_REQUEST)
 
 object RuleTaxYearNotEndedError extends MtdError(code = "RULE_TAX_YEAR_NOT_ENDED", "Tax year not ended", BAD_REQUEST)
 
-object RuleEndDateBeforeStartDateError extends MtdError("RULE_END_DATE_BEFORE_START_DATE", "The end date cannot be earlier than the start date", BAD_REQUEST)
+object RuleEndDateBeforeStartDateError
+    extends MtdError("RULE_END_DATE_BEFORE_START_DATE", "The end date cannot be earlier than the start date", BAD_REQUEST)
 
 object RuleStartDateAfterTaxYearEndError
-  extends MtdError("RULE_START_DATE_AFTER_TAX_YEAR_END", "The start date cannot be later than the tax year end", BAD_REQUEST)
+    extends MtdError("RULE_START_DATE_AFTER_TAX_YEAR_END", "The start date cannot be later than the tax year end", BAD_REQUEST)
 
-object RuleEndDateBeforeTaxYearStartError extends MtdError("RULE_END_DATE_BEFORE_TAX_YEAR_START", "The end date cannot be before the tax year starts", BAD_REQUEST)
+object RuleEndDateBeforeTaxYearStartError
+    extends MtdError("RULE_END_DATE_BEFORE_TAX_YEAR_START", "The end date cannot be before the tax year starts", BAD_REQUEST)
 
-object RuleIncorrectOrEmptyBodyError extends MtdError("RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED", "An empty or non-matching body was submitted", BAD_REQUEST)
+object RuleIncorrectOrEmptyBodyError
+    extends MtdError("RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED", "An empty or non-matching body was submitted", BAD_REQUEST)
 
 object RuleDeleteForbiddenError extends MtdError("RULE_DELETE_FORBIDDEN", "A deletion of a HMRC held state benefit is not permitted", BAD_REQUEST)
 
@@ -72,7 +76,7 @@ object BVRError extends MtdError("BUSINESS_ERROR", "Business validation error", 
 object ServiceUnavailableError extends MtdError("SERVICE_UNAVAILABLE", "Internal server error", INTERNAL_SERVER_ERROR)
 
 //Authorisation Errors
-object ClientNotAuthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client and/or agent is not authorised", FORBIDDEN)
+object ClientNotAuthorisedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client or agent is not authorised", FORBIDDEN)
 
 object ClientNotAuthenticatedError extends MtdError("CLIENT_OR_AGENT_NOT_AUTHORISED", "The client or agent is not authorised", UNAUTHORIZED)
 

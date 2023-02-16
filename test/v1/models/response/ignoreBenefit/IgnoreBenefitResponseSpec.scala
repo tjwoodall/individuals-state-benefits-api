@@ -14,32 +14,25 @@
  * limitations under the License.
  */
 
-package v1.models.response.amendBenefitAmounts
+package v1.models.response.ignoreBenefit
 
 import api.models.hateoas
 import api.models.hateoas.Method._
 import mocks.MockAppConfig
 import support.UnitSpec
 
-class AmendBenefitAmountsResponseSpec extends UnitSpec with MockAppConfig {
+class IgnoreBenefitResponseSpec extends UnitSpec with MockAppConfig {
 
   "LinksFactory" should {
     "produce the correct links" when {
       "called" in {
-        val data: AmendBenefitAmountsHateoasData = AmendBenefitAmountsHateoasData("mynino", "mytaxyear", "mybenefitid")
+        val data: IgnoreBenefitHateoasData = IgnoreBenefitHateoasData("mynino", "mytaxyear", "mybenefitid")
 
         MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
-        AmendBenefitAmountsResponse.AmendBenefitAmountsLinksFactory.links(mockAppConfig, data) shouldBe Seq(
+        IgnoreBenefitResponse.IgnoreBenefitLinksFactory.links(mockAppConfig, data) shouldBe Seq(
           hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
-          hateoas.Link(
-            href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts",
-            method = PUT,
-            rel = "amend-state-benefit-amounts"),
-          hateoas.Link(
-            href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts",
-            method = DELETE,
-            rel = "delete-state-benefit-amounts")
+          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/unignore", method = POST, rel = "unignore-state-benefit")
         )
       }
     }

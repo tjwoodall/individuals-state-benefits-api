@@ -65,56 +65,6 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
           ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(response))))
 
       requestHandler.handleRequest(rawData)
-
-//      val result =
-//        for {
-//          parsedRequest   <- EitherT.fromEither[Future](requestParser.parseRequest(rawData))
-//          serviceResponse <- EitherT(service.listBenefits(parsedRequest))
-//          hateoasResponse <- EitherT.fromEither[Future](
-//            hateoasFactory
-//              .wrapList(
-//                serviceResponse.responseData,
-//                ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(serviceResponse.responseData))
-//              )
-//              .asRight[ErrorWrapper])
-//        } yield {
-//          logger.info(
-//            s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-//              s"Success response received with CorrelationId: ${serviceResponse.correlationId}")
-//
-//          Ok(Json.toJson(hateoasResponse))
-//            .withApiHeaders(serviceResponse.correlationId)
-//            .as(MimeTypes.JSON)
-//        }
-//
-//      result.leftMap { errorWrapper =>
-//        val resCorrelationId = errorWrapper.correlationId
-//        val result           = errorResult(errorWrapper).withApiHeaders(resCorrelationId)
-//        logger.warn(
-//          s"[${endpointLogContext.controllerName}][${endpointLogContext.endpointName}] - " +
-//            s"Error response received with CorrelationId: $resCorrelationId")
-//
-//        result
-//      }.merge
-//    }
-//
-//  private def errorResult(errorWrapper: ErrorWrapper) = {
-//    errorWrapper.error match {
-//      case _
-//          if errorWrapper.containsAnyOf(
-//            BadRequestError,
-//            NinoFormatError,
-//            TaxYearFormatError,
-//            BenefitIdFormatError,
-//            RuleTaxYearNotSupportedError,
-//            RuleTaxYearRangeInvalidError,
-//            RuleIncorrectOrEmptyBodyError
-//          ) =>
-//        BadRequest(Json.toJson(errorWrapper))
-//
-//      case NotFoundError           => NotFound(Json.toJson(errorWrapper))
-//      case StandardDownstreamError => InternalServerError(Json.toJson(errorWrapper))
-//    }
     }
 
   private def hmrcBenefitIds(response: ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]): Seq[String] =
