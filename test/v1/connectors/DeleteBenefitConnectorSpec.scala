@@ -26,7 +26,7 @@ import scala.concurrent.Future
 class DeleteBenefitConnectorSpec extends ConnectorSpec {
 
   private val nino: String      = "AA111111A"
-  private val taxYear: String   = "2019"
+  private val taxYear: String   = "2019-20"
   private val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   "DeleteBenefitConnector" when {
