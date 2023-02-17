@@ -16,30 +16,30 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.Nino
+import api.models.errors._
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.AnyContentAsJson
 import support.UnitSpec
-import v1.models.domain.Nino
 import v1.mocks.validators.MockCreateBenefitValidator
-import v1.models.errors._
 import v1.models.request.createBenefit._
 
 class CreateBenefitRequestParserSpec extends UnitSpec {
 
-  private val nino: String    = "AA123456B"
+  private val nino: String = "AA123456B"
   private val taxYear: String = "2017-18"
-  implicit val correlationId  = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val startDate = "2020-08-03"
-  val endDate   = "2020-12-03"
+  val endDate = "2020-12-03"
 
   private val validRequestBodyJson: JsValue = Json.parse(
     s"""
-      |{
-      |  "benefitType": "otherStateBenefits",
-      |  "startDate": "$startDate",
-      |  "endDate" : "$endDate"
-      |}
+       |{
+       |  "benefitType": "otherStateBenefits",
+       |  "startDate": "$startDate",
+       |  "endDate" : "$endDate"
+       |}
     """.stripMargin
   )
 

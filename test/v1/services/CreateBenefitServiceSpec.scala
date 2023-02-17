@@ -16,19 +16,20 @@
 
 package v1.services
 
-import v1.controllers.EndpointLogContext
+import api.controllers.EndpointLogContext
+import api.models.domain.{BenefitType, Nino}
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.services.ServiceSpec
 import v1.mocks.connectors.MockCreateBenefitConnector
-import v1.models.domain.{BenefitType, Nino}
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.createBenefit.{CreateBenefitRequest, CreateBenefitRequestBody}
-import v1.models.response.AddBenefitResponse
+import v1.models.response.createBenefit.AddBenefitResponse
 
 import scala.concurrent.Future
 
 class CreateBenefitServiceSpec extends ServiceSpec {
 
-  private val nino    = "AA112233A"
+  private val nino = "AA112233A"
   private val taxYear = "2021-22"
 
   val addBenefitRequestBody: CreateBenefitRequestBody = CreateBenefitRequestBody(

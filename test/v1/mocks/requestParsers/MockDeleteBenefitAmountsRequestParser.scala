@@ -16,7 +16,7 @@
 
 package v1.mocks.requestParsers
 
-import v1.models.errors.ErrorWrapper
+import api.models.errors.ErrorWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import v1.controllers.requestParsers.DeleteBenefitAmountsRequestParser

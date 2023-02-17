@@ -16,16 +16,17 @@
 
 package v1.connectors
 
-import v1.models.domain.{Nino, TaxYear}
-import v1.models.outcomes.ResponseWrapper
+import api.connectors.ConnectorSpec
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequest
 
 import scala.concurrent.Future
 
 class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
 
-  val nino: String        = "AA123456A"
-  val benefitId: String   = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val nino: String      = "AA123456A"
+  private val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   "DeleteBenefitAmountsConnector" should {
     "return a 200 result on delete" when {
@@ -33,7 +34,8 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         def taxYear: TaxYear                               = TaxYear.fromMtd("2017-18")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(outcome)
+        willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
+          outcome)
 
         val result = await(connector.deleteBenefitAmounts(request))
 
@@ -44,16 +46,16 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         def taxYear: TaxYear                               = TaxYear.fromMtd("2023-24")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        willDelete(s"$baseUrl/income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/$nino/${request.benefitId}") returns Future.successful(outcome)
+        willDelete(s"$baseUrl/income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/$nino/${request.benefitId}") returns Future
+          .successful(outcome)
 
         val result = await(connector.deleteBenefitAmounts(request))
 
         result shouldBe outcome
       }
-
     }
-
   }
+
   trait Test {
     _: ConnectorTest =>
     def taxYear: TaxYear

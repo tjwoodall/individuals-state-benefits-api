@@ -16,17 +16,17 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.Nino
+import api.models.errors._
 import support.UnitSpec
-import v1.models.domain.Nino
 import v1.mocks.validators.MockDeleteBenefitValidator
-import v1.models.errors._
 import v1.models.request.deleteBenefit.{DeleteBenefitRawData, DeleteBenefitRequest}
 
 class DeleteBenefitRequestParserSpec extends UnitSpec {
 
-  val nino: String           = "AA123456B"
-  val taxYear: String        = "2021-22"
-  val benefitId: String      = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String = "AA123456B"
+  val taxYear: String = "2021-22"
+  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val deleteBenefitRawData: DeleteBenefitRawData = DeleteBenefitRawData(

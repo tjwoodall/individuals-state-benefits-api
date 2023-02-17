@@ -16,6 +16,7 @@
 
 package v1.endpoints
 
+import api.models.errors._
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
 import play.api.http.HeaderNames.ACCEPT
@@ -24,7 +25,6 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
@@ -85,8 +85,8 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new NonTysTest {
 
-            override val nino: String      = requestNino
-            override val taxYear: String   = requestTaxYear
+            override val nino: String = requestNino
+            override val taxYear: String = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -145,8 +145,8 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String          = "AA123456A"
-    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String = "AA123456A"
+    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
     def taxYear: String
@@ -199,12 +199,14 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
   }
 
   private trait NonTysTest extends Test {
-    def taxYear: String       = "2019-20"
+    def taxYear: String = "2019-20"
+
     def downstreamUri: String = s"/income-tax/state-benefits/$nino/2019-20/ignore/$benefitId"
   }
 
   private trait TysIfsTest extends Test {
-    def taxYear: String       = "2023-24"
+    def taxYear: String = "2023-24"
+
     def downstreamUri: String = s"/income-tax/23-24/state-benefits/$nino/ignore/$benefitId"
 
     override def request: WSRequest =

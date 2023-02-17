@@ -16,11 +16,12 @@
 
 package v1.services
 
-import v1.controllers.EndpointLogContext
+import api.controllers.EndpointLogContext
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors._
+import api.models.outcomes.ResponseWrapper
+import api.services.ServiceSpec
 import v1.mocks.connectors.MockUnignoreBenefitConnector
-import v1.models.domain.{Nino, TaxYear}
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 
 import scala.concurrent.Future
@@ -78,8 +79,8 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
   trait Test extends MockUnignoreBenefitConnector {
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
-    val nino: String      = "AA111111A"
-    val taxYear: String   = "2019-20"
+    val nino: String = "AA111111A"
+    val taxYear: String = "2019-20"
     val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
     val request: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId)

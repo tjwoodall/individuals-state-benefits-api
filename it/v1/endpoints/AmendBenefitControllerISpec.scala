@@ -16,6 +16,7 @@
 
 package v1.endpoints
 
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
@@ -25,16 +26,15 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class AmendBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String          = "AA123456B"
-    val taxYear: String       = "2019-20"
-    val benefitId             = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+    val nino: String = "AA123456B"
+    val taxYear: String = "2019-20"
+    val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
     val correlationId: String = "X-123"
 
     val requestJson: JsValue = Json.parse(
@@ -140,7 +140,8 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
     """.stripMargin
         )
 
-        private val responseJson = Json.parse("""
+        private val responseJson = Json.parse(
+          """
             |{
             |	"code": "INVALID_REQUEST",
             |	"message": "Invalid request",
@@ -206,9 +207,9 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
                                 expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String         = requestNino
-            override val taxYear: String      = requestTaxYear
-            override val benefitId: String    = requestBenefitId
+            override val nino: String = requestNino
+            override val taxYear: String = requestTaxYear
+            override val benefitId: String = requestBenefitId
             override val requestJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {

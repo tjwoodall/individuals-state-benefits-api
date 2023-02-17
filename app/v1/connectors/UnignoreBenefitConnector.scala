@@ -16,21 +16,21 @@
 
 package v1.connectors
 
+import api.connectors.DownstreamUri._
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
-import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
-import v1.connectors.httpparsers.StandardDownstreamHttpParser._
-
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UnignoreBenefitConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class UnignoreBenefitConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def unignoreBenefit(
-      request: IgnoreBenefitRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
+                       request: IgnoreBenefitRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import request._
 

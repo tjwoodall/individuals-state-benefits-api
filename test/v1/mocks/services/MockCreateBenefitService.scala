@@ -16,14 +16,13 @@
 
 package v1.mocks.services
 
+import api.controllers.RequestContext
+import api.models.errors.ErrorWrapper
+import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.controllers.EndpointLogContext
-import v1.models.errors.ErrorWrapper
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.createBenefit.CreateBenefitRequest
-import v1.models.response.AddBenefitResponse
+import v1.models.response.createBenefit.AddBenefitResponse
 import v1.services.CreateBenefitService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,8 +35,8 @@ trait MockCreateBenefitService extends MockFactory {
 
     def createStateBenefit(requestData: CreateBenefitRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[AddBenefitResponse]]]] = {
       (mockCreateStateBenefitService
-        .addBenefit(_: CreateBenefitRequest)(_: HeaderCarrier, _: ExecutionContext, _: EndpointLogContext, _: String))
-        .expects(requestData, *, *, *, *)
+        .addBenefit(_: CreateBenefitRequest)(_: RequestContext, _: ExecutionContext))
+        .expects(requestData, *, *)
     }
 
   }

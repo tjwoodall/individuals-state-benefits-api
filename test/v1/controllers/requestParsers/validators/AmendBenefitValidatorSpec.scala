@@ -16,6 +16,8 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.mocks.MockCurrentDateTime
+import api.models.errors._
 import config.AppConfig
 import mocks.MockAppConfig
 import org.joda.time.DateTime
@@ -24,23 +26,21 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.AnyContentAsJson
 import support.UnitSpec
 import utils.CurrentDateTime
-import v1.mocks.MockCurrentDateTime
-import v1.models.errors._
 import v1.models.request.AmendBenefit.AmendBenefitRawData
 
 class AmendBenefitValidatorSpec extends UnitSpec {
 
-  private val validNino    = "AA123456A"
+  private val validNino = "AA123456A"
   private val validTaxYear = "2020-21"
-  private val benefitId    = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
 
   private def requestJson(startDate: String, endDate: String) = AnyContentAsJson(
     Json.parse(
       s"""
-       |{
-       |  "startDate": "$startDate",
-       |  "endDate": "$endDate"
-       |}
+         |{
+         |  "startDate": "$startDate",
+         |  "endDate": "$endDate"
+         |}
       """.stripMargin
     ))
 
@@ -49,7 +49,7 @@ class AmendBenefitValidatorSpec extends UnitSpec {
   class Test extends MockCurrentDateTime with MockAppConfig {
 
     implicit val dateTimeProvider: CurrentDateTime = mockCurrentDateTime
-    val dateTimeFormatter: DateTimeFormatter       = DateTimeFormat.forPattern("yyyy-MM-dd")
+    val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
 
@@ -116,7 +116,7 @@ class AmendBenefitValidatorSpec extends UnitSpec {
       }
 
       "return RuleIncorrectOrEmptyBodyError error for an incorrect request body" in new Test {
-        val paths: Seq[String]     = List("/startDate")
+        val paths: Seq[String] = List("/startDate")
         val body: AnyContentAsJson = AnyContentAsJson(Json.parse("""{ "endDate": "2020-01-01" }""".stripMargin))
 
         validator.validate(AmendBenefitRawData(validNino, validTaxYear, benefitId, body)) shouldBe

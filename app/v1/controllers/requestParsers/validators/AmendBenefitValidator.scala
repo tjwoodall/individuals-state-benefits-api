@@ -16,15 +16,16 @@
 
 package v1.controllers.requestParsers.validators
 
+import api.controllers.requestParsers.validators.Validator
+import api.controllers.requestParsers.validators.validations._
+import api.models.errors.MtdError
 import config.AppConfig
 import utils.CurrentDateTime
-import v1.controllers.requestParsers.validators.validations._
-import v1.models.errors.MtdError
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequestBody}
 
 import javax.inject.Inject
 
-class AmendBenefitValidator @Inject() (implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[AmendBenefitRawData] {
+class AmendBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[AmendBenefitRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidator, bodyValueValidator)
 

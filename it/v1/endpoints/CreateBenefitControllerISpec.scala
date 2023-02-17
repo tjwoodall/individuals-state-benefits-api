@@ -16,6 +16,7 @@
 
 package v1.endpoints
 
+import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.{DateTime, DateTimeZone}
@@ -25,16 +26,15 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.models.errors._
 import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class CreateBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String          = "AA123456A"
-    val taxYear: String       = "2019-20"
-    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String = "AA123456A"
+    val taxYear: String = "2019-20"
+    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     val requestBodyJson: JsValue = Json.parse(
@@ -117,7 +117,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
       val startDate = "2020-08-03"
-      val endDate   = "2020-12-03"
+      val endDate = "2020-12-03"
 
       val validRequestBodyJson: JsValue = Json.parse(
         s"""
@@ -250,8 +250,8 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String             = requestNino
-            override val taxYear: String          = requestTaxYear
+            override val nino: String = requestNino
+            override val taxYear: String = requestTaxYear
             override val requestBodyJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {

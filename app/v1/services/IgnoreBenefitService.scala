@@ -16,27 +16,20 @@
 
 package v1.services
 
+import api.controllers.RequestContext
+import api.models.errors._
+import api.services.BaseService
 import cats.implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 import v1.connectors.IgnoreBenefitConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
-import v1.support.DownstreamResponseMappingSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IgnoreBenefitService @Inject()(connector: IgnoreBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
+class IgnoreBenefitService @Inject() (connector: IgnoreBenefitConnector) extends BaseService {
 
-  def ignoreBenefit(request: IgnoreBenefitRequest)(implicit
-                                                   hc: HeaderCarrier,
-                                                   ec: ExecutionContext,
-                                                   logContext: EndpointLogContext,
-                                                   correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[Unit]]] = {
+  def ignoreBenefit(request: IgnoreBenefitRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[IgnoreBenefitServiceOutcome] = {
 
     connector.ignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }

@@ -16,9 +16,10 @@
 
 package v1.connectors
 
-import v1.models.domain.{Nino, TaxYear}
-import v1.models.outcomes.ResponseWrapper
-import v1.models.request.EmptyBody
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
+import api.models.request.EmptyBody
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 
 import scala.concurrent.Future

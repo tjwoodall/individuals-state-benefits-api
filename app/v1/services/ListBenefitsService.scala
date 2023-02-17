@@ -16,33 +16,22 @@
 
 package v1.services
 
-import cats.data.EitherT
+import api.controllers.RequestContext
+import api.models.errors._
+import api.services.BaseService
 import cats.implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 import v1.connectors.ListBenefitsConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.listBenefits.ListBenefitsRequest
-import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
-import v1.support.DownstreamResponseMappingSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends DownstreamResponseMappingSupport with Logging {
+class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends BaseService {
 
-  def listBenefits(request: ListBenefitsRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
+  def listBenefits(request: ListBenefitsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ListBenefitsServiceOutcome] = {
 
-    val result = EitherT(connector.listBenefits(request)).leftMap(mapDownstreamErrors(downstreamErrorMap))
-
-    result.value
+    connector.listBenefits(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
   private def downstreamErrorMap: Map[String, MtdError] = {

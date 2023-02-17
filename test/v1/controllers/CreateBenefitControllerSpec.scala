@@ -16,74 +16,41 @@
 
 package v1.controllers
 
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.mocks.hateoas.MockHateoasFactory
+import api.mocks.services.MockAuditService
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.{BenefitType, Nino}
+import api.models.errors._
+import api.models.hateoas
+import api.models.hateoas.HateoasWrapper
+import api.models.hateoas.Method.{DELETE, GET, PUT}
+import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.hateoas.HateoasLinks
-import v1.mocks.MockIdGenerator
-import v1.mocks.hateoas.MockHateoasFactory
 import v1.mocks.requestParsers.MockCreateBenefitRequestParser
-import v1.mocks.services.{MockAuditService, MockCreateBenefitService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import v1.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
-import v1.models.domain.{BenefitType, Nino}
-import v1.models.errors._
-import v1.models.hateoas.{HateoasWrapper, Link}
-import v1.models.outcomes.ResponseWrapper
+import v1.mocks.services.MockCreateBenefitService
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequest, CreateBenefitRequestBody}
-import v1.models.response.{AddBenefitHateoasData, AddBenefitResponse}
+import v1.models.response.createBenefit.{AddBenefitHateoasData, AddBenefitResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class CreateBenefitControllerSpec
     extends ControllerBaseSpec
-    with MockEnrolmentsAuthService
-    with MockMtdIdLookupService
+    with ControllerTestRunner
     with MockAppConfig
     with MockCreateBenefitService
     with MockAuditService
     with MockCreateBenefitRequestParser
-    with MockHateoasFactory
-    with HateoasLinks
-    with MockIdGenerator {
+    with MockHateoasFactory {
 
-  val nino: String          = "AA123456A"
-  val taxYear: String       = "2019-20"
-  val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  val startDate             = "2020-08-03"
-  val endDate               = "2020-12-03"
-
-  trait Test {
-    val hc: HeaderCarrier = HeaderCarrier()
-
-    val controller = new CreateBenefitController(
-      authService = mockEnrolmentsAuthService,
-      lookupService = mockMtdIdLookupService,
-      appConfig = mockAppConfig,
-      requestParser = mockAddBenefitRequestParser,
-      service = mockCreateStateBenefitService,
-      auditService = mockAuditService,
-      hateoasFactory = mockHateoasFactory,
-      cc = cc,
-      idGenerator = mockIdGenerator
-    )
-
-    MockedAppConfig.featureSwitches.returns(Configuration("allowTemporalValidationSuspension.enabled" -> true)).anyNumberOfTimes()
-    MockedMtdIdLookupService.lookup(nino).returns(Future.successful(Right("test-mtd-id")))
-    MockedEnrolmentsAuthService.authoriseUser()
-    MockedAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
-    MockIdGenerator.getCorrelationId.returns(correlationId)
-
-    val links: List[Link] = List(
-      retrieveSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-      updateBenefit(mockAppConfig, nino, taxYear, benefitId),
-      deleteBenefit(mockAppConfig, nino, taxYear, benefitId)
-    )
-
-  }
+  val taxYear: String   = "2019-20"
+  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val startDate         = "2020-08-03"
+  val endDate           = "2020-12-03"
 
   val requestBodyJson: JsValue = Json.parse(
     s"""
@@ -115,6 +82,12 @@ class CreateBenefitControllerSpec
 
   val responseData: AddBenefitResponse = AddBenefitResponse(benefitId)
 
+  private val testHateoasLinks = Seq(
+    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
+    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId", method = PUT, rel = "amend-state-benefit"),
+    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId", method = DELETE, rel = "delete-state-benefit")
+  )
+
   val responseJson: JsValue = Json.parse(
     s"""
        |{
@@ -140,24 +113,9 @@ class CreateBenefitControllerSpec
     """.stripMargin
   )
 
-  def event(auditResponse: AuditResponse): AuditEvent[GenericAuditDetail] =
-    AuditEvent(
-      auditType = "CreateStateBenefit",
-      transactionName = "create-state-benefit",
-      detail = GenericAuditDetail(
-        userType = "Individual",
-        agentReferenceNumber = None,
-        params = Map("nino" -> nino, "taxYear" -> taxYear),
-        request = Some(requestBodyJson),
-        `X-CorrelationId` = correlationId,
-        response = auditResponse
-      )
-    )
-
   "CreateBenefitController" should {
-    "return OK" when {
-      "happy path" in new Test {
-
+    "return a successful response with status 200 (OK)" when {
+      "the request received is valid" in new Test {
         MockAddBenefitRequestParser
           .parse(rawData)
           .returns(Right(requestData))
@@ -168,92 +126,73 @@ class CreateBenefitControllerSpec
 
         MockHateoasFactory
           .wrap(responseData, AddBenefitHateoasData(nino, taxYear, benefitId))
-          .returns(HateoasWrapper(responseData, links))
+          .returns(HateoasWrapper(responseData, testHateoasLinks))
 
-        val result: Future[Result] = controller.createStateBenefit(nino, taxYear)(fakePostRequest(requestBodyJson))
-
-        status(result) shouldBe OK
-        contentAsJson(result) shouldBe responseJson
-        header("X-CorrelationId", result) shouldBe Some(correlationId)
-
-        val auditResponse: AuditResponse = AuditResponse(OK, None, Some(responseJson))
-        MockedAuditService.verifyAuditEvent(event(auditResponse)).once
+        runOkTestWithAudit(
+          expectedStatus = OK,
+          maybeAuditRequestBody = Some(requestBodyJson),
+          maybeExpectedResponseBody = Some(responseJson),
+          maybeAuditResponseBody = Some(responseJson)
+        )
       }
     }
 
     "return the error as per spec" when {
-      "parser errors occur" must {
-        def errorsFromParserTester(error: MtdError, expectedStatus: Int): Unit = {
-          s"a ${error.code} error is returned from the parser" in new Test {
+      "the parser validation fails" in new Test {
+        MockAddBenefitRequestParser
+          .parse(rawData)
+          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
 
-            MockAddBenefitRequestParser
-              .parse(rawData)
-              .returns(Left(ErrorWrapper(correlationId, error, None)))
-
-            val result: Future[Result] = controller.createStateBenefit(nino, taxYear)(fakePostRequest(requestBodyJson))
-
-            status(result) shouldBe expectedStatus
-            contentAsJson(result) shouldBe Json.toJson(error)
-            header("X-CorrelationId", result) shouldBe Some(correlationId)
-
-            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(error.code))), None)
-            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
-          }
-        }
-
-        val input = List(
-          (BadRequestError, BAD_REQUEST),
-          (NinoFormatError, BAD_REQUEST),
-          (TaxYearFormatError, BAD_REQUEST),
-          (RuleTaxYearRangeInvalidError, BAD_REQUEST),
-          (RuleIncorrectOrEmptyBodyError, BAD_REQUEST),
-          (RuleTaxYearNotSupportedError, BAD_REQUEST),
-          (RuleTaxYearNotEndedError, BAD_REQUEST),
-          (BenefitTypeFormatError, BAD_REQUEST),
-          (StartDateFormatError, BAD_REQUEST),
-          (EndDateFormatError, BAD_REQUEST),
-          (RuleStartDateAfterTaxYearEndError, BAD_REQUEST),
-          (RuleEndDateBeforeTaxYearStartError, BAD_REQUEST),
-          (RuleEndDateBeforeStartDateError, BAD_REQUEST)
-        )
-
-        input.foreach(args => (errorsFromParserTester _).tupled(args))
+        runErrorTestWithAudit(NinoFormatError, Some(requestBodyJson))
       }
 
-      "service errors occur" must {
-        def serviceErrors(mtdError: MtdError, expectedStatus: Int): Unit = {
-          s"a $mtdError error is returned from the service" in new Test {
+      "the service returns an error" in new Test {
+        MockAddBenefitRequestParser
+          .parse(rawData)
+          .returns(Right(requestData))
 
-            MockAddBenefitRequestParser
-              .parse(rawData)
-              .returns(Right(requestData))
+        MockCreateStateBenefitService
+          .createStateBenefit(requestData)
+          .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
 
-            MockCreateStateBenefitService
-              .createStateBenefit(requestData)
-              .returns(Future.successful(Left(ErrorWrapper(correlationId, mtdError))))
-
-            val result: Future[Result] = controller.createStateBenefit(nino, taxYear)(fakePostRequest(requestBodyJson))
-
-            status(result) shouldBe expectedStatus
-            contentAsJson(result) shouldBe Json.toJson(mtdError)
-            header("X-CorrelationId", result) shouldBe Some(correlationId)
-
-            val auditResponse: AuditResponse = AuditResponse(expectedStatus, Some(Seq(AuditError(mtdError.code))), None)
-            MockedAuditService.verifyAuditEvent(event(auditResponse)).once
-          }
-        }
-
-        val input = List(
-          (NinoFormatError, BAD_REQUEST),
-          (TaxYearFormatError, BAD_REQUEST),
-          (RuleTaxYearNotEndedError, BAD_REQUEST),
-          (RuleBenefitTypeExists, BAD_REQUEST),
-          (StandardDownstreamError, INTERNAL_SERVER_ERROR)
-        )
-
-        input.foreach(args => (serviceErrors _).tupled(args))
+        runErrorTestWithAudit(RuleTaxYearNotSupportedError, maybeAuditRequestBody = Some(requestBodyJson))
       }
     }
+  }
+
+  trait Test extends ControllerTest with AuditEventChecking {
+
+    val controller = new CreateBenefitController(
+      authService = mockEnrolmentsAuthService,
+      lookupService = mockMtdIdLookupService,
+      appConfig = mockAppConfig,
+      parser = mockAddBenefitRequestParser,
+      service = mockCreateStateBenefitService,
+      auditService = mockAuditService,
+      hateoasFactory = mockHateoasFactory,
+      cc = cc,
+      idGenerator = mockIdGenerator
+    )
+
+    MockedAppConfig.featureSwitches.returns(Configuration("allowTemporalValidationSuspension.enabled" -> true)).anyNumberOfTimes()
+
+    protected def callController(): Future[Result] = controller.createStateBenefit(nino, taxYear)(fakePostRequest(requestBodyJson))
+
+    def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
+      AuditEvent(
+        auditType = "CreateStateBenefit",
+        transactionName = "create-state-benefit",
+        detail = GenericAuditDetail(
+          userType = "Individual",
+          agentReferenceNumber = None,
+          pathParams = Map("nino" -> nino, "taxYear" -> taxYear),
+          queryParams = None,
+          requestBody = Some(requestBodyJson),
+          `X-CorrelationId` = correlationId,
+          auditResponse = auditResponse
+        )
+      )
+
   }
 
 }

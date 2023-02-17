@@ -16,38 +16,25 @@
 
 package v1.services
 
-import cats.data.EitherT
+import api.controllers.RequestContext
+import api.models.errors._
+import api.services.BaseService
 import cats.implicits._
-import uk.gov.hmrc.http.HeaderCarrier
-import utils.Logging
 import v1.connectors.CreateBenefitConnector
-import v1.controllers.EndpointLogContext
-import v1.models.errors._
-import v1.models.outcomes.ResponseWrapper
 import v1.models.request.createBenefit.CreateBenefitRequest
-import v1.models.response.AddBenefitResponse
-import v1.support.DownstreamResponseMappingSupport
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends DownstreamResponseMappingSupport with Logging {
+class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends BaseService {
 
-  def addBenefit(request: CreateBenefitRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      logContext: EndpointLogContext,
-      correlationId: String): Future[Either[ErrorWrapper, ResponseWrapper[AddBenefitResponse]]] = {
+  def addBenefit(request: CreateBenefitRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[CreateBenefitServiceOutcome] = {
 
-    val result = for {
-      desResponseWrapper <- EitherT(connector.addBenefit(request)).leftMap(mapDownstreamErrors(desErrorMap))
-    } yield desResponseWrapper
-
-    result.value
+    connector.addBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
-  private def desErrorMap: Map[String, MtdError] =
+  private def downstreamErrorMap: Map[String, MtdError] =
     Map(
       "INVALID_TAXABLE_ENTITY_ID"   -> NinoFormatError,
       "INVALID_TAX_YEAR"            -> TaxYearFormatError,

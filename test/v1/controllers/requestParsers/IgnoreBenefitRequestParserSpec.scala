@@ -16,17 +16,17 @@
 
 package v1.controllers.requestParsers
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors._
 import support.UnitSpec
-import v1.models.domain.{Nino, TaxYear}
 import v1.mocks.validators.MockIgnoreBenefitValidator
-import v1.models.errors._
 import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
 
 class IgnoreBenefitRequestParserSpec extends UnitSpec {
 
-  private val nino: String           = "AA123456B"
-  private val taxYear: String        = "2021-22"
-  private val benefitId: String      = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val nino: String = "AA123456B"
+  private val taxYear: String = "2021-22"
+  private val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val ignoreBenefitRawData = IgnoreBenefitRawData(

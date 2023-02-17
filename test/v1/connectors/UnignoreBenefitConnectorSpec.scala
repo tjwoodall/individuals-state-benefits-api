@@ -16,8 +16,9 @@
 
 package v1.connectors
 
-import v1.models.domain.{Nino, TaxYear}
-import v1.models.outcomes.ResponseWrapper
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 
 import scala.concurrent.Future
@@ -28,7 +29,8 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new IfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
-        val expectedOutcome  = Right(ResponseWrapper(correlationId, ()))
+
+        val expectedOutcome = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
           url = s"$baseUrl/income-tax/state-benefits/$nino/2019-20/ignore/$benefitId"
@@ -42,7 +44,8 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
     "return the expected response for a TYS request" when {
       "a valid request is made" in new TysIfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
-        val expectedOutcome  = Right(ResponseWrapper(correlationId, ()))
+
+        val expectedOutcome = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
           url = s"$baseUrl/income-tax/23-24/state-benefits/$nino/ignore/$benefitId"
@@ -54,10 +57,11 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
     }
   }
 
-  trait Test { _: ConnectorTest =>
+  trait Test {
+    _: ConnectorTest =>
     def taxYear: TaxYear
 
-    val nino: String      = "AA111111A"
+    val nino: String = "AA111111A"
     val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
     val request: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), taxYear, benefitId)

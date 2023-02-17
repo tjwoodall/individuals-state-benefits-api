@@ -17,8 +17,9 @@
 package v1.controllers.requestParsers
 
 
+import api.controllers.requestParsers.RequestParser
+import api.models.domain.{Nino, TaxYear}
 import v1.controllers.requestParsers.validators.DeleteBenefitAmountsValidator
-import v1.models.domain.{Nino, TaxYear}
 import v1.models.request.deleteBenefitAmounts.{DeleteBenefitAmountsRawData, DeleteBenefitAmountsRequest}
 
 import javax.inject.{Inject, Singleton}

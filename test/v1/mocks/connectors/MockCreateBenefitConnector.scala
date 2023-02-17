@@ -16,12 +16,13 @@
 
 package v1.mocks.connectors
 
+import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.connectors.{CreateBenefitConnector, DownstreamOutcome}
+import v1.connectors.CreateBenefitConnector
 import v1.models.request.createBenefit.CreateBenefitRequest
-import v1.models.response.AddBenefitResponse
+import v1.models.response.createBenefit.AddBenefitResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 

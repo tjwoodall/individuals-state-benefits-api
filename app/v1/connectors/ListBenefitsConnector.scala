@@ -16,10 +16,11 @@
 
 package v1.connectors
 
+import api.connectors.DownstreamUri._
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
 import v1.models.request.listBenefits.ListBenefitsRequest
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
@@ -27,22 +28,22 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class ListBenefitsConnector @Inject()(val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def listBenefits(request: ListBenefitsRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
+                                                 hc: HeaderCarrier,
+                                                 ec: ExecutionContext,
+                                                 correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
-    import v1.connectors.httpparsers.StandardDownstreamHttpParser._
+    import api.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
     import request._
 
     val downstreamUri = if (taxYear.useTaxYearSpecificApi) {
-        TaxYearSpecificIfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](
-          s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/${nino.nino}")
-    }else{
+      TaxYearSpecificIfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](
+        s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/${nino.nino}")
+    } else {
       IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/${nino.nino}/${taxYear.asMtd}")
     }
 

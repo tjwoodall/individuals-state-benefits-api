@@ -16,9 +16,9 @@
 
 package v1.models.response.listBenefits
 
+import api.models.utils.JsonErrorValidators
 import play.api.libs.json.{JsObject, JsValue, Json}
 import support.UnitSpec
-import v1.models.utils.JsonErrorValidators
 
 class HMRCStateBenefitSpec extends UnitSpec with JsonErrorValidators {
 

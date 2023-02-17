@@ -16,6 +16,6 @@
 
 package v1.models.request.createBenefit
 
-import v1.models.domain.Nino
+import api.models.domain.Nino
 
 case class CreateBenefitRequest(nino: Nino, taxYear: String, body: CreateBenefitRequestBody)

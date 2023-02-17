@@ -16,12 +16,13 @@
 
 package v1.connectors
 
+import api.connectors.DownstreamUri._
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
+import api.models.request.EmptyBody
 import config.AppConfig
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.connectors.DownstreamUri.{IfsUri, TaxYearSpecificIfsUri}
-import v1.connectors.httpparsers.StandardDownstreamHttpParser._
-import v1.models.request.EmptyBody
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 
 import javax.inject.{Inject, Singleton}
