@@ -28,21 +28,10 @@ import support.IntegrationBaseSpec
 import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
+
   "Calling the 'ignore benefit' endpoint" should {
     "return a 200 status code" when {
-      "any valid request is made" in new NonTysTest {
-
-        override def setupStubs(): Unit = {
-          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, CREATED)
-        }
-
-        val response: WSResponse = await(request().post(JsObject.empty))
-        response.status shouldBe OK
-        response.body[JsValue] shouldBe hateoasResponse
-        response.header("Content-Type") shouldBe Some("application/json")
-      }
-
-      "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysIfsTest {
+      "any valid request is made" in new Test {
 
         override def setupStubs(): Unit = {
           DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, CREATED)
@@ -82,10 +71,10 @@ class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
                                 expectedStatus: Int,
                                 expectedBody: MtdError,
                                 scenario: Option[String]): Unit = {
-          s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new NonTysTest {
+          s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
+            override val nino: String      = requestNino
+            override val taxYear: String   = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -108,7 +97,7 @@ class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
 
       "downstream service error" when {
         def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new NonTysTest {
+          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new Test {
 
             override def setupStubs(): Unit = {
               DownstreamStub.onError(DownstreamStub.PUT, downstreamUri, downstreamStatus, errorBody(downstreamCode))
@@ -145,12 +134,12 @@ class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
+    val nino: String      = "AA123456A"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-    def taxYear: String
+    def taxYear: String = "2019-20"
 
-    def downstreamUri: String
+    def downstreamUri: String = s"/income-tax/19-20/income/state-benefits/$nino/ignore/$benefitId"
 
     val hateoasResponse: JsValue = Json.parse(
       s"""
@@ -197,18 +186,4 @@ class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
 
   }
 
-  private trait NonTysTest extends Test {
-    def taxYear: String = "2019-20"
-
-    def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/2019-20/ignore/$benefitId"
-  }
-
-  private trait TysIfsTest extends Test {
-    def taxYear: String = "2023-24"
-
-    def downstreamUri: String = s"/income-tax/23-24/income/state-benefits/$nino/ignore/$benefitId"
-
-    override def request: WSRequest =
-      super.request.addHttpHeaders("suspend-temporal-validations" -> "true")
-  }
 }
