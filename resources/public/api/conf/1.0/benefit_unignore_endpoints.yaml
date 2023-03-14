@@ -1,5 +1,5 @@
 post:
-  $ref: "./benefit_unignore_endpoints.yaml"
+  $ref: "./benefit_unignore.yaml"
   summary: Unignore State Benefit
   security:
     - User-Restricted:
