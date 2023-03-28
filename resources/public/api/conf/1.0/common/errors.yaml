@@ -106,10 +106,10 @@ components:
         message: A benefit of this type has already been created
 
     ruleUpdateForbidden:
-      description: An update for a HMRC held benefit is not permitted.
+      description: The update for a HMRC held benefit is not permitted.
       value:
         code: RULE_UPDATE_FORBIDDEN
-        message: An update for a HMRC held benefit is not permitted
+        message: The update for a HMRC held benefit is not permitted
 
     ruleDeleteForbidden:
       description: A deletion for a HMRC held state benefit is not permitted.
