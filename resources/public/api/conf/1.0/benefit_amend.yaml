@@ -23,6 +23,14 @@ description: |
               <td><p>Simulates the scenario in which a benefit is HMRC held and therefore cannot be modified or deleted.</p></td>
           </tr>
           <tr>
+              <td><p>START_DATE_AFTER_TAX_YEAR_END</p></td>
+              <td><p>Simulates the scenario where the start date provided is after the tax year ended.</p></td>
+          </tr>
+          <tr>
+              <td><p>END_DATE_BEFORE_TAX_YEAR_START</p></td>
+              <td><p>Simulates the scenario where the end date provided is before the start date.</p></td>
+          </tr>
+          <tr>
               <td><p>NOT_FOUND</p></td>
               <td><p>Simulates the scenario where no data is found.</p></td>
           </tr>
@@ -90,8 +98,6 @@ responses:
             $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
           RULE_TAX_YEAR_NOT_SUPPORTED:
             $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotSupported'
-          RULE_TAX_YEAR_NOT_ENDED:
-            $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotEnded'
           RULE_END_DATE_BEFORE_START_DATE:
             $ref: './common/errors.yaml#/components/examples/ruleEndDateBeforeStartDate'
           RULE_START_DATE_AFTER_TAX_YEAR_END:
