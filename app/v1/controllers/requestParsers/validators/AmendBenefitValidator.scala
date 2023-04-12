@@ -18,16 +18,17 @@ package v1.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations._
-import api.models.errors.MtdError
+import api.models.errors.{EndDateFormatError, MtdError, StartDateFormatError}
 import config.AppConfig
-import utils.CurrentDateTime
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequestBody}
 
+import java.time.LocalDate
 import javax.inject.Inject
 
-class AmendBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime, appConfig: AppConfig) extends Validator[AmendBenefitRawData] {
+class AmendBenefitValidator @Inject() (implicit appConfig: AppConfig) extends Validator[AmendBenefitRawData] {
 
-  private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidator, bodyValueValidator)
+  private val validationSet =
+    List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidator, bodyParameterFormatValidation, bodyValueValidator)
 
   override def validate(data: AmendBenefitRawData): List[MtdError] = {
     run(validationSet, data).distinct
@@ -43,8 +44,7 @@ class AmendBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime,
 
   private def parameterRuleValidation: AmendBenefitRawData => List[List[MtdError]] = { data =>
     List(
-      TaxYearNotSupportedValidation.validate(data.taxYear),
-      if (data.temporalValidationEnabled) TaxYearNotEndedValidation.validate(data.taxYear) else Nil
+      TaxYearNotSupportedValidation.validate(data.taxYear)
     )
   }
 
@@ -54,11 +54,28 @@ class AmendBenefitValidator @Inject()(implicit currentDateTime: CurrentDateTime,
     )
   }
 
-  private def bodyValueValidator: AmendBenefitRawData => List[List[MtdError]] = (data: AmendBenefitRawData) => {
-    val requestBodyData: AmendBenefitRequestBody = data.body.json.as[AmendBenefitRequestBody]
+  private def bodyParameterFormatValidation: AmendBenefitRawData => List[List[MtdError]] = { data =>
+    val body = data.body.json.as[AmendBenefitRequestBody]
 
     List(
-      StateBenefitsDateValidation.validate(requestBodyData.startDate, requestBodyData.endDate, data.taxYear)
+      DateFormatValidation.validate(body.startDate, StartDateFormatError),
+      body.endDate.map(DateFormatValidation.validate(_, EndDateFormatError)).getOrElse(NoValidationErrors)
+    )
+  }
+
+  private def bodyValueValidator: AmendBenefitRawData => List[List[MtdError]] = (data: AmendBenefitRawData) => {
+    val body: AmendBenefitRequestBody = data.body.json.as[AmendBenefitRequestBody]
+
+    val dateOrderValidationErrors = body.endDate match {
+      case Some(end) =>
+        val parsedStart = LocalDate.parse(body.startDate)
+        val parsedEnd   = LocalDate.parse(end)
+        DateOrderValidation.validate(parsedStart, parsedEnd)
+      case _ => NoValidationErrors
+    }
+
+    List(
+      dateOrderValidationErrors
     )
   }
 

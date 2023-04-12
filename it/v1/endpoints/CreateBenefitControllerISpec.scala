@@ -18,8 +18,6 @@ package v1.endpoints
 
 import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -30,73 +28,6 @@ import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class CreateBenefitControllerISpec extends IntegrationBaseSpec {
 
-  private trait Test {
-
-    val nino: String = "AA123456A"
-    val taxYear: String = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-    val correlationId: String = "X-123"
-
-    val requestBodyJson: JsValue = Json.parse(
-      s"""
-         |{
-         |  "benefitType": "incapacityBenefit",
-         |  "startDate": "2019-01-01",
-         |  "endDate": "2020-06-01"
-         |}
-      """.stripMargin
-    )
-
-    val responseJson: JsValue = Json.parse(
-      s"""
-         |{
-         |   "benefitId": "$benefitId"
-         |}
-        """.stripMargin
-    )
-
-    val responseWithHateoasLinksJson: JsValue = Json.parse(
-      s"""
-         |{
-         |   "benefitId": "$benefitId",
-         |   "links": [
-         |         {
-         |         "href": "/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
-         |         "rel": "self",
-         |         "method": "GET"
-         |      },
-         |      {
-         |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
-         |         "rel": "amend-state-benefit",
-         |         "method": "PUT"
-         |      },
-         |      {
-         |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
-         |         "rel": "delete-state-benefit",
-         |         "method": "DELETE"
-         |      }
-         |      ]
-         |}
-    """.stripMargin
-    )
-
-    def uri: String = s"/$nino/$taxYear"
-
-    def ifsUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom"
-
-    def setupStubs(): StubMapping
-
-    def request(): WSRequest = {
-      setupStubs()
-      buildRequest(uri)
-        .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
-          (AUTHORIZATION, "Bearer 123") // some bearer token
-        )
-    }
-
-  }
-
   "Calling the 'create state benefit' endpoint" should {
     "return a 200 status code" when {
       "any valid request is made" in new Test {
@@ -105,7 +36,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.POST, ifsUri, OK, responseJson)
+          DownstreamStub.onSuccess(DownstreamStub.POST, downstreamUri, OK, responseJson)
         }
 
         val response: WSResponse = await(request().post(requestBodyJson))
@@ -117,7 +48,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
       val startDate = "2020-08-03"
-      val endDate = "2020-12-03"
+      val endDate   = "2020-12-03"
 
       val validRequestBodyJson: JsValue = Json.parse(
         s"""
@@ -179,36 +110,6 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
       """.stripMargin
       )
 
-      val invalidDateOrderRequestJson: JsValue = Json.parse(
-        """
-          |{
-          |  "benefitType": "incapacityBenefit",
-          |  "startDate": "2020-01-01",
-          |  "endDate": "2019-06-01"
-          |}
-      """.stripMargin
-      )
-
-      val startDateLateRequestJson: JsValue = Json.parse(
-        """
-          |{
-          |  "benefitType": "incapacityBenefit",
-          |  "startDate": "2023-01-01",
-          |  "endDate": "2023-06-01"
-          |}
-      """.stripMargin
-      )
-
-      val EndDateEarlyRequestJson: JsValue = Json.parse(
-        """
-          |{
-          |  "benefitType": "incapacityBenefit",
-          |  "startDate": "2018-01-01",
-          |  "endDate": "2018-06-01"
-          |}
-      """.stripMargin
-      )
-
       val invalidFieldType: MtdError = RuleIncorrectOrEmptyBodyError.copy(
         paths = Some(
           List(
@@ -226,21 +127,6 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           ))
       )
 
-      def getCurrentTaxYear: String = {
-        val currentDate = DateTime.now(DateTimeZone.UTC)
-
-        val taxYearStartDate: DateTime = DateTime.parse(
-          currentDate.getYear + "-04-06",
-          DateTimeFormat.forPattern("yyyy-MM-dd")
-        )
-
-        def fromIfsIntToString(taxYear: Int): String =
-          (taxYear - 1) + "-" + taxYear.toString.drop(2)
-
-        if (currentDate.isBefore(taxYearStartDate)) fromIfsIntToString(currentDate.getYear)
-        else fromIfsIntToString(currentDate.getYear + 1)
-      }
-
       "validation error" when {
         def validationErrorTest(requestNino: String,
                                 requestTaxYear: String,
@@ -250,8 +136,8 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
+            override val nino: String             = requestNino
+            override val taxYear: String          = requestTaxYear
             override val requestBodyJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {
@@ -271,13 +157,9 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "20177", validRequestBodyJson, BAD_REQUEST, TaxYearFormatError, None),
           ("AA123456A", "2015-17", validRequestBodyJson, BAD_REQUEST, RuleTaxYearRangeInvalidError, None),
           ("AA123456A", "2015-16", validRequestBodyJson, BAD_REQUEST, RuleTaxYearNotSupportedError, None),
-          ("AA123456A", getCurrentTaxYear, validRequestBodyJson, BAD_REQUEST, RuleTaxYearNotEndedError, None),
           ("AA123456A", "2019-20", invalidBenefitIdRequestJson, BAD_REQUEST, BenefitTypeFormatError, None),
           ("AA123456A", "2019-20", invalidStartDateRequestJson, BAD_REQUEST, StartDateFormatError, None),
           ("AA123456A", "2019-20", invalidEndDateRequestJson, BAD_REQUEST, EndDateFormatError, None),
-          ("AA123456A", "2019-20", invalidDateOrderRequestJson, BAD_REQUEST, RuleEndDateBeforeStartDateError, None),
-          ("AA123456A", "2019-20", startDateLateRequestJson, BAD_REQUEST, RuleStartDateAfterTaxYearEndError, None),
-          ("AA123456A", "2019-20", EndDateEarlyRequestJson, BAD_REQUEST, RuleEndDateBeforeTaxYearStartError, None),
           ("AA123456A", "2019-20", emptyRequestBodyJson, BAD_REQUEST, RuleIncorrectOrEmptyBodyError, None),
           ("AA123456A", "2019-20", nonValidRequestBodyJson, BAD_REQUEST, invalidFieldType, Some("(wrong field type)")),
           ("AA123456A", "2019-20", missingFieldRequestBodyJson, BAD_REQUEST, missingMandatoryFieldErrors, Some("(missing mandatory fields)"))
@@ -287,14 +169,14 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
       }
 
       "ifs service error" when {
-        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
+        def serviceErrorTest(downstreamStatus: Int, downstreamStatusCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"ifs returns an $downstreamStatusCode error and status $downstreamStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.POST, ifsUri, ifsStatus, errorBody(ifsCode))
+              DownstreamStub.onError(DownstreamStub.POST, downstreamUri, downstreamStatus, errorBody(downstreamStatusCode))
             }
 
             val response: WSResponse = await(request().post(requestBodyJson))
@@ -307,7 +189,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           s"""
              |{
              |   "code": "$code",
-             |   "reason": "ifs message"
+             |   "reason": "downstream message"
              |}
             """.stripMargin
 
@@ -327,6 +209,72 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
         input.foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
+  }
+
+  private trait Test {
+
+    val nino: String      = "AA123456A"
+    val taxYear: String   = "2019-20"
+    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+
+    val requestBodyJson: JsValue = Json.parse(
+      s"""
+         |{
+         |  "benefitType": "incapacityBenefit",
+         |  "startDate": "2019-01-01",
+         |  "endDate": "2020-06-01"
+         |}
+      """.stripMargin
+    )
+
+    val responseJson: JsValue = Json.parse(
+      s"""
+         |{
+         |   "benefitId": "$benefitId"
+         |}
+        """.stripMargin
+    )
+
+    val responseWithHateoasLinksJson: JsValue = Json.parse(
+      s"""
+         |{
+         |   "benefitId": "$benefitId",
+         |   "links": [
+         |         {
+         |         "href": "/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+         |         "rel": "self",
+         |         "method": "GET"
+         |      },
+         |      {
+         |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+         |         "rel": "amend-state-benefit",
+         |         "method": "PUT"
+         |      },
+         |      {
+         |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+         |         "rel": "delete-state-benefit",
+         |         "method": "DELETE"
+         |      }
+         |      ]
+         |}
+    """.stripMargin
+    )
+
+    def uri: String = s"/$nino/$taxYear"
+
+    def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom"
+
+    def setupStubs(): StubMapping
+
+    def request(): WSRequest = {
+      setupStubs()
+      buildRequest(uri)
+        .withHttpHeaders(
+          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (AUTHORIZATION, "Bearer 123") // some bearer token
+        )
+    }
+
   }
 
 }

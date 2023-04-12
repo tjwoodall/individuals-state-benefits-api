@@ -18,8 +18,6 @@ package v1.endpoints
 
 import api.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -32,10 +30,9 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456B"
+    val nino: String    = "AA123456B"
     val taxYear: String = "2019-20"
-    val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
-    val correlationId: String = "X-123"
+    val benefitId       = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
 
     val requestJson: JsValue = Json.parse(
       """
@@ -48,7 +45,7 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
 
     def uri: String = s"/$nino/$taxYear/$benefitId"
 
-    def ifsUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
+    def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
 
     def setupStubs(): StubMapping
 
@@ -100,7 +97,7 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.PUT, ifsUri, CREATED)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, CREATED)
         }
 
         val response: WSResponse = await(request().put(requestJson))
@@ -110,47 +107,28 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
       }
     }
 
-    def getCurrentTaxYear: String = {
-      val currentDate = DateTime.now(DateTimeZone.UTC)
-
-      val taxYearStartDate: DateTime = DateTime.parse(
-        currentDate.getYear + "-04-06",
-        DateTimeFormat.forPattern("yyyy-MM-dd")
-      )
-
-      def fromIfsIntToString(taxYear: Int): String =
-        (taxYear - 1) + "-" + taxYear.toString.drop(2)
-
-      if (currentDate.isBefore(taxYearStartDate)) {
-        fromIfsIntToString(currentDate.getYear)
-      } else {
-        fromIfsIntToString(currentDate.getYear + 1)
-      }
-    }
-
     "return a 400 with multiple errors" when {
       "all field value validations fail on the request body" in new Test {
 
         val json: JsValue = Json.parse(
           """
             |{
-            |   "startDate": "2021-04-06",
-            |   "endDate": "2020-10-01"
+            |   "startDate": "2021-04--06",
+            |   "endDate": "2020-10--01"
             |}
     """.stripMargin
         )
 
-        private val responseJson = Json.parse(
-          """
+        private val responseJson = Json.parse("""
             |{
             |	"code": "INVALID_REQUEST",
             |	"message": "Invalid request",
             |	"errors": [{
-            |		"code": "RULE_START_DATE_AFTER_TAX_YEAR_END",
-            |		"message": "The start date cannot be later than the tax year end"
+            |		"code": "FORMAT_START_DATE",
+            |		"message": "The provided start date is invalid"
             |	}, {
-            |		"code": "RULE_END_DATE_BEFORE_START_DATE",
-            |		"message": "The end date cannot be earlier than the start date"
+            |		"code": "FORMAT_END_DATE",
+            |		"message": "The provided end date is invalid"
             |	}]
             |}
             |""".stripMargin)
@@ -198,6 +176,15 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
 
       val emptyRequestJson: JsValue = JsObject.empty
 
+      val invalidEndBeforeStartJson: JsValue = Json.parse(
+        """
+          |{
+          |   "startDate": "2021-01-01",
+          |   "endDate": "2020-04-06"
+          |}
+    """.stripMargin
+      )
+
       "validation error" when {
         def validationErrorTest(requestNino: String,
                                 requestTaxYear: String,
@@ -207,9 +194,9 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
                                 expectedBody: MtdError): Unit = {
           s"validation fails with ${expectedBody.code} error" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
-            override val benefitId: String = requestBenefitId
+            override val nino: String         = requestNino
+            override val taxYear: String      = requestTaxYear
+            override val benefitId: String    = requestBenefitId
             override val requestJson: JsValue = requestBody
 
             override def setupStubs(): StubMapping = {
@@ -229,26 +216,26 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
           ("AA1123A", "2020-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, NinoFormatError),
           ("AA123456A", "20199", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, TaxYearFormatError),
           ("AA123456A", "2019-20", "4557ecb-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, BenefitIdFormatError),
-          ("AA123456A", "2018-19", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, RuleTaxYearNotSupportedError),
           ("AA123456A", "2019-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, RuleTaxYearRangeInvalidError),
-          ("AA123456A", getCurrentTaxYear, "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, RuleTaxYearNotEndedError),
           ("AA123456A", "2019-20", "78d9f015-a8b4-47a8-8bbc-c253a1e8057e", emptyRequestJson, BAD_REQUEST, RuleIncorrectOrEmptyBodyError),
           ("AA123456A", "2019-20", "78d9f015-a8b4-47a8-8bbc-c253a1e8057e", invalidStartDateJson, BAD_REQUEST, StartDateFormatError),
-          ("AA123456A", "2019-20", "78d9f015-a8b4-47a8-8bbc-c253a1e8057e", invalidEndDateJson, BAD_REQUEST, EndDateFormatError)
+          ("AA123456A", "2019-20", "78d9f015-a8b4-47a8-8bbc-c253a1e8057e", invalidEndDateJson, BAD_REQUEST, EndDateFormatError),
+          ("AA123456A", "2018-19", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, RuleTaxYearNotSupportedError),
+          ("AA123456A", "2020-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", invalidEndBeforeStartJson, BAD_REQUEST, RuleEndDateBeforeStartDateError)
         )
 
         input.foreach(args => (validationErrorTest _).tupled(args))
       }
 
-      "ifs service error" when {
-        def serviceErrorTest(ifsStatus: Int, ifsCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
-          s"ifs returns an $ifsCode error and status $ifsStatus" in new Test {
+      "downstream service error" when {
+        def serviceErrorTest(downstreamStatus: Int, downstreamCode: String, expectedStatus: Int, expectedBody: MtdError): Unit = {
+          s"downstream returns an $downstreamCode error and status $downstreamStatus" in new Test {
 
             override def setupStubs(): StubMapping = {
               AuditStub.audit()
               AuthStub.authorised()
               MtdIdLookupStub.ninoFound(nino)
-              DownstreamStub.onError(DownstreamStub.PUT, ifsUri, ifsStatus, errorBody(ifsCode))
+              DownstreamStub.onError(DownstreamStub.PUT, downstreamUri, downstreamStatus, errorBody(downstreamCode))
             }
 
             val response: WSResponse = await(request().put(requestJson))

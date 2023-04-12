@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-package v1.models.request.ignoreBenefit
+package api.controllers.requestParsers.validators.validations
 
-import api.models.request.RawData
+import api.models.errors.{MtdError, RuleEndDateBeforeStartDateError}
 
-case class IgnoreBenefitRawData(nino: String, taxYear: String, benefitId: String) extends RawData
+import java.time.LocalDate
+
+object DateOrderValidation {
+
+  def validate(start: LocalDate, end: LocalDate): List[MtdError] =
+    if (start.isAfter(end)) List(RuleEndDateBeforeStartDateError) else NoValidationErrors
+
+}

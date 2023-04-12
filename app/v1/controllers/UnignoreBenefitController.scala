@@ -19,9 +19,9 @@ package v1.controllers
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.{AppConfig, FeatureSwitches}
+import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import utils.{IdGenerator, Logging}
+import utils.IdGenerator
 import v1.controllers.requestParsers.IgnoreBenefitRequestParser
 import v1.models.request.ignoreBenefit.IgnoreBenefitRawData
 import v1.models.response.unignoreBenefit.UnignoreBenefitHateoasData
@@ -41,8 +41,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
                                            hateoasFactory: HateoasFactory,
                                            cc: ControllerComponents,
                                            idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
-    with Logging {
+    extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -54,12 +53,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(
-        nino = nino,
-        taxYear = taxYear,
-        benefitId = benefitId,
-        temporalValidationEnabled = FeatureSwitches()(appConfig).isTemporalValidationEnabled
-      )
+      val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
 
       val requestHandler = RequestHandler
         .withParser(parser)

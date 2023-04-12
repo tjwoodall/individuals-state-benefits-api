@@ -22,12 +22,10 @@ import api.mocks.services.MockAuditService
 import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
-import api.models.hateoas
-import api.models.hateoas.HateoasWrapper
 import api.models.hateoas.Method.{GET, POST}
+import api.models.hateoas.{HateoasWrapper, Link}
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
-import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v1.mocks.requestParsers.MockIgnoreBenefitRequestParser
@@ -46,45 +44,6 @@ class UnignoreBenefitControllerSpec
     with MockIgnoreBenefitRequestParser
     with MockAuditService
     with MockHateoasFactory {
-
-  val taxYear: String   = "2019-20"
-  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-
-  val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(
-    nino = nino,
-    taxYear = taxYear,
-    benefitId = benefitId
-  )
-
-  val requestData: IgnoreBenefitRequest = IgnoreBenefitRequest(
-    nino = Nino(nino),
-    taxYear = TaxYear.fromMtd(taxYear),
-    benefitId = benefitId
-  )
-
-  private val testHateoasLinks = Seq(
-    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
-    hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/ignore", method = POST, rel = "ignore-state-benefit")
-  )
-
-  val hateoasResponse: JsValue = Json.parse(
-    s"""
-       |{
-       |   "links":[
-       |      {
-       |         "href":"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
-       |         "rel":"self",
-       |         "method":"GET"
-       |      },
-       |      {
-       |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/ignore",
-       |         "rel":"ignore-state-benefit",
-       |         "method":"POST"
-       |      }
-       |   ]
-       |}
-    """.stripMargin
-  )
 
   "UnignoreBenefitController" should {
     "return a successful response with status 200 (OK)" when {
@@ -133,7 +92,14 @@ class UnignoreBenefitControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking {
+  private trait Test extends ControllerTest with AuditEventChecking {
+
+    val taxYear: String   = "2019-20"
+    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+
+    val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
+
+    val requestData: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId)
 
     val controller = new UnignoreBenefitController(
       authService = mockEnrolmentsAuthService,
@@ -146,8 +112,6 @@ class UnignoreBenefitControllerSpec
       cc = cc,
       idGenerator = mockIdGenerator
     )
-
-    MockedAppConfig.featureSwitches.returns(Configuration("allowTemporalValidationSuspension.enabled" -> true)).anyNumberOfTimes()
 
     protected def callController(): Future[Result] = controller.unignoreBenefit(nino, taxYear, benefitId)(fakeRequest)
 
@@ -165,6 +129,30 @@ class UnignoreBenefitControllerSpec
           auditResponse = auditResponse
         )
       )
+
+    val testHateoasLinks: Seq[Link] = Seq(
+      Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
+      Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/ignore", method = POST, rel = "ignore-state-benefit")
+    )
+
+    val hateoasResponse: JsValue = Json.parse(
+      s"""
+         |{
+         |   "links":[
+         |      {
+         |         "href":"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+         |         "rel":"self",
+         |         "method":"GET"
+         |      },
+         |      {
+         |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/ignore",
+         |         "rel":"ignore-state-benefit",
+         |         "method":"POST"
+         |      }
+         |   ]
+         |}
+    """.stripMargin
+    )
 
   }
 

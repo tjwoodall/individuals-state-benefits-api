@@ -19,5 +19,4 @@ package v1.models.request.AmendBenefit
 import api.models.request.RawData
 import play.api.mvc.AnyContentAsJson
 
-case class AmendBenefitRawData(nino: String, taxYear: String, benefitId: String, body: AnyContentAsJson, temporalValidationEnabled: Boolean = true)
-    extends RawData
+case class AmendBenefitRawData(nino: String, taxYear: String, benefitId: String, body: AnyContentAsJson) extends RawData

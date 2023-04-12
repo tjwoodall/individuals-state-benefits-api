@@ -17,8 +17,6 @@
 package v1.endpoints
 
 import api.models.errors._
-import org.joda.time.format.DateTimeFormat
-import org.joda.time.{DateTime, DateTimeZone}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -45,25 +43,6 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
     }
 
     "return error according to spec" when {
-
-      def getCurrentTaxYear: String = {
-        val currentDate = DateTime.now(DateTimeZone.UTC)
-
-        val taxYearStartDate: DateTime = DateTime.parse(
-          currentDate.getYear + "-04-06",
-          DateTimeFormat.forPattern("yyyy-MM-dd")
-        )
-
-        def fromDesIntToString(taxYear: Int): String =
-          (taxYear - 1) + "-" + taxYear.toString.drop(2)
-
-        if (currentDate.isBefore(taxYearStartDate)) {
-          fromDesIntToString(currentDate.getYear)
-        } else {
-          fromDesIntToString(currentDate.getYear + 1)
-        }
-      }
-
       "validation error" when {
         def validationErrorTest(requestNino: String,
                                 requestTaxYear: String,
@@ -73,8 +52,8 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
+            override val nino: String      = requestNino
+            override val taxYear: String   = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -88,8 +67,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "20199", "78d9f015-a8b4-47a8-8bbc-c253a1e8057e", BAD_REQUEST, TaxYearFormatError, None),
           ("AA123456A", "2019-20", "ABCDE12345FG", BAD_REQUEST, BenefitIdFormatError, None),
           ("AA123456A", "2018-19", "78d9f015-a8b4-47a8-8bbc-c253a1e8057e", BAD_REQUEST, RuleTaxYearNotSupportedError, None),
-          ("AA123456A", "2019-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", BAD_REQUEST, RuleTaxYearRangeInvalidError, None),
-          ("AA123456A", getCurrentTaxYear, "78d9f015-a8b4-47a8-8bbc-c253a1e8057e", BAD_REQUEST, RuleTaxYearNotEndedError, None)
+          ("AA123456A", "2019-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", BAD_REQUEST, RuleTaxYearRangeInvalidError, None)
         )
 
         input.foreach(args => (validationErrorTest _).tupled(args))
@@ -157,7 +135,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
        """.stripMargin
     )
 
-    lazy val mtdUri: String = s"/$nino/$taxYear/$benefitId/unignore"
+    lazy val mtdUri: String   = s"/$nino/$taxYear/$benefitId/unignore"
     val downstreamUri: String = s"/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
 
     def setupStubs(): Unit = {}

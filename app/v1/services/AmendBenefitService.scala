@@ -34,7 +34,7 @@ class AmendBenefitService @Inject() (connector: AmendBenefitConnector) extends B
     connector.amendBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
-  private def downstreamErrorMap: Map[String, MtdError] = Map(
+  private val downstreamErrorMap: Map[String, MtdError] = Map(
     "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
     "INVALID_TAX_YEAR"          -> TaxYearFormatError,
     "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
