@@ -64,7 +64,7 @@ class AmendBenefitAmountsController @Inject() (val authService: EnrolmentsAuthSe
 
       val requestHandler = RequestHandler
         .withParser(parser)
-        .withService(service.updateBenefitAmounts)
+        .withService(service.amendBenefitAmounts)
         .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "AmendStateBenefitAmounts",

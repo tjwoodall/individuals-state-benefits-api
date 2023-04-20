@@ -65,7 +65,7 @@ class AmendBenefitAmountsControllerSpec
     body = AnyContentAsJson(requestBodyJson)
   )
 
-  val updateBenefitAmountsRequestBody: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
+  val amendBenefitAmountsRequestBody: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
     amount = 2050.45,
     taxPaid = Some(1095.55)
   )
@@ -74,7 +74,7 @@ class AmendBenefitAmountsControllerSpec
     nino = Nino(nino),
     taxYear = TaxYear.fromMtd(taxYear),
     benefitId = benefitId,
-    body = updateBenefitAmountsRequestBody
+    body = amendBenefitAmountsRequestBody
   )
 
   private val testHateoasLinks = Seq(
@@ -107,15 +107,15 @@ class AmendBenefitAmountsControllerSpec
     """.stripMargin
   )
 
-  "UpdateBenefitAmountsController" should {
+  "AmendBenefitAmountsController" should {
     "return a successful response with status 200 (OK)" when {
       "the request received is valid" in new Test {
         MockAmendBenefitAmountsRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
-        MockUpdateBenefitAmountsService
-          .updateBenefitAmounts(requestData)
+        MockAmendBenefitAmountsService
+          .amendBenefitAmounts(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         MockHateoasFactory
@@ -146,8 +146,8 @@ class AmendBenefitAmountsControllerSpec
           .parse(rawData)
           .returns(Right(requestData))
 
-        MockUpdateBenefitAmountsService
-          .updateBenefitAmounts(requestData)
+        MockAmendBenefitAmountsService
+          .amendBenefitAmounts(requestData)
           .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
 
         runErrorTestWithAudit(RuleTaxYearNotSupportedError, Some(requestBodyJson))
@@ -162,7 +162,7 @@ class AmendBenefitAmountsControllerSpec
       lookupService = mockMtdIdLookupService,
       appConfig = mockAppConfig,
       parser = mockAmendBenefitAmountsRequestParser,
-      service = mockUpdateBenefitAmountsService,
+      service = mockAmendBenefitAmountsService,
       hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
       cc = cc,

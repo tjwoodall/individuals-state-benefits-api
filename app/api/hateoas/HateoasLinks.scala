@@ -44,7 +44,7 @@ trait HateoasLinks {
       rel = CREATE_STATE_BENEFIT
     )
 
-  def updateBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def amendBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = uriWithId(appConfig, nino, taxYear, benefitId),
       method = PUT,
@@ -72,7 +72,7 @@ trait HateoasLinks {
       rel = SELF
     )
 
-  def updateBenefitAmounts(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def amendBenefitAmounts(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = uriWithAmounts(appConfig, nino, taxYear, benefitId),
       method = PUT,

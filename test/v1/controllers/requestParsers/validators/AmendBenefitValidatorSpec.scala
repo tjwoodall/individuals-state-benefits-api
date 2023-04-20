@@ -67,7 +67,7 @@ class AmendBenefitValidatorSpec extends UnitSpec {
 
   }
 
-  "UpdateBenefitValidator" when {
+  "AmendBenefitValidator" when {
     "running a validation" should {
       "return no errors for a valid request" in new Test {
         validator.validate(AmendBenefitRawData(validNino, validTaxYear, benefitId, validRawBody)) shouldBe Nil

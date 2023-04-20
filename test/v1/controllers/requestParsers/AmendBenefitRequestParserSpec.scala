@@ -26,10 +26,10 @@ import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest,
 
 class AmendBenefitRequestParserSpec extends UnitSpec {
 
-  private val nino: String = "AA123456B"
-  private val taxYear: String = "2020-21"
-  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
-  implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val nino: String                   = "AA123456B"
+  private val taxYear: String                = "2020-21"
+  private val benefitId                      = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+  implicit private val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validRequestJson: JsValue = Json.parse(
     """
@@ -42,29 +42,29 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
 
   private val validRawBody = AnyContentAsJson(validRequestJson)
 
-  private val updateBenefitRawData = AmendBenefitRawData(
+  private val amendBenefitRawData = AmendBenefitRawData(
     nino = nino,
     taxYear = taxYear,
     benefitId = benefitId,
     body = validRawBody
   )
 
-  private val updateBenefitRequestBody = AmendBenefitRequestBody(
+  private val amendBenefitRequestBody = AmendBenefitRequestBody(
     startDate = "2020-04-06",
     endDate = Some("2021-01-01")
   )
 
-  private val updateBenefitRequest = AmendBenefitRequest(
+  private val amendBenefitRequest = AmendBenefitRequest(
     nino = Nino(nino),
     taxYear = taxYear,
     benefitId = benefitId,
-    body = updateBenefitRequestBody
+    body = amendBenefitRequestBody
   )
 
   trait Test extends MockAmendBenefitValidator {
 
     lazy val parser: AmendBenefitRequestParser = new AmendBenefitRequestParser(
-      validator = mockUpdateBenefitValidator
+      validator = mockAmendBenefitValidator
     )
 
   }
@@ -72,27 +72,27 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
   "parse" should {
     "return a request object" when {
       "valid request data is supplied" in new Test {
-        MockUpdateBenefitValidator.validate(updateBenefitRawData).returns(Nil)
-        parser.parseRequest(updateBenefitRawData) shouldBe Right(updateBenefitRequest)
+        MockAmendBenefitValidator.validate(amendBenefitRawData).returns(Nil)
+        parser.parseRequest(amendBenefitRawData) shouldBe Right(amendBenefitRequest)
       }
     }
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockUpdateBenefitValidator
-          .validate(updateBenefitRawData.copy(nino = "notANino"))
+        MockAmendBenefitValidator
+          .validate(amendBenefitRawData.copy(nino = "notANino"))
           .returns(List(NinoFormatError))
 
-        parser.parseRequest(updateBenefitRawData.copy(nino = "notANino")) shouldBe
+        parser.parseRequest(amendBenefitRawData.copy(nino = "notANino")) shouldBe
           Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
 
       "multiple path parameter validation errors occur" in new Test {
-        MockUpdateBenefitValidator
-          .validate(updateBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear"))
+        MockAmendBenefitValidator
+          .validate(amendBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear"))
           .returns(List(NinoFormatError, TaxYearFormatError))
 
-        parser.parseRequest(updateBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear")) shouldBe
+        parser.parseRequest(amendBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear")) shouldBe
           Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, TaxYearFormatError))))
       }
 
@@ -114,11 +114,11 @@ class AmendBenefitRequestParserSpec extends UnitSpec {
           EndDateFormatError
         )
 
-        MockUpdateBenefitValidator
-          .validate(updateBenefitRawData.copy(body = invalidValueRawBody))
+        MockAmendBenefitValidator
+          .validate(amendBenefitRawData.copy(body = invalidValueRawBody))
           .returns(errors)
 
-        parser.parseRequest(updateBenefitRawData.copy(body = invalidValueRawBody)) shouldBe
+        parser.parseRequest(amendBenefitRawData.copy(body = invalidValueRawBody)) shouldBe
           Left(ErrorWrapper(correlationId, BadRequestError, Some(errors)))
       }
     }

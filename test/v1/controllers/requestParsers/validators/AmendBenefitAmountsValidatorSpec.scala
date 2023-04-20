@@ -30,8 +30,8 @@ import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRawData
 
 class AmendBenefitAmountsValidatorSpec extends UnitSpec {
 
-  private val validNino = "AA123456A"
-  private val validTaxYear = "2020-21"
+  private val validNino      = "AA123456A"
+  private val validTaxYear   = "2020-21"
   private val validBenefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validRequestJson: JsValue = Json.parse(
@@ -71,16 +71,16 @@ class AmendBenefitAmountsValidatorSpec extends UnitSpec {
     """.stripMargin
   )
 
-  private val validRawBody = AnyContentAsJson(validRequestJson)
-  private val emptyRawBody = AnyContentAsJson(emptyRequestJson)
+  private val validRawBody                        = AnyContentAsJson(validRequestJson)
+  private val emptyRawBody                        = AnyContentAsJson(emptyRequestJson)
   private val missingMandatoryFieldRawRequestBody = AnyContentAsJson(missingMandatoryFieldJson)
-  private val incorrectFormatRawBody = AnyContentAsJson(incorrectFormatRequestJson)
-  private val allInvalidValueRawRequestBody = AnyContentAsJson(allInvalidValueRequestBodyJson)
+  private val incorrectFormatRawBody              = AnyContentAsJson(incorrectFormatRequestJson)
+  private val allInvalidValueRawRequestBody       = AnyContentAsJson(allInvalidValueRequestBodyJson)
 
   class Test extends MockCurrentDateTime with MockAppConfig {
 
     implicit val dateTimeProvider: CurrentDateTime = mockCurrentDateTime
-    val dateTimeFormatter: DateTimeFormatter = DateTimeFormat.forPattern("yyyy-MM-dd")
+    val dateTimeFormatter: DateTimeFormatter       = DateTimeFormat.forPattern("yyyy-MM-dd")
 
     implicit val appConfig: AppConfig = mockAppConfig
 
@@ -91,7 +91,7 @@ class AmendBenefitAmountsValidatorSpec extends UnitSpec {
 
   }
 
-  "UpdateBenefitAmountsValidator" when {
+  "AmendBenefitAmountsValidator" when {
     "running a validation" should {
       "return no errors for a valid request" in new Test {
         validator.validate(AmendBenefitAmountsRawData(validNino, validTaxYear, validBenefitId, validRawBody)) shouldBe Nil

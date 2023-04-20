@@ -28,30 +28,29 @@ import scala.concurrent.Future
 
 class AmendBenefitAmountsServiceSpec extends ServiceSpec {
 
-  "UpdateBenefitAmountsService" when {
-    "UpdateBenefitAmounts" must {
+  "AmendBenefitAmountsService" when {
+    "AmendBenefitAmounts" must {
       "return correct result for a success" in new Test {
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        MockUpdateBenefitAmountsConnector
-          .updateBenefitAmounts(requestData)
+        MockAmendBenefitAmountsConnector
+          .amendBenefitAmounts(requestData)
           .returns(Future.successful(expectedOutcome))
 
-        val result: Either[ErrorWrapper, ResponseWrapper[Unit]] = await(service.updateBenefitAmounts(requestData))
+        val result: Either[ErrorWrapper, ResponseWrapper[Unit]] = await(service.amendBenefitAmounts(requestData))
         result shouldBe expectedOutcome
       }
     }
 
     "map errors according to spec" when {
-
       def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
         s"a $downstreamErrorCode error is returned from the service" in new Test {
 
-          MockUpdateBenefitAmountsConnector
-            .updateBenefitAmounts(requestData)
+          MockAmendBenefitAmountsConnector
+            .amendBenefitAmounts(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-          await(service.updateBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
+          await(service.amendBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
       val errors = List(
@@ -79,8 +78,8 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
   trait Test extends MockAmendBenefitAmountsConnector {
     implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
 
-    private val nino = "AA123456A"
-    private val taxYear = "2021-22"
+    private val nino      = "AA123456A"
+    private val taxYear   = "2021-22"
     private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
     val body: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
@@ -96,7 +95,7 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
     )
 
     val service: AmendBenefitAmountsService = new AmendBenefitAmountsService(
-      connector = mockUpdateBenefitAmountsConnector
+      connector = mockAmendBenefitAmountsConnector
     )
 
   }

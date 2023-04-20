@@ -114,15 +114,15 @@ class AmendBenefitControllerSpec
     """.stripMargin
   )
 
-  "UpdateBenefitController" should {
+  "AmendBenefitController" should {
     "return a successful response with status 200 (OK)" when {
       "the request received is valid" in new Test {
-        MockUpdateBenefitRequestParser
+        MockAmendBenefitRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
-        MockUpdateBenefitService
-          .updateBenefit(requestData)
+        MockAmendBenefitService
+          .amendBenefit(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         MockHateoasFactory
@@ -140,7 +140,7 @@ class AmendBenefitControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-        MockUpdateBenefitRequestParser
+        MockAmendBenefitRequestParser
           .parse(rawData)
           .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
 
@@ -148,12 +148,12 @@ class AmendBenefitControllerSpec
       }
 
       "service returns an error" in new Test {
-        MockUpdateBenefitRequestParser
+        MockAmendBenefitRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
-        MockUpdateBenefitService
-          .updateBenefit(requestData)
+        MockAmendBenefitService
+          .amendBenefit(requestData)
           .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
 
         runErrorTestWithAudit(RuleTaxYearNotSupportedError, maybeAuditRequestBody = Some(requestBodyJson))
@@ -167,8 +167,8 @@ class AmendBenefitControllerSpec
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       appConfig = mockAppConfig,
-      parser = mockUpdateBenefitRequestParser,
-      service = mockUpdateBenefitService,
+      parser = mockAmendBenefitRequestParser,
+      service = mockAmendBenefitService,
       hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
       cc = cc,

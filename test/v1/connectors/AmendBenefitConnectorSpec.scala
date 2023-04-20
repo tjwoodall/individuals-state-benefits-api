@@ -32,7 +32,7 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
   val taxYear: String   = "2021-22"
   val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
-  val updateBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody(
+  val amendBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody(
     startDate = "2020-08-03",
     endDate = Some("2020-12-03")
   )
@@ -41,7 +41,7 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
     nino = Nino(nino),
     taxYear = taxYear,
     benefitId = benefitId,
-    body = updateBenefitRequestBody
+    body = amendBenefitRequestBody
   )
 
   class Test extends MockHttpClient with MockAppConfig {
@@ -62,8 +62,8 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
     MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
-  "UpdateBenefitConnector" when {
-    "updateBenefit" must {
+  "AmendBenefitConnector" when {
+    "amendBenefit" must {
       "return a 201 status for a success scenario" in new Test {
         val outcome = Right(ResponseWrapper(correlationId, ()))
 

@@ -33,7 +33,7 @@ object AddBenefitResponse extends HateoasLinks {
       import data._
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),
-        updateBenefit(appConfig, nino, taxYear, benefitId),
+        amendBenefit(appConfig, nino, taxYear, benefitId),
         deleteBenefit(appConfig, nino, taxYear, benefitId)
       )
     }

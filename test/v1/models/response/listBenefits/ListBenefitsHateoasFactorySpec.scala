@@ -87,7 +87,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
             hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitNotIgnored) should
               contain theSameElementsAs Seq(
                 listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
                 ignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
               )
           }
@@ -98,7 +98,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
             hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitIgnored) should
               contain theSameElementsAs Seq(
                 listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
                 unignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
               )
           }
@@ -144,23 +144,23 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
           ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds)
 
         "a benefit is not duplicated in HMRC benefits" must {
-          "include update and delete links" in new Test {
+          "include amend and delete links" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq("otherBenefitId")), benefit) should
               contain theSameElementsAs Seq(
                 listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefit(mockAppConfig, nino, taxYear, benefitId),
+                amendBenefit(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
               )
           }
         }
 
         "a benefit is duplicated in HMRC benefits" must {
-          "not include update and delete links" in new Test {
+          "not include amend and delete links" in new Test {
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq(benefitId)), benefit) should
               contain theSameElementsAs Seq(
                 listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
               )
           }
         }
@@ -170,9 +170,9 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithAmount) should
               contain theSameElementsAs Seq(
                 listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefit(mockAppConfig, nino, taxYear, benefitId),
+                amendBenefit(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
               )
           }
@@ -183,9 +183,9 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
             hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithTaxPaid) should
               contain theSameElementsAs Seq(
                 listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefit(mockAppConfig, nino, taxYear, benefitId),
+                amendBenefit(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-                updateBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
                 deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
               )
           }

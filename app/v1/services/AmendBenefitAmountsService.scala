@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnector) extends BaseService {
 
-  def updateBenefitAmounts(
+  def amendBenefitAmounts(
       request: AmendBenefitAmountsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[AmendBenefitAmountsServiceOutcome] = {
 
     connector.amendBenefitAmounts(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))

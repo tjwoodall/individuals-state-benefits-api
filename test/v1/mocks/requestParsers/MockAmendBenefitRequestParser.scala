@@ -24,12 +24,12 @@ import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest}
 
 trait MockAmendBenefitRequestParser extends MockFactory {
 
-  val mockUpdateBenefitRequestParser: AmendBenefitRequestParser = mock[AmendBenefitRequestParser]
+  val mockAmendBenefitRequestParser: AmendBenefitRequestParser = mock[AmendBenefitRequestParser]
 
-  object MockUpdateBenefitRequestParser {
+  object MockAmendBenefitRequestParser {
 
     def parse(data: AmendBenefitRawData): CallHandler[Either[ErrorWrapper, AmendBenefitRequest]] = {
-      (mockUpdateBenefitRequestParser.parseRequest(_: AmendBenefitRawData)(_: String)).expects(data, *)
+      (mockAmendBenefitRequestParser.parseRequest(_: AmendBenefitRawData)(_: String)).expects(data, *)
     }
 
   }

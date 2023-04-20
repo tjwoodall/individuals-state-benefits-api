@@ -28,16 +28,16 @@ import scala.concurrent.Future
 
 class AmendBenefitServiceSpec extends ServiceSpec {
 
-  "UpdateBenefitService" when {
-    "updateBenefit" must {
+  "AmendBenefitService" when {
+    "amendBenefit" must {
       "return correct result for a success" in new Test {
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        MockUpdateBenefitConnector
-          .updateBenefit(requestData)
+        MockAmendBenefitConnector
+          .amendBenefit(requestData)
           .returns(Future.successful(outcome))
 
-        val result: AmendBenefitServiceOutcome = await(service.updateBenefit(requestData))
+        val result: AmendBenefitServiceOutcome = await(service.amendBenefit(requestData))
         result shouldBe outcome
       }
     }
@@ -46,11 +46,11 @@ class AmendBenefitServiceSpec extends ServiceSpec {
       def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
         s"a $downstreamErrorCode error is returned from the service" in new Test {
 
-          MockUpdateBenefitConnector
-            .updateBenefit(requestData)
+          MockAmendBenefitConnector
+            .amendBenefit(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-          val result: AmendBenefitServiceOutcome = await(service.updateBenefit(requestData))
+          val result: AmendBenefitServiceOutcome = await(service.amendBenefit(requestData))
           result shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
@@ -79,12 +79,12 @@ class AmendBenefitServiceSpec extends ServiceSpec {
     val taxYear   = "2021-22"
     val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
-    val updateBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody("2020-08-03", Some("2020-12-03"))
+    val amendBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody("2020-08-03", Some("2020-12-03"))
 
-    val requestData: AmendBenefitRequest = AmendBenefitRequest(Nino(nino), taxYear, benefitId, updateBenefitRequestBody)
+    val requestData: AmendBenefitRequest = AmendBenefitRequest(Nino(nino), taxYear, benefitId, amendBenefitRequestBody)
 
     val service: AmendBenefitService = new AmendBenefitService(
-      connector = mockUpdateBenefitConnector
+      connector = mockAmendBenefitConnector
     )
 
   }

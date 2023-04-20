@@ -27,10 +27,10 @@ object AmendBenefitResponse extends HateoasLinks {
     override def links(appConfig: AppConfig, data: AmendBenefitHateoasData): Seq[Link] = {
       import data._
       Seq(
-        updateBenefit(appConfig, nino, taxYear, benefitId),
+        amendBenefit(appConfig, nino, taxYear, benefitId),
         listSingleBenefit(appConfig, nino, taxYear, benefitId),
         deleteBenefit(appConfig, nino, taxYear, benefitId),
-        updateBenefitAmounts(appConfig, nino, taxYear, benefitId)
+        amendBenefitAmounts(appConfig, nino, taxYear, benefitId)
       )
     }
 

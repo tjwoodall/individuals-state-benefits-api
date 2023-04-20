@@ -35,14 +35,14 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       import data._
 
       lazy val retrieveLink: Link      = listSingleBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
-      lazy val updateAmountsLink: Link = updateBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
+      lazy val amendAmountsLink: Link  = amendBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val deleteAmountsLink: Link = deleteBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val deleteLink: Link        = deleteBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
-      lazy val updateLink: Link        = updateBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
+      lazy val amendLink: Link         = amendBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val ignoreLink: Link        = ignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val unignoreLink: Link      = unignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
 
-      lazy val commonLinks = Seq(retrieveLink, updateAmountsLink)
+      lazy val commonLinks = Seq(retrieveLink, amendAmountsLink)
     }
 
     override def itemLinks1(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: HMRCStateBenefit): Seq[Link] = {
@@ -64,7 +64,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       } else {
         links.commonLinks ++
           (if (stateBenefit.hasAmounts) Seq(links.deleteAmountsLink) else Nil) ++
-          (if (data.hmrcBenefitIds.contains(stateBenefit.benefitId)) Nil else Seq(links.deleteLink, links.updateLink))
+          (if (data.hmrcBenefitIds.contains(stateBenefit.benefitId)) Nil else Seq(links.deleteLink, links.amendLink))
       }
     }
 

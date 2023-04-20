@@ -26,10 +26,10 @@ import v1.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRawData, AmendB
 
 class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
 
-  private val nino: String = "AA123456B"
-  private val taxYear: String = "2020-21"
-  private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val nino                           = "AA123456B"
+  private val taxYear                        = "2020-21"
+  private val benefitId                      = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  implicit private val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validRequestJson: JsValue = Json.parse(
     """
@@ -42,29 +42,29 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
 
   private val validRawBody = AnyContentAsJson(validRequestJson)
 
-  private val updateBenefitAmountsRawData = AmendBenefitAmountsRawData(
+  private val amendBenefitAmountsRawData = AmendBenefitAmountsRawData(
     nino = nino,
     taxYear = taxYear,
     benefitId = benefitId,
     body = validRawBody
   )
 
-  private val updateBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
+  private val amendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
     amount = 2050.45,
     taxPaid = Some(1095.55)
   )
 
-  private val updateBenefitAmountsRequest = AmendBenefitAmountsRequest(
+  private val amendBenefitAmountsRequest = AmendBenefitAmountsRequest(
     nino = Nino(nino),
     taxYear = TaxYear.fromMtd(taxYear),
     benefitId = benefitId,
-    body = updateBenefitAmountsRequestBody
+    body = amendBenefitAmountsRequestBody
   )
 
   trait Test extends MockAmendBenefitAmountsValidator {
 
     lazy val parser: AmendBenefitAmountsRequestParser = new AmendBenefitAmountsRequestParser(
-      validator = mockUpdateBenefitAmountsValidator
+      validator = mockAmendBenefitAmountsValidator
     )
 
   }
@@ -72,27 +72,27 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
   "parse" should {
     "return a request object" when {
       "valid request data is supplied" in new Test {
-        MockUpdateBenefitAmountsValidator.validate(updateBenefitAmountsRawData).returns(Nil)
-        parser.parseRequest(updateBenefitAmountsRawData) shouldBe Right(updateBenefitAmountsRequest)
+        MockAmendBenefitAmountsValidator.validate(amendBenefitAmountsRawData).returns(Nil)
+        parser.parseRequest(amendBenefitAmountsRawData) shouldBe Right(amendBenefitAmountsRequest)
       }
     }
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockUpdateBenefitAmountsValidator
-          .validate(updateBenefitAmountsRawData.copy(nino = "notANino"))
+        MockAmendBenefitAmountsValidator
+          .validate(amendBenefitAmountsRawData.copy(nino = "notANino"))
           .returns(List(NinoFormatError))
 
-        parser.parseRequest(updateBenefitAmountsRawData.copy(nino = "notANino")) shouldBe
+        parser.parseRequest(amendBenefitAmountsRawData.copy(nino = "notANino")) shouldBe
           Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
 
       "multiple path parameter validation errors occur" in new Test {
-        MockUpdateBenefitAmountsValidator
-          .validate(updateBenefitAmountsRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId"))
+        MockAmendBenefitAmountsValidator
+          .validate(amendBenefitAmountsRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId"))
           .returns(List(NinoFormatError, TaxYearFormatError, BenefitIdFormatError))
 
-        parser.parseRequest(updateBenefitAmountsRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId")) shouldBe
+        parser.parseRequest(amendBenefitAmountsRawData.copy(nino = "notANino", taxYear = "notATaxYear", benefitId = "notABenefitId")) shouldBe
           Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, TaxYearFormatError, BenefitIdFormatError))))
       }
 
@@ -120,11 +120,11 @@ class AmendBenefitAmountsRequestParserSpec extends UnitSpec {
           )
         )
 
-        MockUpdateBenefitAmountsValidator
-          .validate(updateBenefitAmountsRawData.copy(body = allInvalidValueRawRequestBody))
+        MockAmendBenefitAmountsValidator
+          .validate(amendBenefitAmountsRawData.copy(body = allInvalidValueRawRequestBody))
           .returns(allInvalidValueErrors)
 
-        parser.parseRequest(updateBenefitAmountsRawData.copy(body = allInvalidValueRawRequestBody)) shouldBe
+        parser.parseRequest(amendBenefitAmountsRawData.copy(body = allInvalidValueRawRequestBody)) shouldBe
           Left(ErrorWrapper(correlationId, BadRequestError, Some(allInvalidValueErrors)))
       }
     }
