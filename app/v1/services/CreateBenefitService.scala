@@ -29,9 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends BaseService {
 
-  def addBenefit(request: CreateBenefitRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[CreateBenefitServiceOutcome] = {
+  def createBenefit(request: CreateBenefitRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[CreateBenefitServiceOutcome] = {
 
-    connector.addBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
+    connector.createBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
   private val downstreamErrorMap: Map[String, MtdError] = Map(

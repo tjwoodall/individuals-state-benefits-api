@@ -24,12 +24,12 @@ import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitReque
 
 trait MockCreateBenefitRequestParser extends MockFactory {
 
-  val mockAddBenefitRequestParser: CreateBenefitRequestParser = mock[CreateBenefitRequestParser]
+  val mockCreateBenefitRequestParser: CreateBenefitRequestParser = mock[CreateBenefitRequestParser]
 
-  object MockAddBenefitRequestParser {
+  object MockCreateBenefitRequestParser {
 
     def parse(data: CreateBenefitRawData): CallHandler[Either[ErrorWrapper, CreateBenefitRequest]] = {
-      (mockAddBenefitRequestParser.parseRequest(_: CreateBenefitRawData)(_: String)).expects(data, *)
+      (mockCreateBenefitRequestParser.parseRequest(_: CreateBenefitRawData)(_: String)).expects(data, *)
     }
 
   }

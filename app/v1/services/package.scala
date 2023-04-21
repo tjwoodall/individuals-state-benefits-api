@@ -18,7 +18,7 @@ package v1
 
 import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
-import v1.models.response.createBenefit.AddBenefitResponse
+import v1.models.response.createBenefit.CreateBenefitResponse
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 package object services {
@@ -29,7 +29,7 @@ package object services {
 
   type AmendBenefitServiceOutcome = ServiceOutcome[Unit]
 
-  type CreateBenefitServiceOutcome = ServiceOutcome[AddBenefitResponse]
+  type CreateBenefitServiceOutcome = ServiceOutcome[CreateBenefitResponse]
 
   type DeleteBenefitAmountsServiceOutcome = ServiceOutcome[Unit]
 

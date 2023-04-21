@@ -72,7 +72,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       import data._
 
       Seq(
-        addBenefit(appConfig, nino, taxYear),
+        createBenefit(appConfig, nino, taxYear),
         listBenefits(appConfig, nino, taxYear)
       )
     }

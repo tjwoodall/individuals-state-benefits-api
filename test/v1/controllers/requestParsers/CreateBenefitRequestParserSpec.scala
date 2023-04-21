@@ -26,12 +26,12 @@ import v1.models.request.createBenefit._
 
 class CreateBenefitRequestParserSpec extends UnitSpec {
 
-  private val nino: String = "AA123456B"
+  private val nino: String    = "AA123456B"
   private val taxYear: String = "2017-18"
-  implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  implicit val correlationId  = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val startDate = "2020-08-03"
-  val endDate = "2020-12-03"
+  val endDate   = "2020-12-03"
 
   private val validRequestBodyJson: JsValue = Json.parse(
     s"""
@@ -45,52 +45,52 @@ class CreateBenefitRequestParserSpec extends UnitSpec {
 
   private val validRawBody = AnyContentAsJson(validRequestBodyJson)
 
-  private val addBenefitRawData = CreateBenefitRawData(
+  private val createBenefitRawData = CreateBenefitRawData(
     nino = nino,
     taxYear = taxYear,
     body = validRawBody
   )
 
-  private val addBenefitBody = CreateBenefitRequestBody("otherStateBenefits", startDate, Some(endDate))
+  private val createBenefitBody = CreateBenefitRequestBody("otherStateBenefits", startDate, Some(endDate))
 
-  private val addBenefitRequest = CreateBenefitRequest(
+  private val createBenefitRequest = CreateBenefitRequest(
     nino = Nino(nino),
     taxYear = taxYear,
-    body = addBenefitBody
+    body = createBenefitBody
   )
 
   trait Test extends MockCreateBenefitValidator {
 
     lazy val parser: CreateBenefitRequestParser = new CreateBenefitRequestParser(
-      validator = mockAddBenefitValidator
+      validator = mockCreateBenefitValidator
     )
 
   }
 
-  "AddBenefitRequestParser" should {
+  "CreateBenefitRequestParser" should {
     "return a request object" when {
       "valid request data is supplied" in new Test {
-        MockAddBenefitValidator.validate(addBenefitRawData).returns(Nil)
-        parser.parseRequest(addBenefitRawData) shouldBe Right(addBenefitRequest)
+        MockCreateBenefitValidator.validate(createBenefitRawData).returns(Nil)
+        parser.parseRequest(createBenefitRawData) shouldBe Right(createBenefitRequest)
       }
     }
 
     "return an ErrorWrapper" when {
       "a single validation error occurs" in new Test {
-        MockAddBenefitValidator
-          .validate(addBenefitRawData.copy(nino = "notANino"))
+        MockCreateBenefitValidator
+          .validate(createBenefitRawData.copy(nino = "notANino"))
           .returns(List(NinoFormatError))
 
-        parser.parseRequest(addBenefitRawData.copy(nino = "notANino")) shouldBe
+        parser.parseRequest(createBenefitRawData.copy(nino = "notANino")) shouldBe
           Left(ErrorWrapper(correlationId, NinoFormatError, None))
       }
 
       "multiple path parameter validation errors occur" in new Test {
-        MockAddBenefitValidator
-          .validate(addBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear"))
+        MockCreateBenefitValidator
+          .validate(createBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear"))
           .returns(List(NinoFormatError, TaxYearFormatError))
 
-        parser.parseRequest(addBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear")) shouldBe
+        parser.parseRequest(createBenefitRawData.copy(nino = "notANino", taxYear = "notATaxYear")) shouldBe
           Left(ErrorWrapper(correlationId, BadRequestError, Some(Seq(NinoFormatError, TaxYearFormatError))))
       }
 
@@ -114,11 +114,11 @@ class CreateBenefitRequestParserSpec extends UnitSpec {
           BenefitTypeFormatError
         )
 
-        MockAddBenefitValidator
-          .validate(addBenefitRawData.copy(body = invalidValueRawBody))
+        MockCreateBenefitValidator
+          .validate(createBenefitRawData.copy(body = invalidValueRawBody))
           .returns(errors)
 
-        parser.parseRequest(addBenefitRawData.copy(body = invalidValueRawBody)) shouldBe
+        parser.parseRequest(createBenefitRawData.copy(body = invalidValueRawBody)) shouldBe
           Left(ErrorWrapper(correlationId, BadRequestError, Some(errors)))
       }
     }

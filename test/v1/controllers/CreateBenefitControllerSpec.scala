@@ -33,7 +33,7 @@ import play.api.mvc.{AnyContentAsJson, Result}
 import v1.mocks.requestParsers.MockCreateBenefitRequestParser
 import v1.mocks.services.MockCreateBenefitService
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequest, CreateBenefitRequestBody}
-import v1.models.response.createBenefit.{AddBenefitHateoasData, AddBenefitResponse}
+import v1.models.response.createBenefit.{CreateBenefitHateoasData, CreateBenefitResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -80,7 +80,7 @@ class CreateBenefitControllerSpec
     body = createStateBenefitRequestBody
   )
 
-  val responseData: AddBenefitResponse = AddBenefitResponse(benefitId)
+  val responseData: CreateBenefitResponse = CreateBenefitResponse(benefitId)
 
   private val testHateoasLinks = Seq(
     hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
@@ -116,7 +116,7 @@ class CreateBenefitControllerSpec
   "CreateBenefitController" should {
     "return a successful response with status 200 (OK)" when {
       "the request received is valid" in new Test {
-        MockAddBenefitRequestParser
+        MockCreateBenefitRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
@@ -125,7 +125,7 @@ class CreateBenefitControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData))))
 
         MockHateoasFactory
-          .wrap(responseData, AddBenefitHateoasData(nino, taxYear, benefitId))
+          .wrap(responseData, CreateBenefitHateoasData(nino, taxYear, benefitId))
           .returns(HateoasWrapper(responseData, testHateoasLinks))
 
         runOkTestWithAudit(
@@ -139,7 +139,7 @@ class CreateBenefitControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-        MockAddBenefitRequestParser
+        MockCreateBenefitRequestParser
           .parse(rawData)
           .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
 
@@ -147,7 +147,7 @@ class CreateBenefitControllerSpec
       }
 
       "the service returns an error" in new Test {
-        MockAddBenefitRequestParser
+        MockCreateBenefitRequestParser
           .parse(rawData)
           .returns(Right(requestData))
 
@@ -166,7 +166,7 @@ class CreateBenefitControllerSpec
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       appConfig = mockAppConfig,
-      parser = mockAddBenefitRequestParser,
+      parser = mockCreateBenefitRequestParser,
       service = mockCreateStateBenefitService,
       auditService = mockAuditService,
       hateoasFactory = mockHateoasFactory,

@@ -193,13 +193,6 @@ class ListBenefitsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-//    MockedAppConfig.apiGatewayContext.returns("individuals/state-benefits").anyNumberOfTimes()
-//
-//    val links: List[Link] = List(
-//      listBenefits(mockAppConfig, nino, taxYear),
-//      addBenefit(mockAppConfig, nino, taxYear)
-//    )
-
     protected def callController(): Future[Result] = controller.listBenefits(nino, taxYear, Some(benefitId))(fakeGetRequest)
 
   }

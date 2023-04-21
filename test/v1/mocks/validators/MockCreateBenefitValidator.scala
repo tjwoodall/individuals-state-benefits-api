@@ -24,12 +24,12 @@ import v1.models.request.createBenefit.CreateBenefitRawData
 
 trait MockCreateBenefitValidator extends MockFactory {
 
-  val mockAddBenefitValidator: CreateBenefitValidator = mock[CreateBenefitValidator]
+  val mockCreateBenefitValidator: CreateBenefitValidator = mock[CreateBenefitValidator]
 
-  object MockAddBenefitValidator {
+  object MockCreateBenefitValidator {
 
     def validate(data: CreateBenefitRawData): CallHandler1[CreateBenefitRawData, List[MtdError]] = {
-      (mockAddBenefitValidator
+      (mockCreateBenefitValidator
         .validate(_: CreateBenefitRawData))
         .expects(data)
     }

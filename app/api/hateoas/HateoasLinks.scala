@@ -37,7 +37,7 @@ trait HateoasLinks {
     s"/${appConfig.apiGatewayContext}/$nino/$taxYear/$benefitId/amounts"
 
   // Links
-  def addBenefit(appConfig: AppConfig, nino: String, taxYear: String): Link =
+  def createBenefit(appConfig: AppConfig, nino: String, taxYear: String): Link =
     Link(
       href = baseUri(appConfig, nino, taxYear),
       method = POST,

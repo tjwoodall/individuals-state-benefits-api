@@ -21,11 +21,11 @@ import support.UnitSpec
 
 class CreateBenefitResponseSpec extends UnitSpec {
 
-  val model: AddBenefitResponse = AddBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c258")
+  val model: CreateBenefitResponse = CreateBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c258")
 
-  "AddBenefitResponse" when {
+  "CreateBenefitResponse" when {
     "read from valid JSON" should {
-      "produce the expected AddBenefitResponse object" in {
+      "produce the expected CreateBenefitResponse object" in {
         val json: JsValue = Json.parse(
           """
             |{
@@ -34,7 +34,7 @@ class CreateBenefitResponseSpec extends UnitSpec {
           """.stripMargin
         )
 
-        json.as[AddBenefitResponse] shouldBe model
+        json.as[CreateBenefitResponse] shouldBe model
       }
     }
 

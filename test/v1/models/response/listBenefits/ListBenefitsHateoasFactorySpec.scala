@@ -42,7 +42,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
       "be self and add" in new Test {
         hateoasFactory.links(mockAppConfig, hateoasData) should
           contain theSameElementsAs Seq(
-            addBenefit(mockAppConfig, nino, taxYear),
+            createBenefit(mockAppConfig, nino, taxYear),
             listBenefits(mockAppConfig, nino, taxYear)
           )
       }

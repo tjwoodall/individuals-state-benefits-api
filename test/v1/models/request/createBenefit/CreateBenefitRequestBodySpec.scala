@@ -25,7 +25,7 @@ class CreateBenefitRequestBodySpec extends UnitSpec with JsonErrorValidators {
   val startDate = "2020-08-03"
   val endDate   = "2020-12-03"
 
-  "AddBenefitBody" should {
+  "CreateBenefitBody" should {
     "read" when {
       "valid benefit with incapacityBenefit" in {
         val inputJson = Json.parse(

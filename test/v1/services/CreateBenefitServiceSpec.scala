@@ -23,22 +23,22 @@ import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import v1.mocks.connectors.MockCreateBenefitConnector
 import v1.models.request.createBenefit.{CreateBenefitRequest, CreateBenefitRequestBody}
-import v1.models.response.createBenefit.AddBenefitResponse
+import v1.models.response.createBenefit.CreateBenefitResponse
 
 import scala.concurrent.Future
 
 class CreateBenefitServiceSpec extends ServiceSpec {
 
-  "AddBenefitService" when {
-    "addBenefit" must {
+  "CreateBenefitService" when {
+    "createBenefit" must {
       "return correct result for a success" in new Test {
-        val outcome: Right[Nothing, ResponseWrapper[AddBenefitResponse]] = Right(ResponseWrapper(correlationId, response))
+        val outcome: Right[Nothing, ResponseWrapper[CreateBenefitResponse]] = Right(ResponseWrapper(correlationId, response))
 
-        MockAddBenefitConnector
-          .addBenefit(request)
+        MockCreateBenefitConnector
+          .createBenefit(request)
           .returns(Future.successful(outcome))
 
-        val result: CreateBenefitServiceOutcome = await(service.addBenefit(request))
+        val result: CreateBenefitServiceOutcome = await(service.createBenefit(request))
         result shouldBe outcome
       }
 
@@ -46,11 +46,11 @@ class CreateBenefitServiceSpec extends ServiceSpec {
         def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
           s"a $downstreamErrorCode error is returned from the service" in new Test {
 
-            MockAddBenefitConnector
-              .addBenefit(request)
+            MockCreateBenefitConnector
+              .createBenefit(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-            val result: CreateBenefitServiceOutcome = await(service.addBenefit(request))
+            val result: CreateBenefitServiceOutcome = await(service.createBenefit(request))
             result shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
@@ -78,15 +78,15 @@ class CreateBenefitServiceSpec extends ServiceSpec {
     val nino    = "AA112233A"
     val taxYear = "2021-22"
 
-    val addBenefitRequestBody: CreateBenefitRequestBody =
+    val createBenefitRequestBody: CreateBenefitRequestBody =
       CreateBenefitRequestBody(BenefitType.incapacityBenefit.toString, "2020-08-03", Some("2020-12-03"))
 
-    val request: CreateBenefitRequest = CreateBenefitRequest(Nino(nino), taxYear, addBenefitRequestBody)
+    val request: CreateBenefitRequest = CreateBenefitRequest(Nino(nino), taxYear, createBenefitRequestBody)
 
-    val response: AddBenefitResponse = AddBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253")
+    val response: CreateBenefitResponse = CreateBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253")
 
     val service: CreateBenefitService = new CreateBenefitService(
-      connector = mockAddBenefitConnector
+      connector = mockCreateBenefitConnector
     )
 
   }
