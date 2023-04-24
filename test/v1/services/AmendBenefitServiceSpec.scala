@@ -20,7 +20,7 @@ import api.controllers.EndpointLogContext
 import api.models.domain.Nino
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
+import api.services.{ServiceOutcome, ServiceSpec}
 import v1.mocks.connectors.MockAmendBenefitConnector
 import v1.models.request.AmendBenefit.{AmendBenefitRequest, AmendBenefitRequestBody}
 
@@ -37,7 +37,7 @@ class AmendBenefitServiceSpec extends ServiceSpec {
           .amendBenefit(requestData)
           .returns(Future.successful(outcome))
 
-        val result: AmendBenefitServiceOutcome = await(service.amendBenefit(requestData))
+        val result: ServiceOutcome[Unit] = await(service.amendBenefit(requestData))
         result shouldBe outcome
       }
     }
@@ -50,7 +50,7 @@ class AmendBenefitServiceSpec extends ServiceSpec {
             .amendBenefit(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-          val result: AmendBenefitServiceOutcome = await(service.amendBenefit(requestData))
+          val result: ServiceOutcome[Unit] = await(service.amendBenefit(requestData))
           result shouldBe Left(ErrorWrapper(correlationId, error))
         }
 

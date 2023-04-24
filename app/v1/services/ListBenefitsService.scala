@@ -18,10 +18,11 @@ package v1.services
 
 import api.controllers.RequestContext
 import api.models.errors._
-import api.services.BaseService
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.ListBenefitsConnector
 import v1.models.request.listBenefits.ListBenefitsRequest
+import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +30,9 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends BaseService {
 
-  def listBenefits(request: ListBenefitsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ListBenefitsServiceOutcome] = {
+  def listBenefits(request: ListBenefitsRequest)(implicit
+      ctx: RequestContext,
+      ec: ExecutionContext): Future[ServiceOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
     connector.listBenefits(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }

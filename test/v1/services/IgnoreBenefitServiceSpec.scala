@@ -20,7 +20,7 @@ import api.controllers.EndpointLogContext
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
+import api.services.{ServiceOutcome, ServiceSpec}
 import v1.mocks.connectors.MockIgnoreBenefitConnector
 import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
 
@@ -49,7 +49,7 @@ class IgnoreBenefitServiceSpec extends ServiceSpec {
               .ignoreBenefit(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-            val result: IgnoreBenefitServiceOutcome = await(service.ignoreBenefit(request))
+            val result: ServiceOutcome[Unit] = await(service.ignoreBenefit(request))
             result shouldBe Left(ErrorWrapper(correlationId, error))
           }
 

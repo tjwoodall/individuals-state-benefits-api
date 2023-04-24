@@ -20,7 +20,7 @@ import api.controllers.EndpointLogContext
 import api.models.domain.{BenefitType, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
+import api.services.{ServiceOutcome, ServiceSpec}
 import v1.mocks.connectors.MockCreateBenefitConnector
 import v1.models.request.createBenefit.{CreateBenefitRequest, CreateBenefitRequestBody}
 import v1.models.response.createBenefit.CreateBenefitResponse
@@ -38,7 +38,7 @@ class CreateBenefitServiceSpec extends ServiceSpec {
           .createBenefit(request)
           .returns(Future.successful(outcome))
 
-        val result: CreateBenefitServiceOutcome = await(service.createBenefit(request))
+        val result: ServiceOutcome[CreateBenefitResponse] = await(service.createBenefit(request))
         result shouldBe outcome
       }
 
@@ -50,7 +50,7 @@ class CreateBenefitServiceSpec extends ServiceSpec {
               .createBenefit(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-            val result: CreateBenefitServiceOutcome = await(service.createBenefit(request))
+            val result: ServiceOutcome[CreateBenefitResponse] = await(service.createBenefit(request))
             result shouldBe Left(ErrorWrapper(correlationId, error))
           }
 

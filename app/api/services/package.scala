@@ -14,31 +14,13 @@
  * limitations under the License.
  */
 
-package v1
+package api
 
 import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
-import v1.models.response.createBenefit.CreateBenefitResponse
-import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 package object services {
 
   type ServiceOutcome[A] = Either[ErrorWrapper, ResponseWrapper[A]]
-
-  type AmendBenefitAmountsServiceOutcome = ServiceOutcome[Unit]
-
-  type AmendBenefitServiceOutcome = ServiceOutcome[Unit]
-
-  type CreateBenefitServiceOutcome = ServiceOutcome[CreateBenefitResponse]
-
-  type DeleteBenefitAmountsServiceOutcome = ServiceOutcome[Unit]
-
-  type DeleteBenefitServiceOutcome = ServiceOutcome[Unit]
-
-  type IgnoreBenefitServiceOutcome = ServiceOutcome[Unit]
-
-  type ListBenefitsServiceOutcome = ServiceOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]
-
-  type UnignoreBenefitServiceOutcome = ServiceOutcome[Unit]
 
 }
