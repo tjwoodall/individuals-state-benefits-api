@@ -52,11 +52,11 @@ case class AuditHandler(auditService: AuditService,
                         queryParams: Option[Map[String, Option[String]]],
                         requestBody: Option[JsValue],
                         responseBodyMap: Option[JsValue] => Option[JsValue])
-  extends RequestContextImplicits {
+    extends RequestContextImplicits {
 
   def performAudit(userDetails: UserDetails, httpStatus: Int, response: Either[ErrorWrapper, Option[JsValue]])(implicit
-                                                                                                               ctx: RequestContext,
-                                                                                                               ec: ExecutionContext): Unit = {
+      ctx: RequestContext,
+      ec: ExecutionContext): Unit = {
     val auditEvent = {
       val auditResponse = AuditResponse(httpStatus, response.map(responseBodyMap).leftMap(ew => ew.auditErrors))
 

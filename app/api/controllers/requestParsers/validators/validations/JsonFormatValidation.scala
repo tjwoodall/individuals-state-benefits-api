@@ -27,16 +27,19 @@ object JsonFormatValidation {
     else {
       data.validate[A] match {
         case JsSuccess(body, _) => if (Json.toJson(body) == JsObject.empty) List(RuleIncorrectOrEmptyBodyError) else NoValidationErrors
-        case JsError(errors: Seq[(JsPath, Seq[JsonValidationError])]) => handleErrors(errors)
+        case JsError(errors) => {
+          val immutableErrors = errors.map { case (path, errors) => (path, errors.toList) }.toList
+          handleErrors(immutableErrors)
+        }
       }
     }
   }
 
   private def handleErrors(errors: Seq[(JsPath, Seq[JsonValidationError])]): List[MtdError] = {
     val failures = errors.map {
-      case (path: JsPath, Seq(JsonValidationError(Seq("error.path.missing")))) => MissingMandatoryField(path)
+      case (path: JsPath, Seq(JsonValidationError(Seq("error.path.missing"))))                              => MissingMandatoryField(path)
       case (path: JsPath, Seq(JsonValidationError(Seq(error: String)))) if error.contains("error.expected") => WrongFieldType(path)
-      case (path: JsPath, _) => OtherFailure(path)
+      case (path: JsPath, _)                                                                                => OtherFailure(path)
     }
 
     val logString = failures

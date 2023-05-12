@@ -22,17 +22,17 @@ import support.UnitSpec
 trait JsonErrorValidators {
   _: UnitSpec =>
 
-  type JsError = (JsPath, Seq[JsonValidationError])
+  type JsError  = (JsPath, Seq[JsonValidationError])
   type JsErrors = Seq[JsError]
 
   object JsonError {
     val NUMBER_OR_STRING_FORMAT_EXCEPTION = "error.expected.jsnumberorjsstring"
-    val NUMBER_FORMAT_EXCEPTION = "error.expected.numberformatexception"
-    val BOOLEAN_FORMAT_EXCEPTION = "error.expected.jsboolean"
-    val STRING_FORMAT_EXCEPTION = "error.expected.jsstring"
-    val JSNUMBER_FORMAT_EXCEPTION = "error.expected.jsnumber"
-    val JSARRAY_FORMAT_EXCEPTION = "error.expected.jsarray"
-    val PATH_MISSING_EXCEPTION = "error.path.missing"
+    val NUMBER_FORMAT_EXCEPTION           = "error.expected.numberformatexception"
+    val BOOLEAN_FORMAT_EXCEPTION          = "error.expected.jsboolean"
+    val STRING_FORMAT_EXCEPTION           = "error.expected.jsstring"
+    val JSNUMBER_FORMAT_EXCEPTION         = "error.expected.jsnumber"
+    val JSARRAY_FORMAT_EXCEPTION          = "error.expected.jsarray"
+    val PATH_MISSING_EXCEPTION            = "error.path.missing"
   }
 
   implicit class JsErrorOps(err: JsError) {
@@ -46,8 +46,8 @@ trait JsonErrorValidators {
   implicit class JsResultOps[T](res: JsResult[T]) {
 
     def errors: JsErrors = res match {
-      case JsError(jsErrors) => jsErrors
-      case JsSuccess(_, _) => fail("A JSON error was expected")
+      case JsError(jsErrors) => jsErrors.map { case (path, errors) => (path, errors.toList) }.toList
+      case JsSuccess(_, _)   => fail("A JSON error was expected")
     }
 
   }
@@ -69,7 +69,7 @@ trait JsonErrorValidators {
     s"the JSON is missing the required property $property" should {
 
       val jsPath: JsPath = property.split("/").filterNot(_ == "").foldLeft(JsPath())(_ \ _)
-      val jsResult = json.removeProperty(jsPath).validate[A]
+      val jsResult       = json.removeProperty(jsPath).validate[A]
 
       "only throw one error" in {
         jsResult.errors.size shouldBe 1
@@ -143,8 +143,9 @@ trait JsonErrorValidators {
   private def filterErrorByPath(jsPath: JsPath, jsError: JsError): JsonValidationError = {
     jsError match {
       case (path, err :: Nil) if jsError.path == path => err
-      case (path, _ :: Nil) => fail(s"single error returned but path $path does not match $jsPath")
-      case (path, errs@_ :: _) => fail(s"multiple errors returned for $path but only 1 required : $errs")
+      case (path, _ :: Nil)                           => fail(s"single error returned but path $path does not match $jsPath")
+      case (path, errs @ _ :: _)                      => fail(s"multiple errors returned for $path but only 1 required : $errs")
+      case _                                          => fail(s"unrecognised error(s) returned")
     }
   }
 

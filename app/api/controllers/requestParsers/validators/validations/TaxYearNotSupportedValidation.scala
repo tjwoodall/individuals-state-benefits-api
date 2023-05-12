@@ -23,7 +23,7 @@ import config.AppConfig
 object TaxYearNotSupportedValidation {
 
   /** @param taxYear
-    * taxYear in MTD format YYYY-YY
+    *   taxYear in MTD format YYYY-YY
     */
   def validate(taxYear: String)(implicit appConfig: AppConfig): List[MtdError] = {
     val year = TaxYear.fromMtd(taxYear).year

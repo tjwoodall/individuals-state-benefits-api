@@ -27,7 +27,7 @@ object TaxYearNotEndedValidation {
   // @param taxYear In format YYYY-YY
   def validate(taxYear: String)(implicit dateTimeProvider: CurrentDateTime): List[MtdError] = {
 
-    val year: Int = TaxYear.fromMtd(taxYear).year
+    val year: Int             = TaxYear.fromMtd(taxYear).year
     val currentDate: DateTime = dateTimeProvider.getDateTime
 
     if (year >= getCurrentTaxYear(currentDate)) {
@@ -40,7 +40,7 @@ object TaxYearNotEndedValidation {
   private def getCurrentTaxYear(date: DateTime): Int = {
 
     lazy val taxYearStartDate: DateTime = DateTime.parse(
-      date.getYear + "-04-06",
+      s"${date.getYear}-04-06",
       DateTimeFormat.forPattern("yyyy-MM-dd")
     )
 
