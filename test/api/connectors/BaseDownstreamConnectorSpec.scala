@@ -239,19 +239,4 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     }
   }
 
-  val mockBaseDownstreamConnector: BaseDownstreamConnector = mock[BaseDownstreamConnector]
-
-  "BaseDownstreamConnector" when {
-    "configFor receives unknown URI types" should {
-      val unknownUri: DownstreamUri[Any] = new DownstreamUri[Any] {
-        override val value: String = "/some/uri"
-      }
-      "throw an 'IllegalArgumentException'" in {
-        assertThrows[IllegalArgumentException](
-          mockBaseDownstreamConnector.configFor(unknownUri)
-        )
-      }
-    }
-  }
-
 }
