@@ -130,7 +130,6 @@ trait BaseDownstreamConnector {
       case IfsUri(_)                => appConfig.ifsDownstreamConfig
       case TaxYearSpecificIfsUri(_) => appConfig.taxYearSpecificIfsDownstreamConfig
       case Api1651Uri(_)            => appConfig.api1651DownstreamConfig
-      case _                        => throw new IllegalArgumentException("Unknown downstream URI")
     }
 
 }
