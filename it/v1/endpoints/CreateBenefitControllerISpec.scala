@@ -114,8 +114,9 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
         paths = Some(
           List(
             "/benefitType",
-            "/startDate",
-            "/endDate"
+            "/endDate",
+            "/startDate"
+
           ))
       )
 

@@ -24,4 +24,3 @@ package object outcomes {
   type AuthOutcome = Either[MtdError, UserDetails]
 
 }
-

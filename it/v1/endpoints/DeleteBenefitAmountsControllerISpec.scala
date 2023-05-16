@@ -75,7 +75,7 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
           DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
         }
 
-        val response: WSResponse = await(request().delete)
+        val response: WSResponse = await(request().delete())
         response.status shouldBe NO_CONTENT
         response.body shouldBe ""
       }
@@ -90,7 +90,7 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
         DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
       }
 
-      val response: WSResponse = await(request().delete)
+      val response: WSResponse = await(request().delete())
       response.status shouldBe NO_CONTENT
       response.body shouldBe ""
     }
@@ -117,7 +117,7 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
               MtdIdLookupStub.ninoFound(nino)
             }
 
-            val response: WSResponse = await(request().delete)
+            val response: WSResponse = await(request().delete())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
             response.header("Content-Type") shouldBe Some("application/json")
@@ -146,7 +146,7 @@ class DeleteBenefitAmountsControllerISpec extends IntegrationBaseSpec {
               DownstreamStub.onError(DownstreamStub.DELETE, downstreamUri, desStatus, errorBody(desCode))
             }
 
-            val response: WSResponse = await(request().delete)
+            val response: WSResponse = await(request().delete())
             response.status shouldBe expectedStatus
             response.json shouldBe Json.toJson(expectedBody)
             response.header("Content-Type") shouldBe Some("application/json")

@@ -32,19 +32,19 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
   case class Result(value: Int)
 
   // WLOG
-  val body = "body"
+  val body                               = "body"
   val queryParams: Seq[(String, String)] = Seq("aParam" -> "aValue")
-  val outcome = Right(ResponseWrapper(correlationId, Result(2)))
+  val outcome                            = Right(ResponseWrapper(correlationId, Result(2)))
 
-  val url = "some/url?param=value"
+  val url         = "some/url?param=value"
   val absoluteUrl = s"$baseUrl/$url"
 
   implicit val httpReads: HttpReads[DownstreamOutcome[Result]] = mock[HttpReads[DownstreamOutcome[Result]]]
 
-  class DesTest(desEnvironmentHeaders: Option[Seq[String]]) extends MockHttpClient with MockAppConfig {
+  class DesConnectTest(desEnvironmentHeaders: Option[Seq[String]]) extends MockHttpClient with MockAppConfig {
 
     val connector: BaseDownstreamConnector = new BaseDownstreamConnector {
-      val http: HttpClient = mockHttpClient
+      val http: HttpClient     = mockHttpClient
       val appConfig: AppConfig = mockAppConfig
     }
 
@@ -57,10 +57,10 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
   "BaseDesConnector" when {
     val requiredHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "des-environment",
-      "Authorization" -> s"Bearer des-token",
-      "User-Agent" -> "individuals-income-received-api",
-      "CorrelationId" -> correlationId,
+      "Environment"       -> "des-environment",
+      "Authorization"     -> s"Bearer des-token",
+      "User-Agent"        -> "individuals-income-received-api",
+      "CorrelationId"     -> correlationId,
       "Gov-Test-Scenario" -> "DEFAULT"
     )
 
@@ -73,9 +73,9 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
       "exclude all `otherHeaders` when no external service header allow-list is found" should {
         val requiredHeaders: Seq[(String, String)] = Seq(
-          "Environment" -> "des-environment",
+          "Environment"   -> "des-environment",
           "Authorization" -> s"Bearer des-token",
-          "User-Agent" -> "individuals-income-received-api",
+          "User-Agent"    -> "individuals-income-received-api",
           "CorrelationId" -> correlationId
         )
 
@@ -90,7 +90,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
                          desEnvironmentHeaders: Option[Seq[String]]): Unit = {
 
     "complete the request successfully with the required headers" when {
-      "GET" in new DesTest(desEnvironmentHeaders) {
+      "GET" in new DesConnectTest(desEnvironmentHeaders) {
         MockedHttpClient
           .get(absoluteUrl, config, requiredHeaders, excludedHeaders)
           .returns(Future.successful(outcome))
@@ -98,7 +98,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         await(connector.get(DesUri[Result](url))) shouldBe outcome
       }
 
-      "GET with query params" in new DesTest(desEnvironmentHeaders) {
+      "GET with query params" in new DesConnectTest(desEnvironmentHeaders) {
         val params = Seq("param1" -> "value")
         MockedHttpClient
           .parameterGet(absoluteUrl, params, config, requiredHeaders, excludedHeaders)
@@ -107,8 +107,8 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         await(connector.get(DesUri[Result](url), params)) shouldBe outcome
       }
 
-      "POST" in new DesTest(desEnvironmentHeaders) {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+      "POST" in new DesConnectTest(desEnvironmentHeaders) {
+        implicit val hc: HeaderCarrier                 = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
         MockedHttpClient
@@ -118,8 +118,8 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         await(connector.post(body, DesUri[Result](url))) shouldBe outcome
       }
 
-      "PUT" in new DesTest(desEnvironmentHeaders) {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+      "PUT" in new DesConnectTest(desEnvironmentHeaders) {
+        implicit val hc: HeaderCarrier                = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
         MockedHttpClient
@@ -129,7 +129,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         await(connector.put(body, DesUri[Result](url))) shouldBe outcome
       }
 
-      "DELETE" in new DesTest(desEnvironmentHeaders) {
+      "DELETE" in new DesConnectTest(desEnvironmentHeaders) {
         MockedHttpClient
           .delete(absoluteUrl, config, requiredHeaders, excludedHeaders)
           .returns(Future.successful(outcome))
@@ -139,10 +139,10 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     }
   }
 
-  class IfsTest(ifsEnvironmentHeaders: Option[Seq[String]]) extends MockHttpClient with MockAppConfig {
+  class IfsConnectTest(ifsEnvironmentHeaders: Option[Seq[String]]) extends MockHttpClient with MockAppConfig {
 
     val connector: BaseDownstreamConnector = new BaseDownstreamConnector {
-      val http: HttpClient = mockHttpClient
+      val http: HttpClient     = mockHttpClient
       val appConfig: AppConfig = mockAppConfig
     }
 
@@ -155,10 +155,10 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
   "BaseDownstreamConnector" when {
     val requiredHeaders: Seq[(String, String)] = Seq(
-      "Environment" -> "ifs-environment",
-      "Authorization" -> s"Bearer ifs-token",
-      "User-Agent" -> "individuals-income-received-api",
-      "CorrelationId" -> correlationId,
+      "Environment"       -> "ifs-environment",
+      "Authorization"     -> s"Bearer ifs-token",
+      "User-Agent"        -> "individuals-income-received-api",
+      "CorrelationId"     -> correlationId,
       "Gov-Test-Scenario" -> "DEFAULT"
     )
 
@@ -171,9 +171,9 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
 
       "exclude all `otherHeaders` when no external service header allow-list is found" should {
         val requiredHeaders: Seq[(String, String)] = Seq(
-          "Environment" -> "ifs-environment",
+          "Environment"   -> "ifs-environment",
           "Authorization" -> s"Bearer ifs-token",
-          "User-Agent" -> "individuals-income-received-api",
+          "User-Agent"    -> "individuals-income-received-api",
           "CorrelationId" -> correlationId
         )
 
@@ -188,8 +188,8 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
                          ifsEnvironmentHeaders: Option[Seq[String]]): Unit = {
 
     "complete the request successfully with the required headers" when {
-      "POST" in new IfsTest(ifsEnvironmentHeaders) {
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+      "POST" in new IfsConnectTest(ifsEnvironmentHeaders) {
+        implicit val hc: HeaderCarrier                 = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredHeadersPost: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
         MockedHttpClient
@@ -200,7 +200,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
       }
 
       "complete the request successfully with the required headers" when {
-        "GET" in new IfsTest(ifsEnvironmentHeaders) {
+        "GET" in new IfsConnectTest(ifsEnvironmentHeaders) {
           MockedHttpClient
             .get(absoluteUrl, config, requiredHeaders, excludedHeaders)
             .returns(Future.successful(outcome))
@@ -208,7 +208,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           await(connector.get(IfsUri[Result](url))) shouldBe outcome
         }
 
-        "GET with query params" in new IfsTest(ifsEnvironmentHeaders) {
+        "GET with query params" in new IfsConnectTest(ifsEnvironmentHeaders) {
           val params = Seq("param1" -> "value")
           MockedHttpClient
             .parameterGet(absoluteUrl, params, config, requiredHeaders, excludedHeaders)
@@ -217,8 +217,8 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           await(connector.get(IfsUri[Result](url), params)) shouldBe outcome
         }
 
-        "PUT" in new IfsTest(ifsEnvironmentHeaders) {
-          implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
+        "PUT" in new IfsConnectTest(ifsEnvironmentHeaders) {
+          implicit val hc: HeaderCarrier                = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
           val requiredHeadersPut: Seq[(String, String)] = requiredHeaders ++ Seq("Content-Type" -> "application/json")
 
           MockedHttpClient
@@ -228,7 +228,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
           await(connector.put(body, IfsUri[Result](url))) shouldBe outcome
         }
 
-        "DELETE" in new IfsTest(ifsEnvironmentHeaders) {
+        "DELETE" in new IfsConnectTest(ifsEnvironmentHeaders) {
           MockedHttpClient
             .delete(absoluteUrl, config, requiredHeaders, excludedHeaders)
             .returns(Future.successful(outcome))
