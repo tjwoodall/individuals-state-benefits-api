@@ -18,7 +18,7 @@ package v1.connectors
 
 import api.connectors.ConnectorSpec
 import api.mocks.MockHttpClient
-import api.models.domain.{Nino, TaxYear}
+import api.models.domain.{Nino, TaxYear, Timestamp}
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import v1.models.request.listBenefits.ListBenefitsRequest
@@ -37,7 +37,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       Seq(
         HMRCStateBenefit(
           benefitType = "incapacityBenefit",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -56,7 +56,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         )
       )
     )
@@ -96,7 +96,8 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2023-24"), Some(benefitId))
           val outcome = Right(ResponseWrapper(correlationId, validResponse))
 
-          willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino", parameters = Seq("benefitId" -> benefitId)) returns Future.successful(outcome)
+          willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino", parameters = Seq("benefitId" -> benefitId)) returns Future.successful(
+            outcome)
 
           val result = await(connector.listBenefits(request))
 

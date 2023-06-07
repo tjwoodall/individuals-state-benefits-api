@@ -16,6 +16,7 @@
 
 package v1.models.response.listBenefits
 
+import api.models.domain.Timestamp
 import play.api.libs.json.{Json, OFormat}
 import utils.JsonUtils
 
@@ -24,8 +25,8 @@ sealed trait StateBenefit {
 }
 
 case class HMRCStateBenefit(benefitType: String,
-                            dateIgnored: Option[String] = None,
-                            submittedOn: Option[String],
+                            dateIgnored: Option[Timestamp] = None,
+                            submittedOn: Option[Timestamp],
                             benefitId: String,
                             startDate: String,
                             endDate: Option[String],
@@ -38,7 +39,7 @@ object HMRCStateBenefit extends JsonUtils {
 }
 
 case class CustomerStateBenefit(benefitType: String,
-                                submittedOn: Option[String],
+                                submittedOn: Option[Timestamp],
                                 benefitId: String,
                                 startDate: String,
                                 endDate: Option[String],

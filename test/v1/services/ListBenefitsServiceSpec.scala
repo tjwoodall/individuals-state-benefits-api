@@ -17,7 +17,7 @@
 package v1.services
 
 import api.controllers.EndpointLogContext
-import api.models.domain.{Nino, TaxYear}
+import api.models.domain.{Nino, TaxYear, Timestamp}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
@@ -29,8 +29,8 @@ import scala.concurrent.Future
 
 class ListBenefitsServiceSpec extends ServiceSpec {
 
-  private val nino = "AA112233A"
-  private val taxYear = "2019-20"
+  private val nino      = "AA112233A"
+  private val taxYear   = "2019-20"
   private val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
 
   private val requestData = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId)
@@ -40,7 +40,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
       Seq(
         HMRCStateBenefit(
           benefitType = "incapacityBenefit",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -59,7 +59,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         )
       )
     )

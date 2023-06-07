@@ -16,7 +16,7 @@
 
 package v1.fixtures
 
-import api.models.domain.{Nino, TaxYear}
+import api.models.domain.{Nino, TaxYear, Timestamp}
 import api.models.hateoas.Method._
 import api.models.hateoas.{HateoasWrapper, Link}
 import play.api.libs.json.{JsValue, Json}
@@ -25,10 +25,10 @@ import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, 
 
 object ListBenefitsFixture {
 
-  val nino: String = "AA123456A"
+  val nino: String    = "AA123456A"
   val taxYear: String = "2020-21"
 
-  val benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f"
+  val benefitId                      = "f0d83ac0-a10a-4d57-9e41-6d033832779f"
   val queryBenefitId: Option[String] = Some(benefitId)
 
   val correlationId: String = "X-123"
@@ -66,12 +66,11 @@ object ListBenefitsFixture {
     """.stripMargin
   )
 
-  val responseBody: JsValue = Json.parse(
-    s"""
+  val responseBody: JsValue = Json.parse(s"""
        |{
        |	"stateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -85,7 +84,7 @@ object ListBenefitsFixture {
        |	}],
        |	"customerAddedStateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -108,12 +107,11 @@ object ListBenefitsFixture {
        |	}]
        |}""".stripMargin)
 
-  val singleRetrieveWithAmounts: JsValue = Json.parse(
-    """
+  val singleRetrieveWithAmounts: JsValue = Json.parse("""
       |{
       |	"customerAddedStateBenefits": [{
       |		"benefitType": "incapacityBenefit",
-      |		"submittedOn": "2019-04-04T01:01:01Z",
+      |		"submittedOn": "2019-04-04T01:01:01.000Z",
       |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |		"startDate": "2020-01-01",
       |		"endDate": "2020-04-01",
@@ -152,12 +150,11 @@ object ListBenefitsFixture {
       |	}]
       |}""".stripMargin)
 
-  val singleRetrieveWithAmountsBenefitId: JsValue = Json.parse(
-    s"""
+  val singleRetrieveWithAmountsBenefitId: JsValue = Json.parse(s"""
        |{
        |	"customerAddedStateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -196,12 +193,11 @@ object ListBenefitsFixture {
        |	}]
        |}""".stripMargin)
 
-  val singleRetrieveWithDuplicateBenefitId: JsValue = Json.parse(
-    s"""
+  val singleRetrieveWithDuplicateBenefitId: JsValue = Json.parse(s"""
        |{
        |	"customerAddedStateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -240,12 +236,11 @@ object ListBenefitsFixture {
        |	}]
        |}""".stripMargin)
 
-  val responseBodyWithNoAmounts: JsValue = Json.parse(
-    s"""
+  val responseBodyWithNoAmounts: JsValue = Json.parse(s"""
        |{
        |	"stateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -274,12 +269,11 @@ object ListBenefitsFixture {
        |	}]
        |}""".stripMargin)
 
-  val responseBodyWithNoAmountsBenefitId: JsValue = Json.parse(
-    s"""
+  val responseBodyWithNoAmountsBenefitId: JsValue = Json.parse(s"""
        |{
        |	"stateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -308,8 +302,7 @@ object ListBenefitsFixture {
        |	}]
        |}""".stripMargin)
 
-  val responseBodyWithoutDateIgnored: JsValue = Json.parse(
-    s"""
+  val responseBodyWithoutDateIgnored: JsValue = Json.parse(s"""
        |{
        |	"stateBenefits": [{
        |		"benefitType": "incapacityBenefit",
@@ -341,12 +334,11 @@ object ListBenefitsFixture {
        |	}]
        |}""".stripMargin)
 
-  val hmrcOnlyResponseBody: JsValue = Json.parse(
-    s"""
+  val hmrcOnlyResponseBody: JsValue = Json.parse(s"""
        |{
        |	"stateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -369,12 +361,11 @@ object ListBenefitsFixture {
        |	}]
        |}""".stripMargin)
 
-  val duplicateIdResponse: JsValue = Json.parse(
-    s"""
+  val duplicateIdResponse: JsValue = Json.parse(s"""
        |{
        |	"stateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -396,7 +387,7 @@ object ListBenefitsFixture {
        |	}],
        |	"customerAddedStateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -428,13 +419,12 @@ object ListBenefitsFixture {
        |}
        |""".stripMargin)
 
-  val singleStateBenefitDesJson: JsValue = Json.parse(
-    s"""
+  val singleStateBenefitDesJson: JsValue = Json.parse(s"""
        |{
        |  "stateBenefits": {
        |    "incapacityBenefit": [
        |    {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01",
@@ -444,13 +434,12 @@ object ListBenefitsFixture {
        |   }
        |}""".stripMargin)
 
-  val singleStateBenefitDesJsonWithDuplicateId: JsValue = Json.parse(
-    s"""
+  val singleStateBenefitDesJsonWithDuplicateId: JsValue = Json.parse(s"""
        |{
        |  "stateBenefits": {
        |    "incapacityBenefit": [
        |    {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01",
@@ -461,7 +450,7 @@ object ListBenefitsFixture {
        |   "customerAddedStateBenefits": {
        |    "incapacityBenefit": [
        |    {
-       |      "submittedOn": "2019-04-04T01:01:01Z",
+       |      "submittedOn": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "$benefitId",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -471,13 +460,12 @@ object ListBenefitsFixture {
        |   }
        |}""".stripMargin)
 
-  val singleCustomerStateBenefitDesJson: JsValue = Json.parse(
-    s"""
+  val singleCustomerStateBenefitDesJson: JsValue = Json.parse(s"""
        |{
        |  "customerAddedStateBenefits": {
        |    "incapacityBenefit": [
        |    {
-       |      "submittedOn": "2019-04-04T01:01:01Z",
+       |      "submittedOn": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "$benefitId",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -487,13 +475,12 @@ object ListBenefitsFixture {
        |   }
        |}""".stripMargin)
 
-  val desJsonWithNoAmounts: JsValue = Json.parse(
-    s"""
+  val desJsonWithNoAmounts: JsValue = Json.parse(s"""
        |{
        |  "stateBenefits": {
        |    "incapacityBenefit": [
        |    {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01"
@@ -501,8 +488,7 @@ object ListBenefitsFixture {
        |   }
        |}""".stripMargin)
 
-  val desJsonWithNoDateIgnored: JsValue = Json.parse(
-    s"""
+  val desJsonWithNoDateIgnored: JsValue = Json.parse(s"""
        |{
        |  "stateBenefits": {
        |    "incapacityBenefit": [
@@ -520,7 +506,7 @@ object ListBenefitsFixture {
        |  "stateBenefits": {
        |    "incapacityBenefit": [
        |    {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01",
@@ -528,7 +514,7 @@ object ListBenefitsFixture {
        |      "taxPaid": 2132.22
        |     },
        |     {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |      "startDate": "2020-03-01",
        |      "endDate": "2020-04-01",
@@ -536,13 +522,13 @@ object ListBenefitsFixture {
        |     }
        |    ],
        |    "statePension": {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2019-01-01",
        |      "amount": 2000.00
        |    },
        |    "statePensionLumpSum": {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2019-01-01",
        |      "endDate"  : "2019-01-01",
@@ -551,7 +537,7 @@ object ListBenefitsFixture {
        |    },
        |    "employmentSupportAllowance": [
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "$benefitId",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -559,7 +545,7 @@ object ListBenefitsFixture {
        |        "taxPaid": 2132.22
        |      },
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -568,7 +554,7 @@ object ListBenefitsFixture {
        |    ],
        |    "jobSeekersAllowance": [
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "$benefitId",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -576,7 +562,7 @@ object ListBenefitsFixture {
        |        "taxPaid": 2132.22
        |      },
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -584,14 +570,14 @@ object ListBenefitsFixture {
        |      }
        |    ],
        |    "bereavementAllowance": {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01",
        |      "amount": 2000.00
        |    },
        |    "otherStateBenefits": {
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01",
@@ -601,8 +587,8 @@ object ListBenefitsFixture {
        |  "customerAddedStateBenefits": {
        |    "incapacityBenefit": [
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
-       |        "submittedOn": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |        "submittedOn": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "$benefitId",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -610,8 +596,8 @@ object ListBenefitsFixture {
        |        "taxPaid": 2132.22
        |      },
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
-       |        "submittedOn": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |        "submittedOn": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |        "startDate": "2020-03-01",
        |        "endDate": "2020-04-01",
@@ -619,15 +605,15 @@ object ListBenefitsFixture {
        |      }
        |    ],
        |    "statePension": [{
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
-       |      "submittedOn": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |      "submittedOn": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2019-01-01",
        |      "amount": 2000.00
        |    }],
        |    "statePensionLumpSum": [{
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
-       |      "submittedOn": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |      "submittedOn": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2019-01-01",
        |      "endDate" : "2019-01-01",
@@ -636,8 +622,8 @@ object ListBenefitsFixture {
        |    }],
        |    "employmentSupportAllowance": [
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
-       |        "submittedOn": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |        "submittedOn": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "$benefitId",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -647,8 +633,8 @@ object ListBenefitsFixture {
        |    ],
        |    "jobSeekersAllowance": [
        |      {
-       |        "dateIgnored": "2019-04-04T01:01:01Z",
-       |        "submittedOn": "2019-04-04T01:01:01Z",
+       |        "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |        "submittedOn": "2019-04-04T01:01:01.000Z",
        |        "benefitId": "$benefitId",
        |        "startDate": "2020-01-01",
        |        "endDate": "2020-04-01",
@@ -657,16 +643,16 @@ object ListBenefitsFixture {
        |      }
        |    ],
        |    "bereavementAllowance": [{
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
-       |      "submittedOn": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |      "submittedOn": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01",
        |      "amount": 2000.00
        |    }],
        |    "otherStateBenefits": [{
-       |      "dateIgnored": "2019-04-04T01:01:01Z",
-       |      "submittedOn": "2019-04-04T01:01:01Z",
+       |      "dateIgnored": "2019-04-04T01:01:01.000Z",
+       |      "submittedOn": "2019-04-04T01:01:01.000Z",
        |      "benefitId": "$benefitId",
        |      "startDate": "2020-01-01",
        |      "endDate": "2020-04-01",
@@ -677,12 +663,11 @@ object ListBenefitsFixture {
        |""".stripMargin
   )
 
-  def mtdJson(taxYear: String): JsValue = Json.parse(
-    s"""
+  def mtdJson(taxYear: String): JsValue = Json.parse(s"""
        |{
        |	"stateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -695,7 +680,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "incapacityBenefit",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |		"startDate": "2020-03-01",
        |		"endDate": "2020-04-01",
@@ -707,7 +692,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "statePension",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2019-01-01",
        |		"amount": 2000,
@@ -718,7 +703,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "statePensionLumpSum",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2019-01-01",
        |		"endDate": "2019-01-01",
@@ -731,7 +716,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "employmentSupportAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -744,7 +729,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "employmentSupportAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -756,7 +741,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "jobSeekersAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -769,7 +754,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "jobSeekersAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -781,7 +766,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "bereavementAllowance",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -793,7 +778,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "otherStateBenefits",
-       |		"dateIgnored": "2019-04-04T01:01:01Z",
+       |		"dateIgnored": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -806,7 +791,7 @@ object ListBenefitsFixture {
        |	}],
        |	"customerAddedStateBenefits": [{
        |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -819,7 +804,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "incapacityBenefit",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
        |		"startDate": "2020-03-01",
        |		"endDate": "2020-04-01",
@@ -831,7 +816,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "statePension",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2019-01-01",
        |		"amount": 2000,
@@ -842,7 +827,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "statePensionLumpSum",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2019-01-01",
        |		"endDate": "2019-01-01",
@@ -855,7 +840,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "employmentSupportAllowance",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -868,7 +853,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "jobSeekersAllowance",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -881,7 +866,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "bereavementAllowance",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -893,7 +878,7 @@ object ListBenefitsFixture {
        |		}]
        |	}, {
        |		"benefitType": "otherStateBenefits",
-       |		"submittedOn": "2019-04-04T01:01:01Z",
+       |		"submittedOn": "2019-04-04T01:01:01.000Z",
        |		"benefitId": "$benefitId",
        |		"startDate": "2020-01-01",
        |		"endDate": "2020-04-01",
@@ -918,7 +903,7 @@ object ListBenefitsFixture {
 
   val stateBenefits: HMRCStateBenefit = HMRCStateBenefit(
     benefitType = "incapacityBenefit",
-    dateIgnored = Some("2019-04-04T01:01:01Z"),
+    dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
     benefitId = s"$benefitId",
     startDate = "2020-01-01",
     endDate = Some("2020-04-01"),
@@ -934,7 +919,7 @@ object ListBenefitsFixture {
     endDate = Some("2020-04-01"),
     amount = Some(2000.00),
     taxPaid = Some(2132.22),
-    submittedOn = Some("2019-04-04T01:01:01Z")
+    submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
   )
 
   val responseData: ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit] = ListBenefitsResponse(

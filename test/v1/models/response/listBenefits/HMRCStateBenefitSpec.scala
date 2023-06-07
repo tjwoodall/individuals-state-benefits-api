@@ -16,6 +16,7 @@
 
 package v1.models.response.listBenefits
 
+import api.models.domain.Timestamp
 import api.models.utils.JsonErrorValidators
 import play.api.libs.json.{JsObject, JsValue, Json}
 import support.UnitSpec
@@ -24,19 +25,19 @@ class HMRCStateBenefitSpec extends UnitSpec with JsonErrorValidators {
 
   val json: JsValue = Json.parse("""{
       |     "benefitType": "incapacityBenefit",
-      |			"dateIgnored": "2019-04-04T01:01:01Z",
-      |     "submittedOn": "9d51a3eb-e374-5349-aa02-96db92561138",
-      |			"benefitId": "9d51a3eb-e374-5349-aa02-96db92561138",
-      |			"startDate": "2020-01-01",
-      |			"endDate": "2020-04-01",
-      |			"amount": 34345.55,
-      |			"taxPaid": 345.55
+      |		"dateIgnored": "2019-04-04T01:01:01.000Z",
+      |     "submittedOn": "2019-04-04T01:01:01.000Z",
+      |		"benefitId": "9d51a3eb-e374-5349-aa02-96db92561138",
+      |		"startDate": "2020-01-01",
+      |		"endDate": "2020-04-01",
+      |		"amount": 34345.55,
+      |		"taxPaid": 345.55
       |}""".stripMargin)
 
   val model: HMRCStateBenefit = HMRCStateBenefit(
     benefitType = "incapacityBenefit",
-    dateIgnored = Some("2019-04-04T01:01:01Z"),
-    submittedOn = Some("9d51a3eb-e374-5349-aa02-96db92561138"),
+    dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
+    submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z")),
     benefitId = "9d51a3eb-e374-5349-aa02-96db92561138",
     startDate = "2020-01-01",
     endDate = Some("2020-04-01"),

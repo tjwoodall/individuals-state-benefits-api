@@ -17,6 +17,7 @@
 package v1.models.response.listBenefits
 
 import api.hateoas.{HateoasLinks, HateoasListLinksFactory2}
+import api.models.domain.Timestamp
 import mocks.MockAppConfig
 import org.scalatest.prop.TableDrivenPropertyChecks
 import support.UnitSpec
@@ -27,11 +28,10 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
   private val taxYear   = "2020-21"
   private val benefitId = "benefitId"
 
-  private val dateIgnored = Some("ignoreDate")
+  private val dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z"))
 
   class Test {
     MockedAppConfig.apiGatewayContext.returns("gatewayContext").anyNumberOfTimes()
-
 
     val hateoasFactory: HateoasListLinksFactory2[ListBenefitsResponse, HMRCStateBenefit, CustomerStateBenefit, ListBenefitsHateoasData] = implicitly
   }
@@ -50,7 +50,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
     }
 
     "links obtained for HMRC benefit item" when {
-      def stateBenefit(dateIgnored: Option[String] = None): HMRCStateBenefit =
+      def stateBenefit(dateIgnored: Option[Timestamp] = None): HMRCStateBenefit =
         HMRCStateBenefit(
           benefitType = "someBenefitType",
           dateIgnored = dateIgnored,

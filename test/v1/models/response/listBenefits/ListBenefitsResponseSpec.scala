@@ -16,6 +16,7 @@
 
 package v1.models.response.listBenefits
 
+import api.models.domain.Timestamp
 import play.api.libs.json.{JsValue, Json}
 import support.UnitSpec
 import v1.fixtures.ListBenefitsFixture._
@@ -27,7 +28,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       Seq(
         HMRCStateBenefit(
           benefitType = "incapacityBenefit",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -37,7 +38,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "incapacityBenefit",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779g",
           startDate = "2020-03-01",
           endDate = Some("2020-04-01"),
@@ -47,7 +48,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "statePension",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2019-01-01",
           endDate = None,
@@ -57,7 +58,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "statePensionLumpSum",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2019-01-01",
           endDate = Some("2019-01-01"),
@@ -67,7 +68,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "employmentSupportAllowance",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -77,7 +78,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "employmentSupportAllowance",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779g",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -87,7 +88,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "jobSeekersAllowance",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -97,7 +98,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "jobSeekersAllowance",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779g",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -107,7 +108,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "bereavementAllowance",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -117,7 +118,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
         ),
         HMRCStateBenefit(
           benefitType = "otherStateBenefits",
-          dateIgnored = Some("2019-04-04T01:01:01Z"),
+          dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
           startDate = "2020-01-01",
           endDate = Some("2020-04-01"),
@@ -136,7 +137,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         ),
         CustomerStateBenefit(
           benefitType = "incapacityBenefit",
@@ -145,7 +146,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = Some("2020-04-01"),
           amount = Some(1000.00),
           taxPaid = None,
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         ),
         CustomerStateBenefit(
           benefitType = "statePension",
@@ -154,7 +155,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = None,
           amount = Some(2000.00),
           taxPaid = None,
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         ),
         CustomerStateBenefit(
           benefitType = "statePensionLumpSum",
@@ -163,7 +164,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = Some("2019-01-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         ),
         CustomerStateBenefit(
           benefitType = "employmentSupportAllowance",
@@ -172,7 +173,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         ),
         CustomerStateBenefit(
           benefitType = "jobSeekersAllowance",
@@ -181,7 +182,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = Some(2132.22),
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         ),
         CustomerStateBenefit(
           benefitType = "bereavementAllowance",
@@ -190,7 +191,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = None,
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         ),
         CustomerStateBenefit(
           benefitType = "otherStateBenefits",
@@ -199,7 +200,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
           endDate = Some("2020-04-01"),
           amount = Some(2000.00),
           taxPaid = None,
-          submittedOn = Some("2019-04-04T01:01:01Z")
+          submittedOn = Some(Timestamp("2019-04-04T01:01:01.000Z"))
         )
       )
     )
@@ -210,7 +211,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |    "stateBenefits": [
       |      {
       |        "benefitType": "incapacityBenefit",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -219,7 +220,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "incapacityBenefit",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |        "startDate": "2020-03-01",
       |        "endDate": "2020-04-01",
@@ -227,14 +228,14 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "statePension",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2019-01-01",
       |        "amount": 2000.00
       |      },
       |      {
       |        "benefitType": "statePensionLumpSum",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2019-01-01",
       |        "endDate"  : "2019-01-01",
@@ -243,7 +244,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "employmentSupportAllowance",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -252,7 +253,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "employmentSupportAllowance",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -260,7 +261,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "jobSeekersAllowance",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -269,7 +270,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "jobSeekersAllowance",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -277,7 +278,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "bereavementAllowance",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -285,7 +286,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "otherStateBenefits",
-      |        "dateIgnored": "2019-04-04T01:01:01Z",
+      |        "dateIgnored": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -295,7 +296,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |    "customerAddedStateBenefits": [
       |      {
       |        "benefitType": "incapacityBenefit",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -304,7 +305,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "incapacityBenefit",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779g",
       |        "startDate": "2020-03-01",
       |        "endDate": "2020-04-01",
@@ -312,14 +313,14 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "statePension",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2019-01-01",
       |        "amount": 2000.00
       |      },
       |      {
       |        "benefitType": "statePensionLumpSum",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2019-01-01",
       |        "endDate" : "2019-01-01",
@@ -328,7 +329,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "employmentSupportAllowance",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -337,7 +338,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "jobSeekersAllowance",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -346,7 +347,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "bereavementAllowance",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
@@ -354,7 +355,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
       |      },
       |      {
       |        "benefitType": "otherStateBenefits",
-      |        "submittedOn": "2019-04-04T01:01:01Z",
+      |        "submittedOn": "2019-04-04T01:01:01.000Z",
       |        "benefitId": "f0d83ac0-a10a-4d57-9e41-6d033832779f",
       |        "startDate": "2020-01-01",
       |        "endDate": "2020-04-01",
