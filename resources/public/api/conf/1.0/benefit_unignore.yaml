@@ -82,6 +82,8 @@ responses:
             $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotEnded'
           RULE_UNIGNORE_FORBIDDEN:
             $ref: './common/errors.yaml#/components/examples/ruleUnignoreForbidden'
+          RULE_INCORRECT_GOV_TEST_SCENARIO:
+            $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
 
   "403":
     description: Forbidden
