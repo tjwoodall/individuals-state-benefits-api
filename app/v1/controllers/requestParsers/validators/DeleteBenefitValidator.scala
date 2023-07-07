@@ -24,7 +24,7 @@ import v1.models.request.deleteBenefit.DeleteBenefitRawData
 
 import javax.inject.Inject
 
-class DeleteBenefitValidator @Inject()(implicit appConfig: AppConfig) extends Validator[DeleteBenefitRawData] {
+class DeleteBenefitValidator @Inject() (implicit appConfig: AppConfig) extends Validator[DeleteBenefitRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 

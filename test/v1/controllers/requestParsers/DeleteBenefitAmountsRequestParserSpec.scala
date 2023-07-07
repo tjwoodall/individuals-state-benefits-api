@@ -23,10 +23,10 @@ import v1.mocks.validators.MockDeleteBenefitAmountsValidator
 import v1.models.request.deleteBenefitAmounts.{DeleteBenefitAmountsRawData, DeleteBenefitAmountsRequest}
 
 class DeleteBenefitAmountsRequestParserSpec extends UnitSpec {
-  val nino: String = "AA123456B"
-  val taxYear: TaxYear = TaxYear.fromMtd("2019-20")
-  val taxYearString: String = "2019-20"
-  val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  val nino: String                   = "AA123456B"
+  val taxYear: TaxYear               = TaxYear.fromMtd("2019-20")
+  val taxYearString: String          = "2019-20"
+  val benefitId: String              = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val rawData = DeleteBenefitAmountsRawData(

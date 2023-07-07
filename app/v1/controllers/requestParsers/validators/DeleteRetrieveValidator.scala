@@ -24,7 +24,7 @@ import v1.models.request.deleteRetrieve.DeleteRetrieveRawData
 
 import javax.inject.Inject
 
-class DeleteRetrieveValidator @Inject()(implicit appConfig: AppConfig) extends Validator[DeleteRetrieveRawData] {
+class DeleteRetrieveValidator @Inject() (implicit appConfig: AppConfig) extends Validator[DeleteRetrieveRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 

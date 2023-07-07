@@ -101,7 +101,7 @@ class CreateBenefitValidatorSpec extends UnitSpec {
       }
 
       "return RuleIncorrectOrEmptyBodyError error for an incorrect request body" in new Test {
-        private val paths: Seq[String] = List("/benefitType","/endDate", "/startDate")
+        private val paths: Seq[String] = List("/benefitType", "/endDate", "/startDate")
         private val body: AnyContentAsJson = AnyContentAsJson(Json.parse(s"""
              |{ 
              |  "benefitType": true, 

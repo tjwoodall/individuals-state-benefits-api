@@ -33,7 +33,7 @@ trait MockListBenefitsConnector extends MockFactory {
   object MockListBenefitsConnector {
 
     def listBenefits(
-                      requestData: ListBenefitsRequest): CallHandler[Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
+        requestData: ListBenefitsRequest): CallHandler[Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
       (mockListBenefitsConnector
         .listBenefits(_: ListBenefitsRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)

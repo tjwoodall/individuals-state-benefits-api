@@ -64,12 +64,12 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
 
         val errors = Seq(
           "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-          "INVALID_TAX_YEAR" -> TaxYearFormatError,
-          "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
-          "INVALID_CORRELATIONID" -> StandardDownstreamError,
-          "NO_DATA_FOUND" -> NotFoundError,
-          "SERVER_ERROR" -> StandardDownstreamError,
-          "SERVICE_UNAVAILABLE" -> StandardDownstreamError
+          "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+          "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+          "INVALID_CORRELATIONID"     -> StandardDownstreamError,
+          "NO_DATA_FOUND"             -> NotFoundError,
+          "SERVER_ERROR"              -> StandardDownstreamError,
+          "SERVICE_UNAVAILABLE"       -> StandardDownstreamError
         )
 
         val extraTysErrors = Seq(

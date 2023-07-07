@@ -25,8 +25,7 @@ import v1.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRawData, AmendB
 
 import javax.inject.Inject
 
-class AmendBenefitAmountsValidator @Inject()(implicit appConfig: AppConfig)
-  extends Validator[AmendBenefitAmountsRawData] {
+class AmendBenefitAmountsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[AmendBenefitAmountsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation, bodyFormatValidator, bodyValueValidator)
 

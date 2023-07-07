@@ -24,7 +24,7 @@ import v1.models.request.listBenefits.ListBenefitsRawData
 
 import javax.inject.Inject
 
-class ListBenefitsValidator @Inject()(implicit appConfig: AppConfig) extends Validator[ListBenefitsRawData] {
+class ListBenefitsValidator @Inject() (implicit appConfig: AppConfig) extends Validator[ListBenefitsRawData] {
 
   private val validationSet = List(parameterFormatValidation, parameterRuleValidation)
 

@@ -18,10 +18,10 @@ package v1.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.Nino
-
-import javax.inject.Inject
 import v1.controllers.requestParsers.validators.DeleteBenefitValidator
 import v1.models.request.deleteBenefit.{DeleteBenefitRawData, DeleteBenefitRequest}
+
+import javax.inject.Inject
 
 class DeleteBenefitRequestParser @Inject() (val validator: DeleteBenefitValidator) extends RequestParser[DeleteBenefitRawData, DeleteBenefitRequest] {
 

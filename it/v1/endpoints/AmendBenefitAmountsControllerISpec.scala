@@ -104,8 +104,8 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
     "return error according to spec" when {
 
-      val validNino: String = "AA123456A"
-      val validTaxYear: String = "2019-20"
+      val validNino: String      = "AA123456A"
+      val validTaxYear: String   = "2019-20"
       val validBenefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
       val validRequestJson: JsValue = Json.parse(
@@ -170,9 +170,9 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.error} error ${scenario.getOrElse("")}" in new NonTysTest {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
-            override val benefitId: String = requestBenefitId
+            override val nino: String             = requestNino
+            override val taxYear: String          = requestTaxYear
+            override val benefitId: String        = requestBenefitId
             override val requestBodyJson: JsValue = requestBody
 
             val response: WSResponse = await(request().put(requestBodyJson))
@@ -255,8 +255,8 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String = "AA123456A"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String          = "AA123456A"
+    val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
     def taxYear: String

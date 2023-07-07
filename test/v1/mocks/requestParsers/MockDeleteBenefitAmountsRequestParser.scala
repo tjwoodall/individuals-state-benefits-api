@@ -33,6 +33,7 @@ trait MockDeleteBenefitAmountsRequestParser extends MockFactory {
       (mockDeleteBenefitAmountsRequestParser
         .parseRequest(_: DeleteBenefitAmountsRawData)(_: String))
         .expects(data, *)
+
   }
 
 }

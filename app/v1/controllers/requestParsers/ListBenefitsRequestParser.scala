@@ -18,10 +18,10 @@ package v1.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.{Nino, TaxYear}
-
-import javax.inject.Inject
 import v1.controllers.requestParsers.validators.ListBenefitsValidator
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
+
+import javax.inject.Inject
 
 class ListBenefitsRequestParser @Inject() (val validator: ListBenefitsValidator) extends RequestParser[ListBenefitsRawData, ListBenefitsRequest] {
 

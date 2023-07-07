@@ -34,14 +34,14 @@ trait MockHateoasFactory extends MockFactory {
         .expects(a, data, *)
     }
 
-    def wrapList[A[_] : Functor, I, D <: HateoasData](a: A[I], data: D): CallHandler[HateoasWrapper[A[HateoasWrapper[I]]]] = {
+    def wrapList[A[_]: Functor, I, D <: HateoasData](a: A[I], data: D): CallHandler[HateoasWrapper[A[HateoasWrapper[I]]]] = {
       (mockHateoasFactory
         .wrapList(_: A[I], _: D)(_: Functor[A], _: HateoasListLinksFactory[A, I, D]))
         .expects(a, data, *, *)
     }
 
-    def wrapList[A[_, _] : Bifunctor, I1, I2, D <: HateoasData](a: A[I1, I2],
-                                                                data: D): CallHandler[HateoasWrapper[A[HateoasWrapper[I1], HateoasWrapper[I2]]]] = {
+    def wrapList[A[_, _]: Bifunctor, I1, I2, D <: HateoasData](a: A[I1, I2],
+                                                               data: D): CallHandler[HateoasWrapper[A[HateoasWrapper[I1], HateoasWrapper[I2]]]] = {
       (mockHateoasFactory
         .wrapList(_: A[I1, I2], _: D)(_: Bifunctor[A], _: HateoasListLinksFactory2[A, I1, I2, D]))
         .expects(a, data, *, *)

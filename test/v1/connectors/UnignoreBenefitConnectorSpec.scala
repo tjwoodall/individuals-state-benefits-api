@@ -46,7 +46,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
     _: ConnectorTest =>
     def taxYear: TaxYear
 
-    val nino: String = "AA111111A"
+    val nino: String      = "AA111111A"
     val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
     val request: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), taxYear, benefitId)

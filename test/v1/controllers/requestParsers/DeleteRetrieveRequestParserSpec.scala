@@ -25,8 +25,8 @@ import v1.models.request.deleteRetrieve.DeleteRetrieveRawData
 
 class DeleteRetrieveRequestParserSpec extends UnitSpec {
 
-  val nino: String = "AA123456B"
-  val taxYear: String = "2017-18"
+  val nino: String           = "AA123456B"
+  val taxYear: String        = "2017-18"
   implicit val correlationId = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val deleteRetrieveSavingsRawData: DeleteRetrieveRawData = DeleteRetrieveRawData(

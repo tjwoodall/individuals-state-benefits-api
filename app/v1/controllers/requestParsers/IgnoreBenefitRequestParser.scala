@@ -18,10 +18,10 @@ package v1.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.{Nino, TaxYear}
-
-import javax.inject.Inject
 import v1.controllers.requestParsers.validators.IgnoreBenefitValidator
 import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
+
+import javax.inject.Inject
 
 class IgnoreBenefitRequestParser @Inject() (val validator: IgnoreBenefitValidator) extends RequestParser[IgnoreBenefitRawData, IgnoreBenefitRequest] {
 

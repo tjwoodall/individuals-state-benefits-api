@@ -18,11 +18,11 @@ package v1.controllers.requestParsers
 
 import api.controllers.requestParsers.RequestParser
 import api.models.domain.{Nino, TaxYear}
-
-import javax.inject.Inject
 import v1.controllers.requestParsers.validators.DeleteRetrieveValidator
 import v1.models.request.deleteRetrieve
 import v1.models.request.deleteRetrieve.{DeleteRetrieveRawData, DeleteRetrieveRequest}
+
+import javax.inject.Inject
 
 class DeleteRetrieveRequestParser @Inject() (val validator: DeleteRetrieveValidator)
     extends RequestParser[DeleteRetrieveRawData, DeleteRetrieveRequest] {

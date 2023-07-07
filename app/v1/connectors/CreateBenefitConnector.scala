@@ -17,13 +17,13 @@
 package v1.connectors
 
 import api.connectors.DownstreamUri.IfsUri
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.models.request.createBenefit.CreateBenefitRequest
 import v1.models.response.createBenefit.CreateBenefitResponse
-import api.connectors.httpparsers.StandardDownstreamHttpParser._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}

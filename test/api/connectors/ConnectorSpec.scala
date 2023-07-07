@@ -28,15 +28,15 @@ import scala.concurrent.{ExecutionContext, Future}
 
 trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames {
 
-  lazy val baseUrl = "http://test-BaseUrl"
+  lazy val baseUrl                   = "http://test-BaseUrl"
   implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   val otherHeaders: Seq[(String, String)] = Seq(
     "Gov-Test-Scenario" -> "DEFAULT",
-    "AnotherHeader" -> "HeaderValue"
+    "AnotherHeader"     -> "HeaderValue"
   )
 
-  implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders)
+  implicit val hc: HeaderCarrier    = HeaderCarrier(otherHeaders = otherHeaders)
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
   val dummyDesHeaderCarrierConfig: HeaderCarrier.Config =
@@ -47,10 +47,10 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     )
 
   val requiredDesHeaders: Seq[(String, String)] = Seq(
-    "Authorization" -> "Bearer des-token",
-    "Environment" -> "des-environment",
-    "User-Agent" -> "individuals-income-received-api",
-    "CorrelationId" -> correlationId,
+    "Authorization"     -> "Bearer des-token",
+    "Environment"       -> "des-environment",
+    "User-Agent"        -> "individuals-income-received-api",
+    "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
 
@@ -78,10 +78,10 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     )
 
   val requiredIfsHeaders: Seq[(String, String)] = Seq(
-    "Authorization" -> "Bearer ifs-token",
-    "Environment" -> "ifs-environment",
-    "User-Agent" -> "individuals-income-received-api",
-    "CorrelationId" -> correlationId,
+    "Authorization"     -> "Bearer ifs-token",
+    "Environment"       -> "ifs-environment",
+    "User-Agent"        -> "individuals-income-received-api",
+    "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
 
@@ -95,24 +95,24 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   )
 
   val requiredTysIfsHeaders: Seq[(String, String)] = Seq(
-    "Environment" -> "TYS-IFS-environment",
+    "Environment"   -> "TYS-IFS-environment",
     "Authorization" -> s"Bearer TYS-IFS-token",
     "CorrelationId" -> s"$correlationId"
   )
 
   val requiredRelease6Headers: Seq[(String, String)] = Seq(
-    "Authorization" -> "Bearer release6-token",
-    "Environment" -> "release6-environment",
-    "User-Agent" -> "individuals-income-received-api",
-    "CorrelationId" -> correlationId,
+    "Authorization"     -> "Bearer release6-token",
+    "Environment"       -> "release6-environment",
+    "User-Agent"        -> "individuals-income-received-api",
+    "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
 
   val requiredApi1651Headers: Seq[(String, String)] = Seq(
-    "Authorization" -> "Bearer api1651-token",
-    "Environment" -> "api1651-environment",
-    "User-Agent" -> "individuals-income-received-api",
-    "CorrelationId" -> correlationId,
+    "Authorization"     -> "Bearer api1651-token",
+    "Environment"       -> "api1651-environment",
+    "User-Agent"        -> "individuals-income-received-api",
+    "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
 

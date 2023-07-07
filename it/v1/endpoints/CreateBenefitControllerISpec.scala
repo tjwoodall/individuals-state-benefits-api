@@ -116,7 +116,6 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
             "/benefitType",
             "/endDate",
             "/startDate"
-
           ))
       )
 
