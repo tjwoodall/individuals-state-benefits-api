@@ -6,29 +6,13 @@ description: |
   A National Insurance number, tax year and benefit ID must be provided.
 
   ### Test data
-  <p>Scenario simulations using Gov-Test-Scenario headers is only available in the sandbox environment.</p>
-  <table>
-      <thead>
-          <tr>
-              <th>Header Value (Gov-Test-Scenario)</th>
-              <th>Scenario</th>
-          </tr>
-      </thead>
-      <tbody>
-          <tr>
-              <td><p>N/A - DEFAULT</p></td>
-              <td><p>Simulates success response.</p></td>
-          </tr>
-          <tr>
-              <td><p>HMRC_HELD</p></td>
-              <td><p>Simulates the scenario in which a deletion of a HMRC held state benefit is not permitted.</p></td>
-          </tr>
-          <tr>
-              <td><p>NOT_FOUND</p></td>
-              <td><p>Simulates the scenario where no data is found.</p></td>
-          </tr>
-      </tbody>
-  </table>
+  Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+  | Header Value (Gov-Test-Scenario) | Scenario                                                                                   |
+  |----------------------------------|--------------------------------------------------------------------------------------------|
+  | N/A - DEFAULT                    | Simulates success response.                                                                |
+  | HMRC_HELD                        | Simulates the scenario in which a deletion of an HMRC held state benefit is not permitted. |
+  | NOT_FOUND                        | Simulates the scenario where no data is found.                                             |
 
 parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'
