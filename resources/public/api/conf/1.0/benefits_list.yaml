@@ -15,7 +15,7 @@ description: |
   | N/A - DEFAULT<br>using **benefitId** parameter | Simulates a single HMRC held state benefit.                          |
   | HMRC_AMENDED_AMOUNTS                | Simulates the response where HMRC held state benefit amounts have been amended. |
   | NOT_FOUND                           | Simulates the scenario where no data is found.                                  |
-  | DYNAMIC                             | The following response parameters will be based on the data submitted in the request:<br> • SubmittedOn<br> • BenefitID<br> • startDate<br> • endDate.|
+  | DYNAMIC                             | The following response parameters will be based on the data submitted in the request:<br> • SubmittedOn<br> • BenefitID<br> • startDate<br> • endDate |
 
 parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'
