@@ -19,6 +19,7 @@ package api.models.audit
 import api.models.errors.TaxYearFormatError
 import play.api.http.Status.{BAD_REQUEST, OK}
 import play.api.libs.json.{JsValue, Json}
+import routing.Version1
 import support.UnitSpec
 
 class GenericAuditDetailSpec extends UnitSpec {
@@ -43,6 +44,7 @@ class GenericAuditDetailSpec extends UnitSpec {
        |      "endDate":"2020-12-03"
        |   },
        |   "X-CorrelationId":"$correlationId",
+       |   "versionNumber":"${Version1.name}",
        |   "response":{
        |      "httpStatus":$OK,
        |      "body":{
@@ -86,6 +88,7 @@ class GenericAuditDetailSpec extends UnitSpec {
         """.stripMargin
       )),
     `X-CorrelationId` = correlationId,
+    versionNumber = Version1.name,
     auditResponse = AuditResponse(
       OK,
       Right(Some(Json.parse(s"""
@@ -126,6 +129,7 @@ class GenericAuditDetailSpec extends UnitSpec {
        |      "endDate":"2020-12-03"
        |   },
        |    "X-CorrelationId":"$correlationId",
+       |    "versionNumber":"${Version1.name}",
        |    "response": {
        |      "httpStatus":$BAD_REQUEST,
        |      "errors": [
@@ -154,6 +158,7 @@ class GenericAuditDetailSpec extends UnitSpec {
       """.stripMargin
       )),
     `X-CorrelationId` = correlationId,
+    versionNumber = Version1.name,
     auditResponse = AuditResponse(BAD_REQUEST, Left(Seq(AuditError(TaxYearFormatError.code))))
   )
 

@@ -19,6 +19,7 @@ package v1.controllers
 import api.controllers._
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import routing.{Version, Version1}
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.DeleteBenefitAmountsRequestParser
 import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRawData
@@ -61,6 +62,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
           auditService = auditService,
           auditType = "DeleteStateBenefitAmounts",
           transactionName = "delete-state-benefit-amounts",
+          version = Version.from(request, orElse = Version1),
           pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           queryParams = None,
           requestBody = None

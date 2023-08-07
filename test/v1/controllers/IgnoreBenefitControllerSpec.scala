@@ -28,6 +28,7 @@ import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
+import routing.Version1
 import v1.mocks.requestParsers.MockIgnoreBenefitRequestParser
 import v1.mocks.services.MockIgnoreBenefitService
 import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
@@ -126,6 +127,7 @@ class IgnoreBenefitControllerSpec
           queryParams = None,
           requestBody = None,
           `X-CorrelationId` = correlationId,
+          versionNumber = Version1.name,
           auditResponse = auditResponse
         )
       )

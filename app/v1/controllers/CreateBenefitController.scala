@@ -22,6 +22,7 @@ import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import config.AppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
+import routing.{Version, Version1}
 import utils.IdGenerator
 import v1.controllers.requestParsers.CreateBenefitRequestParser
 import v1.models.request.createBenefit.CreateBenefitRawData
@@ -62,6 +63,7 @@ class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
           auditService = auditService,
           auditType = "CreateStateBenefit",
           transactionName = "create-state-benefit",
+          version = Version.from(request, orElse = Version1),
           pathParams = Map("nino" -> nino, "taxYear" -> taxYear),
           requestBody = Some(request.body),
           includeResponse = true

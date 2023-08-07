@@ -24,6 +24,7 @@ import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
+import routing.Version1
 import v1.mocks.requestParsers.MockDeleteBenefitAmountsRequestParser
 import v1.mocks.services.MockDeleteBenefitAmountsService
 import v1.models.request.deleteBenefitAmounts.{DeleteBenefitAmountsRawData, DeleteBenefitAmountsRequest}
@@ -116,6 +117,7 @@ class DeleteBenefitAmountsControllerSpec
           queryParams = None,
           requestBody = None,
           `X-CorrelationId` = correlationId,
+          versionNumber = Version1.name,
           auditResponse = auditResponse
         )
       )

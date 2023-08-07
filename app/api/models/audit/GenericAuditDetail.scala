@@ -19,6 +19,7 @@ package api.models.audit
 import api.models.auth.UserDetails
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, JsValue, OWrites}
+import routing.Version
 
 case class GenericAuditDetail(userType: String,
                               agentReferenceNumber: Option[String],
@@ -26,6 +27,7 @@ case class GenericAuditDetail(userType: String,
                               queryParams: Option[Map[String, Option[String]]],
                               requestBody: Option[JsValue],
                               `X-CorrelationId`: String,
+                              versionNumber: String,
                               auditResponse: AuditResponse)
 
 object GenericAuditDetail {
@@ -37,6 +39,7 @@ object GenericAuditDetail {
       JsPath.writeNullable[Map[String, Option[String]]] and
       (JsPath \ "request").writeNullable[JsValue] and
       (JsPath \ "X-CorrelationId").write[String] and
+      (JsPath \ "versionNumber").write[String] and
       (JsPath \ "response").write[AuditResponse]
   )(unlift(GenericAuditDetail.unapply))
 
@@ -45,6 +48,7 @@ object GenericAuditDetail {
             queryParams: Option[Map[String, Option[String]]],
             requestBody: Option[JsValue],
             `X-CorrelationId`: String,
+            apiVersion: Version,
             auditResponse: AuditResponse): GenericAuditDetail = {
 
     GenericAuditDetail(
@@ -54,6 +58,7 @@ object GenericAuditDetail {
       queryParams = queryParams,
       requestBody = requestBody,
       `X-CorrelationId` = `X-CorrelationId`,
+      versionNumber = apiVersion.name,
       auditResponse = auditResponse
     )
   }

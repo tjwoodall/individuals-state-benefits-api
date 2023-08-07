@@ -22,6 +22,7 @@ import api.models.errors.ErrorWrapper
 import api.services.AuditService
 import cats.syntax.either._
 import play.api.libs.json.JsValue
+import routing.Version
 
 import scala.concurrent.ExecutionContext
 
@@ -30,6 +31,7 @@ object AuditHandler {
   def apply(auditService: AuditService,
             auditType: String,
             transactionName: String,
+            version: Version,
             pathParams: Map[String, String],
             queryParams: Option[Map[String, Option[String]]] = None,
             requestBody: Option[JsValue] = None,
@@ -40,18 +42,20 @@ object AuditHandler {
     pathParams = pathParams,
     queryParams = queryParams,
     requestBody = requestBody,
-    responseBodyMap = if (includeResponse) identity else _ => None
+    responseBodyMap = if (includeResponse) identity else _ => None,
+    apiVersion = version
   )
 
 }
 
-case class AuditHandler(auditService: AuditService,
-                        auditType: String,
-                        transactionName: String,
-                        pathParams: Map[String, String],
-                        queryParams: Option[Map[String, Option[String]]],
-                        requestBody: Option[JsValue],
-                        responseBodyMap: Option[JsValue] => Option[JsValue])
+case class AuditHandler private (auditService: AuditService,
+                                 auditType: String,
+                                 transactionName: String,
+                                 pathParams: Map[String, String],
+                                 queryParams: Option[Map[String, Option[String]]],
+                                 requestBody: Option[JsValue],
+                                 responseBodyMap: Option[JsValue] => Option[JsValue],
+                                 apiVersion: Version)
     extends RequestContextImplicits {
 
   def performAudit(userDetails: UserDetails, httpStatus: Int, response: Either[ErrorWrapper, Option[JsValue]])(implicit
@@ -66,6 +70,7 @@ case class AuditHandler(auditService: AuditService,
         queryParams = queryParams,
         requestBody = requestBody,
         `X-CorrelationId` = ctx.correlationId,
+        apiVersion = apiVersion,
         auditResponse = auditResponse
       )
 

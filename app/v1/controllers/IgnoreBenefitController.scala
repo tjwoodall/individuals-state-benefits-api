@@ -21,6 +21,7 @@ import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import routing.{Version, Version1}
 import utils.IdGenerator
 import v1.controllers.requestParsers.IgnoreBenefitRequestParser
 import v1.models.request.ignoreBenefit.IgnoreBenefitRawData
@@ -62,6 +63,7 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
           auditService = auditService,
           auditType = "IgnoreStateBenefit",
           transactionName = "ignore-state-benefit",
+          version = Version.from(request, orElse = Version1),
           pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = None,
           includeResponse = true

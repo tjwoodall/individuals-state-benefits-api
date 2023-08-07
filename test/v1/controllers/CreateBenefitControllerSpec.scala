@@ -30,6 +30,7 @@ import mocks.MockAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
+import routing.Version1
 import v1.mocks.requestParsers.MockCreateBenefitRequestParser
 import v1.mocks.services.MockCreateBenefitService
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequest, CreateBenefitRequestBody}
@@ -189,6 +190,7 @@ class CreateBenefitControllerSpec
           queryParams = None,
           requestBody = Some(requestBodyJson),
           `X-CorrelationId` = correlationId,
+          versionNumber = Version1.name,
           auditResponse = auditResponse
         )
       )

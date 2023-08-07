@@ -22,6 +22,7 @@ import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import config.AppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
+import routing.{Version1, Version}
 import utils.{IdGenerator, Logging}
 import v1.controllers.requestParsers.AmendBenefitAmountsRequestParser
 import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRawData
@@ -69,6 +70,7 @@ class AmendBenefitAmountsController @Inject() (val authService: EnrolmentsAuthSe
           auditService = auditService,
           auditType = "AmendStateBenefitAmounts",
           transactionName = "amend-state-benefit-amounts",
+          version = Version.from(request, orElse = Version1),
           pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = Some(request.body),
           includeResponse = true
