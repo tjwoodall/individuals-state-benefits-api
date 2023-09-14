@@ -18,7 +18,7 @@ package v1.controllers.requestParsers.validators
 
 import api.controllers.requestParsers.validators.Validator
 import api.controllers.requestParsers.validators.validations._
-import api.models.errors.{EndDateFormatError, MtdError, StartDateFormatError}
+import api.models.errors.{MtdError}
 import config.AppConfig
 import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequestBody}
 
@@ -58,8 +58,8 @@ class AmendBenefitValidator @Inject() (implicit appConfig: AppConfig) extends Va
     val body = data.body.json.as[AmendBenefitRequestBody]
 
     List(
-      DateFormatValidation.validate(body.startDate, StartDateFormatError),
-      body.endDate.map(DateFormatValidation.validate(_, EndDateFormatError)).getOrElse(NoValidationErrors)
+      DateFormatValidation.validate(body.startDate, isStartDate = true),
+      body.endDate.map(DateFormatValidation.validate(_)).getOrElse(NoValidationErrors)
     )
   }
 

@@ -16,28 +16,46 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.MtdError
-import play.api.http.Status.BAD_REQUEST
+import api.models.errors.{EndDateFormatError, StartDateFormatError}
 import support.UnitSpec
 
 class DateFormatValidationSpec extends UnitSpec {
 
   "DateFormatValidation.validate" should {
     "return an empty list for a valid date" when {
-      object DateError extends MtdError("FORMAT_DATE", "Invalid Date format", BAD_REQUEST)
       "valid params are supplied" in {
 
         DateFormatValidation.validate(
-          date = "2019-04-20",
-          error = DateError
+          date = "2019-04-20"
         ) shouldBe NoValidationErrors
       }
 
-      "return a DateFormatError for an invalid date" in {
+      "return a DateFormatError for an invalid start date" in {
         DateFormatValidation.validate(
           date = "2019-04-40",
-          error = DateError
-        ) shouldBe List(DateError)
+          isStartDate = true
+        ) shouldBe List(StartDateFormatError)
+      }
+
+      "return a DateFormatError for an invalid end date" in {
+        DateFormatValidation.validate(
+          date = "2019-04-40"
+        ) shouldBe List(EndDateFormatError)
+      }
+    }
+
+    "return date validation errors" when {
+      "the start date is too early" in {
+        DateFormatValidation.validate(
+          date = "1890-04-14",
+          isStartDate = true
+        ) shouldBe List(StartDateFormatError)
+      }
+
+      "the end date is too late" in {
+        DateFormatValidation.validate(
+          date = "2102-10-21"
+        ) shouldBe List(EndDateFormatError)
       }
     }
   }

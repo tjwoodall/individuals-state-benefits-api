@@ -137,6 +137,24 @@ class CreateBenefitValidatorSpec extends UnitSpec {
         validator.validate(CreateBenefitRawData(validNino, validTaxYear, requestJson("invalid", "invalid", "invalid"))) shouldBe
           List(BenefitTypeFormatError, StartDateFormatError, EndDateFormatError)
       }
+
+      "return start date format error when start date is before 1900" in new Test {
+        val result: Seq[MtdError] = validator.validate(
+          CreateBenefitRawData(validNino, validTaxYear, requestJson(startDate = "1809-02-01"))
+        )
+
+        result shouldBe
+          List(StartDateFormatError)
+      }
+
+      "return end date format error when end date is after 2100" in new Test {
+        val result: Seq[MtdError] = validator.validate(
+          CreateBenefitRawData(validNino, validTaxYear, requestJson(endDate = "2149-02-21"))
+        )
+
+        result shouldBe
+          List(EndDateFormatError)
+      }
     }
   }
 

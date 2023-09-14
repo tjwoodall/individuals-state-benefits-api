@@ -16,18 +16,31 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.MtdError
+import api.models.errors.{EndDateFormatError, MtdError, StartDateFormatError}
 
 import java.time.LocalDate
 import scala.util.{Failure, Success, Try}
 
 object DateFormatValidation {
 
-  def validate(date: String, error: MtdError): List[MtdError] = Try {
+  private val minYear = 1900
+  private val maxYear = 2100
+
+  def validate(date: String, isStartDate: Boolean = false): List[MtdError] = Try {
     LocalDate.parse(date, dateFormat)
   } match {
-    case Success(_) => NoValidationErrors
-    case Failure(_) => List(error)
+    case Success(localDate) => validateStartAndEndDate(localDate, isStartDate)
+    case Failure(_)         => if (isStartDate) List(StartDateFormatError) else List(EndDateFormatError)
+  }
+
+  private def validateStartAndEndDate(date: LocalDate, isStartDate: Boolean): List[MtdError] = {
+    if (isStartDate && date.getYear <= minYear) {
+      List(StartDateFormatError)
+    } else if (!isStartDate && date.getYear >= maxYear) {
+      List(EndDateFormatError)
+    } else {
+      Nil
+    }
   }
 
 }

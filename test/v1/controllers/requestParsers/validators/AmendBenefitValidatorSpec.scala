@@ -37,7 +37,7 @@ class AmendBenefitValidatorSpec extends UnitSpec {
   private val startDate = "2020-04-06"
   private val endDate   = "2021-01-01"
 
-  private def requestJson(startDate: String, endDate: String) = AnyContentAsJson(
+  private def requestJson(startDate: String = startDate, endDate: String = endDate) = AnyContentAsJson(
     Json.parse(
       s"""
          |{
@@ -47,7 +47,7 @@ class AmendBenefitValidatorSpec extends UnitSpec {
       """.stripMargin
     ))
 
-  private val validRawBody = requestJson(startDate, endDate)
+  private val validRawBody = requestJson()
 
   class Test extends MockCurrentDateTime with MockAppConfig {
 
@@ -124,6 +124,24 @@ class AmendBenefitValidatorSpec extends UnitSpec {
       "return multiple errors for incorrect field formats" in new Test {
         validator.validate(AmendBenefitRawData(validNino, validTaxYear, benefitId, requestJson("notValid", "notValid"))) shouldBe
           List(StartDateFormatError, EndDateFormatError)
+      }
+
+      "return start date format error when start date is before 1900" in new Test {
+        val result: Seq[MtdError] = validator.validate(
+          AmendBenefitRawData(validNino, validTaxYear, benefitId, requestJson(startDate = "1809-02-01"))
+        )
+
+        result shouldBe
+          List(StartDateFormatError)
+      }
+
+      "return end date format error when end date is after 2100" in new Test {
+        val result: Seq[MtdError] = validator.validate(
+          AmendBenefitRawData(validNino, validTaxYear, benefitId, requestJson(endDate = "2149-02-21"))
+        )
+
+        result shouldBe
+          List(EndDateFormatError)
       }
     }
   }
