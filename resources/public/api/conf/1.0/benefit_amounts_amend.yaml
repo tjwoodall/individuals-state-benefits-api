@@ -10,6 +10,7 @@ description: |
   | N/A - DEFAULT                    | Simulate success response.                                                                                                    |
   | NOT_FOUND                        | Simulates the scenario where no data is found.                                                                                |
   | TAX_YEAR_NOT_ENDED               | Simulates the error returned when a benefit that is not employmentSupportAllowance or jobSeekersAllowance is amended in year. |
+  | STATEFUL                         | Performs a stateful update.                                                                                                   |
 
 parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'
