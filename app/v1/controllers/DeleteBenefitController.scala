@@ -55,10 +55,10 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
         benefitId = benefitId
       )
 
-      val requestHandler = RequestHandler
+      val requestHandler = RequestHandlerOld
         .withParser(parser)
         .withService(service.deleteBenefit)
-        .withAuditing(AuditHandler(
+        .withAuditing(AuditHandlerOld(
           auditService = auditService,
           auditType = "DeleteStateBenefit",
           transactionName = "delete-state-benefit",

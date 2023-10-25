@@ -48,24 +48,24 @@ object Version {
 
 sealed trait Version {
   val name: String
-  val configName: String
-  val maybePrevious: Option[Version] = None
-
   override def toString: String = name
 }
 
 case object Version1 extends Version {
-  val name       = "1.0"
-  val configName = "1"
+  val name = "1.0"
 }
 
 object Versions {
+
+  val latest: Version = Version1
 
   private val versionsByName: Map[String, Version] = Map(
     Version1.name -> Version1
   )
 
   private val versionRegex = """application/vnd.hmrc.(\d.\d)\+json""".r
+
+  def versionOrLatest(request: RequestHeader): Version = getFromRequest(request).getOrElse(latest)
 
   def getFromRequest(request: RequestHeader): Either[GetFromRequestError, Version] =
     for {

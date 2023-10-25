@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package api.models.hateoas
+package api.hateoas
 
-import api.models.hateoas.Method._
 import play.api.libs.json.{Json, OWrites}
+import api.hateoas.Method.GET
 import support.UnitSpec
 
 class HateoasWrapperSpec extends UnitSpec {

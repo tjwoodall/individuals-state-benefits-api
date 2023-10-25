@@ -105,7 +105,7 @@ class AmendBenefitValidatorSpec extends UnitSpec {
 
       "return RuleEndDateBeforeStartDateError error for an incorrect End Date" in new Test {
         validator.validate(AmendBenefitRawData(validNino, validTaxYear, benefitId, requestJson(startDate = endDate, endDate = startDate))) shouldBe
-          List(RuleEndDateBeforeStartDateError)
+          List(RuleEndBeforeStartDateError)
       }
 
       "return RuleIncorrectOrEmptyBodyError error for an empty request body" in new Test {

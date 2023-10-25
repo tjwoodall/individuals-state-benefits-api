@@ -28,6 +28,7 @@ trait AppConfig {
 
   def mtdIdBaseUrl: String
 
+  // DES Config
   def desBaseUrl: String
   def desEnv: String
   def desToken: String
@@ -36,6 +37,7 @@ trait AppConfig {
   lazy val desDownstreamConfig: DownstreamConfig =
     DownstreamConfig(baseUrl = desBaseUrl, env = desEnv, token = desToken, environmentHeaders = desEnvironmentHeaders)
 
+  // IFS Config
   def ifsBaseUrl: String
   def ifsEnv: String
   def ifsToken: String
@@ -65,15 +67,18 @@ trait AppConfig {
   def minimumPermittedTaxYear: Int
 
   def apiStatus(version: Version): String
+  def isApiDeprecated(version: Version): Boolean = apiStatus(version) == "DEPRECATED"
   def featureSwitches: Configuration
   def endpointsEnabled(version: Version): Boolean
 
   def confidenceLevelConfig: ConfidenceLevelConfig
+  def apiDocumentationUrl: String
 }
 
 @Singleton
 class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configuration) extends AppConfig {
 
+  // MTD ID Lookup Config
   val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
 
   // DES config
@@ -109,6 +114,10 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   def endpointsEnabled(version: Version): Boolean = config.getBoolean(s"api.${version.name}.endpoints.enabled")
 
   val confidenceLevelConfig: ConfidenceLevelConfig = configuration.get[ConfidenceLevelConfig](s"api.confidence-level-check")
+
+  val apiDocumentationUrl: String =
+    config.getConfString("api.documentation-url", defString = "https://developer.service.hmrc.gov.uk/api-documentation/docs/api")
+
 }
 
 case class ConfidenceLevelConfig(confidenceLevel: ConfidenceLevel, definitionEnabled: Boolean, authValidationEnabled: Boolean)

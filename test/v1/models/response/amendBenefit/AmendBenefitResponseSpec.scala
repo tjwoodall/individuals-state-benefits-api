@@ -16,8 +16,8 @@
 
 package v1.models.response.amendBenefit
 
-import api.models.hateoas
-import api.models.hateoas.Method._
+import api.hateoas.Link
+import api.hateoas.Method._
 import mocks.MockAppConfig
 import support.UnitSpec
 
@@ -31,13 +31,11 @@ class AmendBenefitResponseSpec extends UnitSpec with MockAppConfig {
         MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         AmendBenefitResponse.AmendBenefitLinksFactory.links(mockAppConfig, data) shouldBe Seq(
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}", method = PUT, rel = "amend-state-benefit"),
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}", method = DELETE, rel = "delete-state-benefit"),
-          hateoas.Link(
-            href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts",
-            method = PUT,
-            rel = "amend-state-benefit-amounts")
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}", method = PUT, rel = "amend-state-benefit"),
+          api.hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
+          api.hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}", method = DELETE, rel = "delete-state-benefit"),
+          api.hateoas
+            .Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts", method = PUT, rel = "amend-state-benefit-amounts")
         )
       }
     }

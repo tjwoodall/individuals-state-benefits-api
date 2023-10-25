@@ -16,8 +16,7 @@
 
 package v1.models.response.listBenefits
 
-import api.hateoas.{HateoasLinks, HateoasListLinksFactory2}
-import api.models.hateoas.{HateoasData, Link}
+import api.hateoas.{HateoasData, HateoasLinks, HateoasListLinksFactory2, Link}
 import cats._
 import config.AppConfig
 import play.api.libs.json._
@@ -42,7 +41,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       lazy val ignoreLink: Link        = ignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val unignoreLink: Link      = unignoreBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
 
-      lazy val commonLinks = Seq(retrieveLink, amendAmountsLink)
+      lazy val commonLinks: Seq[Link] = Seq(retrieveLink, amendAmountsLink)
     }
 
     override def itemLinks1(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: HMRCStateBenefit): Seq[Link] = {

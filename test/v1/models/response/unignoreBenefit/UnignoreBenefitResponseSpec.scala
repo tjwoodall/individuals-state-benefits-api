@@ -16,8 +16,8 @@
 
 package v1.models.response.unignoreBenefit
 
-import api.models.hateoas
-import api.models.hateoas.Method._
+import api.hateoas.Link
+import api.hateoas.Method._
 import mocks.MockAppConfig
 import support.UnitSpec
 
@@ -31,8 +31,8 @@ class UnignoreBenefitResponseSpec extends UnitSpec with MockAppConfig {
         MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
         UnignoreBenefitResponse.UnignoreBenefitLinksFactory.links(mockAppConfig, data) shouldBe Seq(
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
-          hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/ignore", method = POST, rel = "ignore-state-benefit")
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
+          api.hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/ignore", method = POST, rel = "ignore-state-benefit")
         )
       }
     }

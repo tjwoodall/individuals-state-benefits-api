@@ -16,8 +16,7 @@
 
 package api.mocks.hateoas
 
-import api.hateoas.{HateoasFactory, HateoasLinksFactory, HateoasListLinksFactory, HateoasListLinksFactory2}
-import api.models.hateoas.{HateoasData, HateoasWrapper}
+import api.hateoas.{HateoasData, HateoasFactory, HateoasLinksFactory, HateoasListLinksFactory, HateoasListLinksFactory2, HateoasWrapper}
 import cats.{Bifunctor, Functor}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory

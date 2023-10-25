@@ -56,10 +56,10 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
 
       val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
 
-      val requestHandler = RequestHandler
+      val requestHandler = RequestHandlerOld
         .withParser(parser)
         .withService(service.ignoreBenefit)
-        .withAuditing(AuditHandler(
+        .withAuditing(AuditHandlerOld(
           auditService = auditService,
           auditType = "IgnoreStateBenefit",
           transactionName = "ignore-state-benefit",

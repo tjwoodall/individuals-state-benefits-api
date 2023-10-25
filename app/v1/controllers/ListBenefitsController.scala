@@ -58,10 +58,10 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
         benefitId = benefitId
       )
 
-      val requestHandler = RequestHandler
+      val requestHandler = RequestHandlerOld
         .withParser(parser)
         .withService(service.listBenefits)
-        .withResultCreator(ResultCreator.hateoasListWrapping2(hateoasFactory)((_, response) =>
+        .withResultCreator(ResultCreatorOld.hateoasListWrapping2(hateoasFactory)((_, response) =>
           ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(response))))
 
       requestHandler.handleRequest(rawData)

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package api.models.hateoas
+package api.models.domain
 
-import play.api.libs.json.Format
-import utils.enums.Enums
+import play.api.libs.json.{JsValue, Json}
+import support.UnitSpec
 
-sealed trait Method
+class EmptyJsonBodySpec extends UnitSpec {
 
-object Method {
-  case object GET extends Method
+  "EmptyJsonBody.writes" should {
+    "return an empty JSON body" when {
+      "called" in {
+        val json            = EmptyJsonBody
+        val result: JsValue = Json.toJson(json)(EmptyJsonBody.writes)
+        result shouldBe Json.obj()
+      }
+    }
+  }
 
-  case object PUT extends Method
-
-  case object POST extends Method
-
-  case object DELETE extends Method
-
-  implicit val formats: Format[Method] = Enums.format[Method]
 }

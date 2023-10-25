@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package api.models.hateoas
+package api.models.domain
 
-object RelType {
-  val CREATE_STATE_BENEFIT         = "create-state-benefit"
-  val LIST_STATE_BENEFITS          = "list-state-benefits"
-  val AMEND_STATE_BENEFIT          = "amend-state-benefit"
-  val DELETE_STATE_BENEFIT         = "delete-state-benefit"
-  val AMEND_STATE_BENEFIT_AMOUNTS  = "amend-state-benefit-amounts"
-  val DELETE_STATE_BENEFIT_AMOUNTS = "delete-state-benefit-amounts"
-  val IGNORE_STATE_BENEFIT         = "ignore-state-benefit"
-  val UNIGNORE_STATE_BENEFIT       = "unignore-state-benefit"
-
-  val SELF = "self"
+case class CalculationId(calculationId: String) {
+  override def toString: String = calculationId
 }

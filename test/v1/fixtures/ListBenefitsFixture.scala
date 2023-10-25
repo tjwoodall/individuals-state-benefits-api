@@ -16,9 +16,9 @@
 
 package v1.fixtures
 
+import api.hateoas.{HateoasWrapper, Link}
 import api.models.domain.{Nino, TaxYear, Timestamp}
-import api.models.hateoas.Method._
-import api.models.hateoas.{HateoasWrapper, Link}
+import api.hateoas.Method._
 import play.api.libs.json.{JsValue, Json}
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}

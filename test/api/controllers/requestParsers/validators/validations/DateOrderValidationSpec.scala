@@ -16,7 +16,7 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.RuleEndDateBeforeStartDateError
+import api.models.errors.RuleEndBeforeStartDateError
 import support.UnitSpec
 
 import java.time.LocalDate
@@ -46,7 +46,7 @@ class DateOrderValidationSpec extends UnitSpec {
       val invalidEndDate   = LocalDate.parse(earlier)
 
       val result = DateOrderValidation.validate(invalidStartDate, invalidEndDate)
-      result shouldBe List(RuleEndDateBeforeStartDateError)
+      result shouldBe List(RuleEndBeforeStartDateError)
     }
 
   }

@@ -16,13 +16,13 @@
 
 package api.controllers.requestParsers.validators.validations
 
-import api.models.errors.{MtdError, RuleEndDateBeforeStartDateError}
+import api.models.errors.{MtdError, RuleEndBeforeStartDateError}
 
 import java.time.LocalDate
 
 object DateOrderValidation {
 
   def validate(start: LocalDate, end: LocalDate): List[MtdError] =
-    if (start.isAfter(end)) List(RuleEndDateBeforeStartDateError) else NoValidationErrors
+    if (start.isAfter(end)) List(RuleEndBeforeStartDateError) else NoValidationErrors
 
 }

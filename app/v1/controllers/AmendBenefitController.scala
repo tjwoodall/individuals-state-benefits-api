@@ -57,10 +57,10 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
 
       val rawData = AmendBenefitRawData(nino, taxYear, benefitId, AnyContentAsJson(request.body))
 
-      val requestHandler = RequestHandler
+      val requestHandler = RequestHandlerOld
         .withParser(parser)
         .withService(service.amendBenefit)
-        .withAuditing(AuditHandler(
+        .withAuditing(AuditHandlerOld(
           auditService = auditService,
           auditType = "AmendStateBenefit",
           transactionName = "amend-state-benefit",
