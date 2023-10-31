@@ -21,19 +21,18 @@ import api.hateoas.Method.{DELETE, GET, PUT}
 import api.hateoas.{HateoasWrapper, Link}
 import api.mocks.hateoas.MockHateoasFactory
 import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetailOld}
-import api.models.domain.Nino
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
-import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
-import play.api.mvc.{AnyContentAsJson, Result}
-import routing.Version1
-import v1.mocks.requestParsers.MockAmendBenefitRequestParser
-import v1.mocks.services.MockAmendBenefitService
-import v1.models.request.AmendBenefit.{AmendBenefitRawData, AmendBenefitRequest, AmendBenefitRequestBody}
+import play.api.mvc.Result
+import v1.controllers.validators.MockAmendBenefitValidatorFactory
+import v1.models.domain.BenefitId
+import v1.models.request.amendBenefit.{AmendBenefitRequestBody, AmendBenefitRequestData}
 import v1.models.response.amendBenefit.AmendBenefitHateoasData
+import v1.services.MockAmendBenefitService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -43,14 +42,14 @@ class AmendBenefitControllerSpec
     with ControllerTestRunner
     with MockAppConfig
     with MockAmendBenefitService
-    with MockAmendBenefitRequestParser
+    with MockAmendBenefitValidatorFactory
     with MockAuditService
     with MockHateoasFactory {
 
-  private val taxYear: String = "2020-21"
-  private val benefitId       = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
+  private val taxYear   = "2020-21"
+  private val benefitId = "4557ecb5-fd32-48cc-81f5-e6acd1099f3c"
 
-  val requestBodyJson: JsValue = Json.parse(
+  private val requestBodyJson = Json.parse(
     """
       |{
       |   "startDate": "2020-04-06",
@@ -59,33 +58,18 @@ class AmendBenefitControllerSpec
     """.stripMargin
   )
 
-  val rawData: AmendBenefitRawData = AmendBenefitRawData(
-    nino = nino,
-    taxYear = taxYear,
-    benefitId = benefitId,
-    body = AnyContentAsJson(requestBodyJson)
-  )
+  private val requestBody = AmendBenefitRequestBody("2020-04-06", Some("2021-01-01"))
 
-  val requestBody: AmendBenefitRequestBody = AmendBenefitRequestBody(
-    startDate = "2020-04-06",
-    endDate = Some("2021-01-01")
-  )
+  private val requestData = AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), requestBody)
 
-  val requestData: AmendBenefitRequest = AmendBenefitRequest(
-    nino = Nino(nino),
-    taxYear = taxYear,
-    benefitId = benefitId,
-    body = requestBody
-  )
-
-  private val testHateoasLinks = Seq(
+  private val testHateoasLinks = List(
     Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId", method = PUT, rel = "amend-state-benefit"),
-    api.hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
-    api.hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId", method = DELETE, rel = "delete-state-benefit"),
-    api.hateoas.Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", method = PUT, rel = "amend-state-benefit-amounts")
+    Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
+    Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId", method = DELETE, rel = "delete-state-benefit"),
+    Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", method = PUT, rel = "amend-state-benefit-amounts")
   )
 
-  val responseJson: JsValue = Json.parse(
+  private val responseJson = Json.parse(
     s"""
        |{
        |  "links": [
@@ -117,9 +101,7 @@ class AmendBenefitControllerSpec
   "AmendBenefitController" should {
     "return a successful response with status 200 (OK)" when {
       "the request received is valid" in new Test {
-        MockAmendBenefitRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockAmendBenefitService
           .amendBenefit(requestData)
@@ -140,17 +122,13 @@ class AmendBenefitControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-        MockAmendBenefitRequestParser
-          .parse(rawData)
-          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
+        willUseValidator(returning(NinoFormatError))
 
         runErrorTestWithAudit(NinoFormatError, Some(requestBodyJson))
       }
 
       "service returns an error" in new Test {
-        MockAmendBenefitRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockAmendBenefitService
           .amendBenefit(requestData)
@@ -161,13 +139,12 @@ class AmendBenefitControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking {
+  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller = new AmendBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      appConfig = mockAppConfig,
-      parser = mockAmendBenefitRequestParser,
+      validatorFactory = mockAmendBenefitValidatorFactory,
       service = mockAmendBenefitService,
       hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
@@ -175,22 +152,19 @@ class AmendBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitches.returns(Configuration("allowTemporalValidationSuspension.enabled" -> true)).anyNumberOfTimes()
-
     protected def callController(): Future[Result] = controller.amendBenefit(nino, taxYear, benefitId)(fakePutRequest(requestBodyJson))
 
-    def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetailOld] =
+    def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "AmendStateBenefit",
         transactionName = "amend-state-benefit",
-        detail = GenericAuditDetailOld(
+        detail = GenericAuditDetail(
+          versionNumber = "1.0",
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-          queryParams = None,
-          requestBody = Some(requestBodyJson),
+          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          requestBody = maybeRequestBody,
           `X-CorrelationId` = correlationId,
-          versionNumber = Version1.name,
           auditResponse = auditResponse
         )
       )

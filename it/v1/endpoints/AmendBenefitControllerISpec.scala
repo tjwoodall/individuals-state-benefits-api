@@ -123,13 +123,16 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
             |{
             |	"code": "INVALID_REQUEST",
             |	"message": "Invalid request",
-            |	"errors": [{
-            |		"code": "FORMAT_START_DATE",
-            |		"message": "The provided start date is invalid"
-            |	}, {
+            |	"errors": [
+            |     {
             |		"code": "FORMAT_END_DATE",
             |		"message": "The provided end date is invalid"
-            |	}]
+            |	  },
+            |     {
+            |		"code": "FORMAT_START_DATE",
+            |		"message": "The provided start date is invalid"
+            |	  }
+            |   ]
             |}
             |""".stripMargin)
 
@@ -212,7 +215,7 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
           }
         }
 
-        val input = Seq(
+        val input = List(
           ("AA1123A", "2020-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, NinoFormatError),
           ("AA123456A", "20199", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, TaxYearFormatError),
           ("AA123456A", "2019-20", "4557ecb-fd32-48cc-81f5-e6acd1099f3c", validJson, BAD_REQUEST, BenefitIdFormatError),
@@ -252,7 +255,7 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
              |}
             """.stripMargin
 
-        val input = Seq(
+        val input = List(
           (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
           (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),

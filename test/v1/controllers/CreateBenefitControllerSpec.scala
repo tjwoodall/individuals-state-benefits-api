@@ -26,14 +26,13 @@ import api.models.domain.{BenefitType, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
-import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsJson, Result}
 import routing.Version1
 import v1.mocks.requestParsers.MockCreateBenefitRequestParser
-import v1.mocks.services.MockCreateBenefitService
 import v1.models.request.createBenefit.{CreateBenefitRawData, CreateBenefitRequest, CreateBenefitRequestBody}
 import v1.models.response.createBenefit.{CreateBenefitHateoasData, CreateBenefitResponse}
+import v1.services.MockCreateBenefitService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -160,12 +159,11 @@ class CreateBenefitControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking {
+  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetailOld] {
 
     val controller = new CreateBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      appConfig = mockAppConfig,
       parser = mockCreateBenefitRequestParser,
       service = mockCreateStateBenefitService,
       auditService = mockAuditService,
@@ -173,8 +171,6 @@ class CreateBenefitControllerSpec
       cc = cc,
       idGenerator = mockIdGenerator
     )
-
-    MockedAppConfig.featureSwitches.returns(Configuration("allowTemporalValidationSuspension.enabled" -> true)).anyNumberOfTimes()
 
     protected def callController(): Future[Result] = controller.createStateBenefit(nino, taxYear)(fakePostRequest(requestBodyJson))
 

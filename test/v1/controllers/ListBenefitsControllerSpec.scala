@@ -22,13 +22,12 @@ import api.mocks.hateoas.MockHateoasFactory
 import api.mocks.services.MockAuditService
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
 import play.api.libs.json.JsObject
 import play.api.mvc.Result
 import v1.fixtures.ListBenefitsFixture._
 import v1.mocks.requestParsers.MockListBenefitsRequestParser
-import v1.mocks.services.MockListBenefitsService
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData}
+import v1.services.MockListBenefitsService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -36,7 +35,6 @@ import scala.concurrent.Future
 class ListBenefitsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with MockAppConfig
     with MockListBenefitsService
     with MockListBenefitsRequestParser
     with MockHateoasFactory
@@ -185,7 +183,6 @@ class ListBenefitsControllerSpec
     val controller = new ListBenefitsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      appConfig = mockAppConfig,
       parser = mockListBenefitsRequestParser,
       service = mockListBenefitsService,
       hateoasFactory = mockHateoasFactory,

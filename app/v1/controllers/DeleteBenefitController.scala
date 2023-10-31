@@ -20,9 +20,8 @@ import api.controllers._
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import routing.{Version, Version1}
-import utils.{IdGenerator, Logging}
-import v1.controllers.requestParsers.DeleteBenefitRequestParser
-import v1.models.request.deleteBenefit.DeleteBenefitRawData
+import utils.IdGenerator
+import v1.controllers.validators.DeleteBenefitValidatorFactory
 import v1.services.DeleteBenefitService
 
 import javax.inject.{Inject, Singleton}
@@ -31,13 +30,12 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          val lookupService: MtdIdLookupService,
-                                         parser: DeleteBenefitRequestParser,
+                                         validatorFactory: DeleteBenefitValidatorFactory,
                                          service: DeleteBenefitService,
                                          auditService: AuditService,
                                          cc: ControllerComponents,
                                          idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
-    with Logging {
+    extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -49,26 +47,21 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData: DeleteBenefitRawData = DeleteBenefitRawData(
-        nino = nino,
-        taxYear = taxYear,
-        benefitId = benefitId
-      )
+      val validator = validatorFactory.validator(nino, taxYear, benefitId)
 
-      val requestHandler = RequestHandlerOld
-        .withParser(parser)
+      val requestHandler = RequestHandler
+        .withValidator(validator)
         .withService(service.deleteBenefit)
-        .withAuditing(AuditHandlerOld(
+        .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "DeleteStateBenefit",
           transactionName = "delete-state-benefit",
-          version = Version.from(request, orElse = Version1),
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-          queryParams = None,
+          apiVersion = Version.from(request, orElse = Version1),
+          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = None
         ))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

@@ -17,11 +17,12 @@
 package v1.connectors
 
 import api.connectors.DownstreamUri.IfsUri
+import api.connectors.httpparsers.StandardDownstreamHttpParser._
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.models.request.AmendBenefit.AmendBenefitRequest
+import v1.models.request.amendBenefit.AmendBenefitRequestData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,16 +31,12 @@ import scala.concurrent.{ExecutionContext, Future}
 class AmendBenefitConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def amendBenefit(
-      request: AmendBenefitRequest)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
+      request: AmendBenefitRequestData)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
+    import request._
 
-    import api.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.CREATED)
 
-    val nino      = request.nino.nino
-    val taxYear   = request.taxYear
-    val benefitId = request.benefitId
-
-    put(request.body, IfsUri[Unit](s"income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"))
+    put(request.body, IfsUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/custom/$benefitId"))
   }
 
 }

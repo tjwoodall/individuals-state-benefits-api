@@ -21,8 +21,9 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
-import v1.mocks.connectors.MockAmendBenefitAmountsConnector
-import v1.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRequest, AmendBenefitAmountsRequestBody}
+import v1.connectors.MockAmendBenefitAmountsConnector
+import v1.models.domain.BenefitId
+import v1.models.request.amendBenefitAmounts.{AmendBenefitAmountsRequestData, AmendBenefitAmountsRequestBody}
 
 import scala.concurrent.Future
 
@@ -87,10 +88,10 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
       taxPaid = Some(123.13)
     )
 
-    val requestData: AmendBenefitAmountsRequest = AmendBenefitAmountsRequest(
+    val requestData: AmendBenefitAmountsRequestData = AmendBenefitAmountsRequestData(
       nino = Nino(nino),
       taxYear = TaxYear.fromMtd(taxYear),
-      benefitId = benefitId,
+      benefitId = BenefitId(benefitId),
       body = body
     )
 

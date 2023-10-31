@@ -149,14 +149,14 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
       val missingMandatoryFieldError: MtdError = RuleIncorrectOrEmptyBodyError.copy(paths = Some(List("/amount")))
 
-      val allInvalidValueErrors: Seq[MtdError] = Seq(
-        ValueFormatError.copy(
-          message = "The field should be between 0 and 99999999999.99",
-          paths = Some(List("/amount"))
-        ),
+      val allInvalidValueErrors: Seq[MtdError] = List(
         ValueFormatError.copy(
           message = "The field should be between -99999999999.99 and 99999999999.99",
           paths = Some(List("/taxPaid"))
+        ),
+        ValueFormatError.copy(
+          message = "The field should be between 0 and 99999999999.99",
+          paths = Some(List("/amount"))
         )
       )
 

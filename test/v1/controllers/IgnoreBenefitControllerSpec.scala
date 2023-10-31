@@ -25,14 +25,14 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.hateoas.Method.{GET, POST}
 import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import routing.Version1
 import v1.mocks.requestParsers.MockIgnoreBenefitRequestParser
-import v1.mocks.services.MockIgnoreBenefitService
+import v1.models.domain.BenefitId
 import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
 import v1.models.response.ignoreBenefit.IgnoreBenefitHateoasData
+import v1.services.MockIgnoreBenefitService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -40,7 +40,6 @@ import scala.concurrent.Future
 class IgnoreBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with MockAppConfig
     with MockIgnoreBenefitService
     with MockIgnoreBenefitRequestParser
     with MockAuditService
@@ -94,18 +93,17 @@ class IgnoreBenefitControllerSpec
     }
   }
 
-  private trait Test extends ControllerTest with AuditEventChecking {
+  private trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetailOld] {
     val taxYear: String   = "2019-20"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
     val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
 
-    val requestData: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId)
+    val requestData: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
     val controller = new IgnoreBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      appConfig = mockAppConfig,
       parser = mockIgnoreBenefitRequestParser,
       service = mockIgnoreBenefitService,
       hateoasFactory = mockHateoasFactory,

@@ -21,7 +21,7 @@ import api.models.errors._
 import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.AmendBenefitAmountsConnector
-import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRequest
+import v1.models.request.amendBenefitAmounts.AmendBenefitAmountsRequestData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,13 +29,14 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnector) extends BaseService {
 
-  def amendBenefitAmounts(request: AmendBenefitAmountsRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
+  def amendBenefitAmounts(
+      request: AmendBenefitAmountsRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
 
     connector.amendBenefitAmounts(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
 
   }
 
-  private def downstreamErrorMap: Map[String, MtdError] = {
+  private val downstreamErrorMap: Map[String, MtdError] = {
     val errors = Map(
       "INCOME_SOURCE_NOT_FOUND"         -> NotFoundError,
       "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,

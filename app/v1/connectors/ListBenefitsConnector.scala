@@ -47,7 +47,9 @@ class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppC
       IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/${nino.nino}/${taxYear.asMtd}")
     }
 
-    get(downstreamUri, queryParams = benefitId.map("benefitId" -> _).toSeq)
+    val queryParams = benefitId.map(id => List("benefitId" -> id.benefitId)).getOrElse(Nil)
+
+    get(downstreamUri, queryParams = queryParams)
 
   }
 

@@ -19,7 +19,7 @@ package api.controllers
 import api.controllers.ControllerTestRunner.validNino
 import api.mocks.MockIdGenerator
 import api.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetailOld}
+import api.models.audit.{AuditError, AuditEvent, AuditResponse}
 import api.models.errors.MtdError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
@@ -92,10 +92,10 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
     protected def callController(): Future[Result]
   }
 
-  trait AuditEventChecking {
+  trait AuditEventChecking[AUDIT] {
     _: ControllerTest =>
 
-    protected def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[GenericAuditDetailOld]
+    protected def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[AUDIT]
 
     protected def runOkTestWithAudit(expectedStatus: Int,
                                      maybeExpectedResponseBody: Option[JsValue] = None,

@@ -20,6 +20,7 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.errors.{BadRequestError, ErrorWrapper, NinoFormatError, TaxYearFormatError}
 import support.UnitSpec
 import v1.mocks.validators.MockListBenefitsValidator
+import v1.models.domain.BenefitId
 import v1.models.request.listBenefits.{ListBenefitsRawData, ListBenefitsRequest}
 
 class ListBenefitsRequestParserSpec extends UnitSpec {
@@ -49,7 +50,7 @@ class ListBenefitsRequestParserSpec extends UnitSpec {
         MockListBenefitsValidator.validate(listBenefitsRawData).returns(Nil)
 
         parser.parseRequest(listBenefitsRawData) shouldBe
-          Right(ListBenefitsRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId))
+          Right(ListBenefitsRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId.map(BenefitId)))
       }
     }
 

@@ -19,13 +19,11 @@ package v1.controllers
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
+import play.api.mvc.{Action, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
-import v1.controllers.requestParsers.AmendBenefitRequestParser
-import v1.models.request.AmendBenefit.AmendBenefitRawData
+import v1.controllers.validators.AmendBenefitValidatorFactory
 import v1.models.response.amendBenefit.AmendBenefitHateoasData
 import v1.models.response.amendBenefit.AmendBenefitResponse.AmendBenefitLinksFactory
 import v1.services.AmendBenefitService
@@ -36,8 +34,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                         val lookupService: MtdIdLookupService,
-                                        appConfig: AppConfig,
-                                        parser: AmendBenefitRequestParser,
+                                        validatorFactory: AmendBenefitValidatorFactory,
                                         service: AmendBenefitService,
                                         auditService: AuditService,
                                         hateoasFactory: HateoasFactory,
@@ -55,23 +52,23 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
     authorisedAction(nino).async(parse.json) { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = AmendBenefitRawData(nino, taxYear, benefitId, AnyContentAsJson(request.body))
+      val validator = validatorFactory.validator(nino, taxYear, benefitId, request.body)
 
-      val requestHandler = RequestHandlerOld
-        .withParser(parser)
+      val requestHandler = RequestHandler
+        .withValidator(validator)
         .withService(service.amendBenefit)
-        .withAuditing(AuditHandlerOld(
+        .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "AmendStateBenefit",
           transactionName = "amend-state-benefit",
-          version = Version.from(request, orElse = Version1),
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          apiVersion = Version.from(request, orElse = Version1),
+          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = Some(request.body),
           includeResponse = true
         ))
         .withHateoasResult(hateoasFactory)(AmendBenefitHateoasData(nino, taxYear, benefitId))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

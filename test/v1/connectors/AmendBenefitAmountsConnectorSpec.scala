@@ -19,7 +19,8 @@ package v1.connectors
 import api.connectors.{ConnectorSpec, DownstreamOutcome}
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
-import v1.models.request.AmendBenefitAmounts.{AmendBenefitAmountsRequest, AmendBenefitAmountsRequestBody}
+import v1.models.domain.BenefitId
+import v1.models.request.amendBenefitAmounts.{AmendBenefitAmountsRequestData, AmendBenefitAmountsRequestBody}
 
 import scala.concurrent.Future
 
@@ -70,10 +71,10 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
       taxPaid = Some(123.13)
     )
 
-    val request: AmendBenefitAmountsRequest = AmendBenefitAmountsRequest(
+    val request: AmendBenefitAmountsRequestData = AmendBenefitAmountsRequestData(
       nino = Nino(nino),
       taxYear = taxYear,
-      benefitId = benefitId,
+      benefitId = BenefitId(benefitId),
       body = body
     )
 

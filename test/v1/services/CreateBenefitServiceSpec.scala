@@ -21,7 +21,7 @@ import api.models.domain.{BenefitType, Nino}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.{ServiceOutcome, ServiceSpec}
-import v1.mocks.connectors.MockCreateBenefitConnector
+import v1.connectors.MockCreateBenefitConnector
 import v1.models.request.createBenefit.{CreateBenefitRequest, CreateBenefitRequestBody}
 import v1.models.response.createBenefit.CreateBenefitResponse
 

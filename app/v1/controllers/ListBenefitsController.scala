@@ -19,9 +19,8 @@ package v1.controllers
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import utils.{IdGenerator, Logging}
+import utils.IdGenerator
 import v1.controllers.requestParsers.ListBenefitsRequestParser
 import v1.models.request.listBenefits.ListBenefitsRawData
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData, ListBenefitsResponse}
@@ -33,14 +32,12 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
                                         val lookupService: MtdIdLookupService,
-                                        appConfig: AppConfig,
                                         parser: ListBenefitsRequestParser,
                                         service: ListBenefitsService,
                                         hateoasFactory: HateoasFactory,
                                         cc: ControllerComponents,
                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
-    with Logging {
+    extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -52,11 +49,7 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = ListBenefitsRawData(
-        nino = nino,
-        taxYear = taxYear,
-        benefitId = benefitId
-      )
+      val rawData = ListBenefitsRawData(nino, taxYear, benefitId)
 
       val requestHandler = RequestHandlerOld
         .withParser(parser)

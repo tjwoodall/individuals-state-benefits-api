@@ -37,10 +37,10 @@ object BusinessIdFormatError extends MtdError("FORMAT_BUSINESS_ID", "The Busines
 
 object CountryCodeFormatError extends MtdError("FORMAT_COUNTRY_CODE", "The provided Country code is invalid", BAD_REQUEST)
 
-object ValueFormatError extends MtdError("FORMAT_VALUE", "The value must be between 0 and 99999999999.99", BAD_REQUEST) {
+object ValueFormatError extends MtdError("FORMAT_VALUE", "The field should be between 0 and 99999999999.99", BAD_REQUEST) {
 
   def forPathAndRange(path: String, min: String, max: String): MtdError =
-    ValueFormatError.copy(paths = Some(Seq(path)), message = s"The value must be between $min and $max")
+    ValueFormatError.copy(paths = Some(Seq(path)), message = s"The field should be between $min and $max")
 
 }
 

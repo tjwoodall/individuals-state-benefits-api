@@ -19,7 +19,6 @@ package v1.controllers
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
@@ -35,7 +34,6 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                            val lookupService: MtdIdLookupService,
-                                           appConfig: AppConfig,
                                            parser: IgnoreBenefitRequestParser,
                                            service: UnignoreBenefitService,
                                            auditService: AuditService,
@@ -54,7 +52,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
+      val rawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
 
       val requestHandler = RequestHandlerOld
         .withParser(parser)

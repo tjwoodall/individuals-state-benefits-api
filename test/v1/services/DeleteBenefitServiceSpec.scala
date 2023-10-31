@@ -17,26 +17,27 @@
 package v1.services
 
 import api.controllers.EndpointLogContext
-import api.models.domain.Nino
+import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.ServiceSpec
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.mocks.connectors.MockDeleteBenefitConnector
-import v1.models.request.deleteBenefit.DeleteBenefitRequest
+import v1.connectors.MockDeleteBenefitConnector
+import v1.models.domain.BenefitId
+import v1.models.request.deleteBenefit.DeleteBenefitRequestData
 
 import scala.concurrent.Future
 
 class DeleteBenefitServiceSpec extends ServiceSpec {
 
-  private val nino: String      = "AA112233A"
-  private val taxYear: String   = "2019"
-  private val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val nino      = "AA112233A"
+  private val taxYear   = "2019-20"
+  private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   "DeleteBenefitService" when {
     "a valid request is supplied" must {
       "return correct result for a success" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         MockDeleteBenefitConnector
           .deleteBenefit(request)
@@ -81,7 +82,7 @@ class DeleteBenefitServiceSpec extends ServiceSpec {
       connector = mockDeleteBenefitConnector
     )
 
-    val request: DeleteBenefitRequest = DeleteBenefitRequest(Nino(nino), taxYear, benefitId)
+    val request: DeleteBenefitRequestData = DeleteBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
   }
 

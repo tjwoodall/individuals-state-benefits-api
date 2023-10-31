@@ -21,7 +21,7 @@ import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
 import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequest
+import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequestData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,10 +29,10 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeleteBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def deleteBenefitAmounts(request: DeleteBenefitAmountsRequest)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def deleteBenefitAmounts(request: DeleteBenefitAmountsRequestData)(implicit
+                                                                     hc: HeaderCarrier,
+                                                                     ec: ExecutionContext,
+                                                                     correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import api.connectors.httpparsers.StandardDownstreamHttpParser._
 

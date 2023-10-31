@@ -19,13 +19,11 @@ package v1.controllers
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
-import routing.{Version1, Version}
-import utils.{IdGenerator, Logging}
-import v1.controllers.requestParsers.AmendBenefitAmountsRequestParser
-import v1.models.request.AmendBenefitAmounts.AmendBenefitAmountsRawData
+import play.api.mvc.{Action, ControllerComponents}
+import routing.{Version, Version1}
+import utils.IdGenerator
+import v1.controllers.validators.AmendBenefitAmountsValidatorFactory
 import v1.models.response.amendBenefitAmounts.AmendBenefitAmountsHateoasData
 import v1.models.response.amendBenefitAmounts.AmendBenefitAmountsResponse.AmendBenefitAmountsLinksFactory
 import v1.services.AmendBenefitAmountsService
@@ -36,15 +34,13 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class AmendBenefitAmountsController @Inject() (val authService: EnrolmentsAuthService,
                                                val lookupService: MtdIdLookupService,
-                                               appConfig: AppConfig,
-                                               parser: AmendBenefitAmountsRequestParser,
+                                               validatorFactory: AmendBenefitAmountsValidatorFactory,
                                                service: AmendBenefitAmountsService,
                                                auditService: AuditService,
                                                hateoasFactory: HateoasFactory,
                                                cc: ControllerComponents,
                                                val idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc)
-    with Logging {
+    extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -56,28 +52,23 @@ class AmendBenefitAmountsController @Inject() (val authService: EnrolmentsAuthSe
     authorisedAction(nino).async(parse.json) { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData: AmendBenefitAmountsRawData = AmendBenefitAmountsRawData(
-        nino = nino,
-        taxYear = taxYear,
-        benefitId = benefitId,
-        body = AnyContentAsJson(request.body)
-      )
+      val validator = validatorFactory.validator(nino, taxYear, benefitId, request.body)
 
-      val requestHandler = RequestHandlerOld
-        .withParser(parser)
+      val requestHandler = RequestHandler
+        .withValidator(validator)
         .withService(service.amendBenefitAmounts)
-        .withAuditing(AuditHandlerOld(
+        .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "AmendStateBenefitAmounts",
           transactionName = "amend-state-benefit-amounts",
-          version = Version.from(request, orElse = Version1),
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          apiVersion = Version.from(request, orElse = Version1),
+          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = Some(request.body),
           includeResponse = true
         ))
         .withHateoasResult(hateoasFactory)(AmendBenefitAmountsHateoasData(nino, taxYear, benefitId))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }
