@@ -16,7 +16,7 @@
 
 package v1.connectors
 
-import api.connectors.ConnectorSpec
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
 import v1.models.domain.BenefitId
@@ -38,7 +38,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
           outcome)
 
-        val result = await(connector.deleteBenefitAmounts(request))
+        val result: DownstreamOutcome[Unit] = await(connector.deleteBenefitAmounts(request))
 
         result shouldBe outcome
       }
@@ -50,7 +50,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         willDelete(s"$baseUrl/income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/$nino/${request.benefitId}") returns Future
           .successful(outcome)
 
-        val result = await(connector.deleteBenefitAmounts(request))
+        val result: DownstreamOutcome[Unit] = await(connector.deleteBenefitAmounts(request))
 
         result shouldBe outcome
       }
@@ -61,18 +61,9 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
     _: ConnectorTest =>
     def taxYear: TaxYear
 
-    protected val connector: DeleteBenefitAmountsConnector =
-      new DeleteBenefitAmountsConnector(
-        http = mockHttpClient,
-        appConfig = mockAppConfig
-      )
+    protected val connector: DeleteBenefitAmountsConnector = new DeleteBenefitAmountsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
-    protected val request: DeleteBenefitAmountsRequestData =
-      DeleteBenefitAmountsRequestData(
-        nino = Nino(nino),
-        taxYear = taxYear,
-        benefitId = BenefitId(benefitId)
-      )
+    protected val request: DeleteBenefitAmountsRequestData = DeleteBenefitAmountsRequestData(Nino(nino), taxYear, BenefitId(benefitId))
 
   }
 

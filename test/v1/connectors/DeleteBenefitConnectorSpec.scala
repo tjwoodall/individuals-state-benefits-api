@@ -16,7 +16,7 @@
 
 package v1.connectors
 
-import api.connectors.ConnectorSpec
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
 import v1.models.domain.BenefitId
@@ -26,15 +26,15 @@ import scala.concurrent.Future
 
 class DeleteBenefitConnectorSpec extends ConnectorSpec {
 
-  private val nino: String      = "AA111111A"
-  private val taxYear: String   = "2019-20"
-  private val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val nino      = "AA111111A"
+  private val taxYear   = "2019-20"
+  private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   "DeleteBenefitConnector" when {
     "a valid request is supplied" must {
       "return a 204 status for a success scenario" in new IfsTest with Test {
 
-        val outcome = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         MockedHttpClient
           .delete(
@@ -45,7 +45,8 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
           )
           .returns(Future.successful(outcome))
 
-        await(connector.deleteBenefit(request)) shouldBe outcome
+        val result: DownstreamOutcome[Unit] = await(connector.deleteBenefit(request))
+        result shouldBe outcome
       }
     }
   }
@@ -53,16 +54,9 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
   trait Test {
     _: ConnectorTest =>
 
-    protected val request: DeleteBenefitRequestData = DeleteBenefitRequestData(
-      nino = Nino(nino),
-      taxYear = TaxYear.fromMtd(taxYear),
-      benefitId = BenefitId(benefitId)
-    )
+    protected val request: DeleteBenefitRequestData = DeleteBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
-    val connector: DeleteBenefitConnector = new DeleteBenefitConnector(
-      http = mockHttpClient,
-      appConfig = mockAppConfig
-    )
+    val connector: DeleteBenefitConnector = new DeleteBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
   }
 

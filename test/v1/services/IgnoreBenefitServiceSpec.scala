@@ -16,18 +16,23 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.{ServiceOutcome, ServiceSpec}
 import v1.connectors.MockIgnoreBenefitConnector
 import v1.models.domain.BenefitId
-import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
+import v1.models.request.ignoreBenefit.IgnoreBenefitRequestData
 
 import scala.concurrent.Future
 
 class IgnoreBenefitServiceSpec extends ServiceSpec {
+
+  private val nino      = "AA111111A"
+  private val taxYear   = "2019-20"
+  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
+
+  private val request = IgnoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
   "IgnoreBenefitService" when {
     "ignoreBenefit" must {
@@ -58,33 +63,22 @@ class IgnoreBenefitServiceSpec extends ServiceSpec {
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-          ("INVALID_CORRELATION_ID", StandardDownstreamError),
+          ("INVALID_CORRELATION_ID", InternalError),
           ("IGNORE_FORBIDDEN", RuleIgnoreForbiddenError),
           ("NO_DATA_FOUND", NotFoundError),
           ("NOT_SUPPORTED_TAX_YEAR", RuleTaxYearNotEndedError),
           ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
-          ("SERVICE_ERROR", StandardDownstreamError),
-          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
+          ("SERVICE_ERROR", InternalError),
+          ("SERVICE_UNAVAILABLE", InternalError)
         )
 
-        errors.foreach(args => (serviceError _).tupled(args))
+        errors.foreach((serviceError _).tupled)
       }
     }
   }
 
   private trait Test extends MockIgnoreBenefitConnector {
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    val nino: String      = "AA111111A"
-    val taxYear: String   = "2019-20"
-    val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
-
-    val request: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
-
-    val service: IgnoreBenefitService = new IgnoreBenefitService(
-      connector = mockIgnoreBenefitConnector
-    )
-
+    val service: IgnoreBenefitService = new IgnoreBenefitService(mockIgnoreBenefitConnector)
   }
 
 }

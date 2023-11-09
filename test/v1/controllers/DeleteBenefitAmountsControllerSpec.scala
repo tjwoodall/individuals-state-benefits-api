@@ -76,9 +76,9 @@ class DeleteBenefitAmountsControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
+  private trait Test extends ControllerTest with AuditEventChecking {
 
-    val controller = new DeleteBenefitAmountsController(
+    private val controller = new DeleteBenefitAmountsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockDeleteBenefitAmountsValidatorFactory,

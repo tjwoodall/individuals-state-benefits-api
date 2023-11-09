@@ -22,7 +22,7 @@ import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.models.request.createBenefit.CreateBenefitRequest
+import v1.models.request.createBenefit.CreateBenefitRequestData
 import v1.models.response.createBenefit.CreateBenefitResponse
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CreateBenefitConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  def createBenefit(request: CreateBenefitRequest)(implicit
+  def createBenefit(request: CreateBenefitRequestData)(implicit
       hc: HeaderCarrier,
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[CreateBenefitResponse]] = {
@@ -39,7 +39,7 @@ class CreateBenefitConnector @Inject() (val http: HttpClient, val appConfig: App
     import request._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    post(body, IfsUri[CreateBenefitResponse](s"income-tax/income/state-benefits/$nino/$taxYear/custom"))
+    post(body, IfsUri[CreateBenefitResponse](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/custom"))
   }
 
 }

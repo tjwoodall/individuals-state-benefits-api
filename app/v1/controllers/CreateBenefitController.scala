@@ -20,11 +20,10 @@ import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import play.api.libs.json.JsValue
-import play.api.mvc.{Action, AnyContentAsJson, ControllerComponents}
+import play.api.mvc.{Action, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
-import v1.controllers.requestParsers.CreateBenefitRequestParser
-import v1.models.request.createBenefit.CreateBenefitRawData
+import v1.controllers.validators.CreateBenefitValidatorFactory
 import v1.models.response.createBenefit.CreateBenefitHateoasData
 import v1.services.CreateBenefitService
 
@@ -34,7 +33,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          val lookupService: MtdIdLookupService,
-                                         parser: CreateBenefitRequestParser,
+                                         validatorFactory: CreateBenefitValidatorFactory,
                                          service: CreateBenefitService,
                                          auditService: AuditService,
                                          hateoasFactory: HateoasFactory,
@@ -52,23 +51,23 @@ class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
     authorisedAction(nino).async(parse.json) { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData: CreateBenefitRawData = CreateBenefitRawData(nino, taxYear, AnyContentAsJson(request.body))
+      val validator = validatorFactory.validator(nino, taxYear, request.body)
 
-      val requestHandler = RequestHandlerOld
-        .withParser(parser)
+      val requestHandler = RequestHandler
+        .withValidator(validator)
         .withService(service.createBenefit)
-        .withAuditing(AuditHandlerOld(
+        .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "CreateStateBenefit",
           transactionName = "create-state-benefit",
-          version = Version.from(request, orElse = Version1),
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear),
+          apiVersion = Version.from(request, orElse = Version1),
+          params = Map("nino" -> nino, "taxYear" -> taxYear),
           requestBody = Some(request.body),
           includeResponse = true
         ))
         .withHateoasResultFrom(hateoasFactory)((_, response) => CreateBenefitHateoasData(nino, taxYear, response.benefitId))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

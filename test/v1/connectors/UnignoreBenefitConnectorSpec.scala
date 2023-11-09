@@ -20,24 +20,28 @@ import api.connectors.{ConnectorSpec, DownstreamOutcome}
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
 import v1.models.domain.BenefitId
-import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
+import v1.models.request.ignoreBenefit.IgnoreBenefitRequestData
 
 import scala.concurrent.Future
 
 class UnignoreBenefitConnectorSpec extends ConnectorSpec {
+
+  private val nino      = "AA111111A"
+  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
   "UnignoreBenefitConnector" should {
     "return the expected response for a request" when {
       "a valid request is made" in new TysIfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
 
-        val expectedOutcome = Right(ResponseWrapper(correlationId, ()))
+        val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
           url = s"$baseUrl/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
         ).returns(Future.successful(expectedOutcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.unignoreBenefit(request))
+
         result shouldBe expectedOutcome
       }
     }
@@ -47,15 +51,9 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
     _: ConnectorTest =>
     def taxYear: TaxYear
 
-    val nino: String      = "AA111111A"
-    val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
+    val request: IgnoreBenefitRequestData = IgnoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))
 
-    val request: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), taxYear, BenefitId(benefitId))
-
-    val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(
-      http = mockHttpClient,
-      appConfig = mockAppConfig
-    )
+    val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
   }
 

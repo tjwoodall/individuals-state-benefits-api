@@ -63,9 +63,9 @@ class AmendBenefitAmountsControllerSpec
   private val requestData = AmendBenefitAmountsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitAmountsRequestBody)
 
   private val testHateoasLinks = List(
-    Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
-    Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", method = PUT, rel = "amend-state-benefit-amounts"),
-    Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", method = DELETE, rel = "delete-state-benefit-amounts")
+    Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, "self"),
+    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", PUT, "amend-state-benefit-amounts"),
+    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", DELETE, "delete-state-benefit-amounts")
   )
 
   private val hateoasResponse = Json.parse(
@@ -133,9 +133,9 @@ class AmendBenefitAmountsControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
+  private trait Test extends ControllerTest with AuditEventChecking {
 
-    val controller = new AmendBenefitAmountsController(
+    private val controller = new AmendBenefitAmountsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockAmendBenefitAmountsValidatorFactory,

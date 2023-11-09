@@ -21,7 +21,7 @@ import api.models.errors._
 import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
 import v1.connectors.IgnoreBenefitConnector
-import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
+import v1.models.request.ignoreBenefit.IgnoreBenefitRequestData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class IgnoreBenefitService @Inject() (connector: IgnoreBenefitConnector) extends BaseService {
 
-  def ignoreBenefit(request: IgnoreBenefitRequest)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
+  def ignoreBenefit(request: IgnoreBenefitRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
 
     connector.ignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
@@ -38,13 +38,13 @@ class IgnoreBenefitService @Inject() (connector: IgnoreBenefitConnector) extends
     ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
     ("INVALID_TAX_YEAR", TaxYearFormatError),
     ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-    ("INVALID_CORRELATION_ID", StandardDownstreamError),
+    ("INVALID_CORRELATION_ID", InternalError),
     ("IGNORE_FORBIDDEN", RuleIgnoreForbiddenError),
     ("NO_DATA_FOUND", NotFoundError),
     ("NOT_SUPPORTED_TAX_YEAR", RuleTaxYearNotEndedError),
     ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
-    ("SERVICE_ERROR", StandardDownstreamError),
-    ("SERVICE_UNAVAILABLE", StandardDownstreamError)
+    ("SERVICE_ERROR", InternalError),
+    ("SERVICE_UNAVAILABLE", InternalError)
   )
 
 }

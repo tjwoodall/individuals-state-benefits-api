@@ -82,8 +82,6 @@ object NotFoundError extends MtdError("MATCHING_RESOURCE_NOT_FOUND", "Matching r
 
 object InternalError extends MtdError("INTERNAL_SERVER_ERROR", "An internal server error occurred", INTERNAL_SERVER_ERROR)
 
-object StandardDownstreamError extends MtdError("INTERNAL_SERVER_ERROR", "An internal server error occurred", INTERNAL_SERVER_ERROR)
-
 object BadRequestError extends MtdError("INVALID_REQUEST", "Invalid request", BAD_REQUEST)
 
 object BVRError extends MtdError("BUSINESS_ERROR", "Business validation error", BAD_REQUEST)

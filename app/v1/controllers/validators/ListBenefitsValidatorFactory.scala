@@ -20,26 +20,27 @@ import api.controllers.validators.Validator
 import api.controllers.validators.resolvers.{DetailedResolveTaxYear, ResolveNino}
 import api.models.errors.MtdError
 import cats.data.Validated
-import cats.implicits.catsSyntaxTuple3Semigroupal
+import cats.data.Validated._
+import cats.implicits._
 import v1.controllers.validators.resolvers.ResolveBenefitId
-import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequestData
+import v1.models.request.listBenefits.ListBenefitsRequestData
 
 import javax.inject.Singleton
 
 @Singleton
-class DeleteBenefitAmountsValidatorFactory {
+class ListBenefitsValidatorFactory {
 
   private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
 
-  def validator(nino: String, taxYear: String, benefitId: String): Validator[DeleteBenefitAmountsRequestData] =
-    new Validator[DeleteBenefitAmountsRequestData] {
+  def validator(nino: String, taxYear: String, benefitId: Option[String]): Validator[ListBenefitsRequestData] =
+    new Validator[ListBenefitsRequestData] {
 
-      def validate: Validated[Seq[MtdError], DeleteBenefitAmountsRequestData] = {
+      def validate: Validated[Seq[MtdError], ListBenefitsRequestData] = {
         (
           ResolveNino(nino),
           resolveTaxYear(taxYear),
           ResolveBenefitId(benefitId)
-        ) mapN DeleteBenefitAmountsRequestData
+        ) mapN ListBenefitsRequestData
       }
 
     }

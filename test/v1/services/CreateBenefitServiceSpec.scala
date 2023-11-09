@@ -16,18 +16,27 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
-import api.models.domain.{BenefitType, Nino}
+import api.models.domain.{BenefitType, Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.{ServiceOutcome, ServiceSpec}
 import v1.connectors.MockCreateBenefitConnector
-import v1.models.request.createBenefit.{CreateBenefitRequest, CreateBenefitRequestBody}
+import v1.models.request.createBenefit.{CreateBenefitRequestBody, CreateBenefitRequestData}
 import v1.models.response.createBenefit.CreateBenefitResponse
 
 import scala.concurrent.Future
 
 class CreateBenefitServiceSpec extends ServiceSpec {
+
+  private val nino    = "AA112233A"
+  private val taxYear = "2021-22"
+
+  private val createBenefitRequestBody =
+    CreateBenefitRequestBody(BenefitType.incapacityBenefit.toString, "2020-08-03", Some("2020-12-03"))
+
+  private val request = CreateBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), createBenefitRequestBody)
+
+  private val response = CreateBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253")
 
   "CreateBenefitService" when {
     "createBenefit" must {
@@ -57,38 +66,22 @@ class CreateBenefitServiceSpec extends ServiceSpec {
         val errors = List(
           "INVALID_TAXABLE_ENTITY_ID"   -> NinoFormatError,
           "INVALID_TAX_YEAR"            -> TaxYearFormatError,
-          "INVALID_CORRELATIONID"       -> StandardDownstreamError,
-          "INVALID_PAYLOAD"             -> StandardDownstreamError,
+          "INVALID_CORRELATIONID"       -> InternalError,
+          "INVALID_PAYLOAD"             -> InternalError,
           "BENEFIT_TYPE_ALREADY_EXISTS" -> RuleBenefitTypeExists,
           "NOT_SUPPORTED_TAX_YEAR"      -> RuleTaxYearNotEndedError,
           "INVALID_START_DATE"          -> RuleStartDateAfterTaxYearEndError,
           "INVALID_CESSATION_DATE"      -> RuleEndDateBeforeTaxYearStartError,
-          "SERVER_ERROR"                -> StandardDownstreamError,
-          "SERVICE_UNAVAILABLE"         -> StandardDownstreamError
+          "SERVER_ERROR"                -> InternalError,
+          "SERVICE_UNAVAILABLE"         -> InternalError
         )
 
-        errors.foreach(args => (serviceError _).tupled(args))
-      }
+        errors.foreach((serviceError _).tupled)      }
     }
   }
 
   private trait Test extends MockCreateBenefitConnector {
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    val nino    = "AA112233A"
-    val taxYear = "2021-22"
-
-    val createBenefitRequestBody: CreateBenefitRequestBody =
-      CreateBenefitRequestBody(BenefitType.incapacityBenefit.toString, "2020-08-03", Some("2020-12-03"))
-
-    val request: CreateBenefitRequest = CreateBenefitRequest(Nino(nino), taxYear, createBenefitRequestBody)
-
-    val response: CreateBenefitResponse = CreateBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253")
-
-    val service: CreateBenefitService = new CreateBenefitService(
-      connector = mockCreateBenefitConnector
-    )
-
+    val service: CreateBenefitService = new CreateBenefitService(mockCreateBenefitConnector)
   }
 
 }

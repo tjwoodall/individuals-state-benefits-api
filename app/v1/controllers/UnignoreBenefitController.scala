@@ -22,8 +22,7 @@ import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
-import v1.controllers.requestParsers.IgnoreBenefitRequestParser
-import v1.models.request.ignoreBenefit.IgnoreBenefitRawData
+import v1.controllers.validators.IgnoreBenefitValidatorFactory
 import v1.models.response.unignoreBenefit.UnignoreBenefitHateoasData
 import v1.models.response.unignoreBenefit.UnignoreBenefitResponse.UnignoreBenefitLinksFactory
 import v1.services.UnignoreBenefitService
@@ -34,7 +33,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                            val lookupService: MtdIdLookupService,
-                                           parser: IgnoreBenefitRequestParser,
+                                           validatorFactory: IgnoreBenefitValidatorFactory,
                                            service: UnignoreBenefitService,
                                            auditService: AuditService,
                                            hateoasFactory: HateoasFactory,
@@ -52,23 +51,23 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
+      val validator = validatorFactory.validator(nino, taxYear, benefitId)
 
-      val requestHandler = RequestHandlerOld
-        .withParser(parser)
+      val requestHandler = RequestHandler
+        .withValidator(validator)
         .withService(service.unignoreBenefit)
-        .withAuditing(AuditHandlerOld(
+        .withAuditing(AuditHandler(
           auditService = auditService,
           auditType = "UnignoreStateBenefit",
           transactionName = "unignore-state-benefit",
-          version = Version.from(request, orElse = Version1),
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          apiVersion = Version.from(request, orElse = Version1),
+          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = None,
           includeResponse = true
         ))
         .withHateoasResult(hateoasFactory)(UnignoreBenefitHateoasData(nino, taxYear, benefitId))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
 }

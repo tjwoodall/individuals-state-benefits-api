@@ -16,14 +16,13 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
 import api.models.domain.{Nino, TaxYear, Timestamp}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
+import api.services.{ServiceOutcome, ServiceSpec}
 import v1.connectors.MockListBenefitsConnector
 import v1.models.domain.BenefitId
-import v1.models.request.listBenefits.ListBenefitsRequest
+import v1.models.request.listBenefits.ListBenefitsRequestData
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import scala.concurrent.Future
@@ -34,11 +33,11 @@ class ListBenefitsServiceSpec extends ServiceSpec {
   private val taxYear   = "2019-20"
   private val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
 
-  private val requestData = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd(taxYear), benefitId.map(BenefitId))
+  private val requestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), benefitId.map(BenefitId))
 
   private val validResponse = ListBenefitsResponse(
     stateBenefits = Some(
-      Seq(
+      List(
         HMRCStateBenefit(
           benefitType = "incapacityBenefit",
           dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z")),
@@ -52,7 +51,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
       )
     ),
     customerAddedStateBenefits = Some(
-      Seq(
+      List(
         CustomerStateBenefit(
           benefitType = "incapacityBenefit",
           benefitId = "f0d83ac0-a10a-4d57-9e41-6d033832779f",
@@ -66,56 +65,55 @@ class ListBenefitsServiceSpec extends ServiceSpec {
     )
   )
 
-  trait Test extends MockListBenefitsConnector {
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    val service: ListBenefitsService = new ListBenefitsService(connector = mockListBenefitsConnector)
-  }
-
   "ListBenefitsService" when {
     "listBenefits" must {
       "return correct result for a success" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, validResponse))
+        val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =
+          Right(ResponseWrapper(correlationId, validResponse))
 
         MockListBenefitsConnector
           .listBenefits(requestData)
           .returns(Future.successful(outcome))
 
-        await(service.listBenefits(requestData)) shouldBe outcome
+        val result: ServiceOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(service.listBenefits(requestData))
+        result shouldBe outcome
       }
 
       "map errors according to spec" when {
-
-        def serviceError(desErrorCode: String, error: MtdError): Unit =
-          s"a $desErrorCode error is returned from the service" in new Test {
-
+        def serviceError(errorCode: String, error: MtdError): Unit =
+          s"a $errorCode error is returned from the service" in new Test {
             MockListBenefitsConnector
               .listBenefits(requestData)
-              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(desErrorCode))))))
+              .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(errorCode))))))
 
-            await(service.listBenefits(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
+            val result: ServiceOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(service.listBenefits(requestData))
+            result shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
-        val errors = Seq(
+        val errors = List(
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-          ("INVALID_VIEW", StandardDownstreamError),
-          ("INVALID_CORRELATIONID", StandardDownstreamError),
+          ("INVALID_VIEW", InternalError),
+          ("INVALID_CORRELATIONID", InternalError),
           ("NO_DATA_FOUND", NotFoundError),
           ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
-          ("SERVER_ERROR", StandardDownstreamError),
-          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
+          ("SERVER_ERROR", InternalError),
+          ("SERVICE_UNAVAILABLE", InternalError)
         )
 
-        val extraTysErrors = Seq(
-          ("INVALID_CORRELATION_ID", StandardDownstreamError),
+        val extraTysErrors = List(
+          ("INVALID_CORRELATION_ID", InternalError),
           ("NOT_FOUND", NotFoundError)
         )
 
-        (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
+        (errors ++ extraTysErrors).foreach((serviceError _).tupled)
       }
     }
+  }
+
+  private trait Test extends MockListBenefitsConnector {
+    val service: ListBenefitsService = new ListBenefitsService(mockListBenefitsConnector)
   }
 
 }

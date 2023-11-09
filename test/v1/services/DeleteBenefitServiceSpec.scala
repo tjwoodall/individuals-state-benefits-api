@@ -16,12 +16,10 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
-import uk.gov.hmrc.http.HeaderCarrier
+import api.services.{ServiceOutcome, ServiceSpec}
 import v1.connectors.MockDeleteBenefitConnector
 import v1.models.domain.BenefitId
 import v1.models.request.deleteBenefit.DeleteBenefitRequestData
@@ -34,6 +32,8 @@ class DeleteBenefitServiceSpec extends ServiceSpec {
   private val taxYear   = "2019-20"
   private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
+  private val request = DeleteBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
+
   "DeleteBenefitService" when {
     "a valid request is supplied" must {
       "return correct result for a success" in new Test {
@@ -43,11 +43,11 @@ class DeleteBenefitServiceSpec extends ServiceSpec {
           .deleteBenefit(request)
           .returns(Future.successful(outcome))
 
-        await(service.deleteBenefit(request)) shouldBe outcome
+        val result: ServiceOutcome[Unit] = await(service.deleteBenefit(request))
+        result shouldBe outcome
       }
 
       "map errors according to spec" when {
-
         def serviceError(downstreamErrorCode: String, error: MtdError): Unit =
           s"a $downstreamErrorCode error is returned from the service" in new Test {
 
@@ -55,35 +55,28 @@ class DeleteBenefitServiceSpec extends ServiceSpec {
               .deleteBenefit(request)
               .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-            await(service.deleteBenefit(request)) shouldBe Left(ErrorWrapper(correlationId, error))
+            val result: ServiceOutcome[Unit] = await(service.deleteBenefit(request))
+            result shouldBe Left(ErrorWrapper(correlationId, error))
           }
 
-        val input = Seq(
+        val errors = List(
           ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
           ("INVALID_TAX_YEAR", TaxYearFormatError),
           ("INVALID_BENEFIT_ID", BenefitIdFormatError),
           ("DELETE_FORBIDDEN", RuleDeleteForbiddenError),
-          ("INVALID_CORRELATIONID", StandardDownstreamError),
+          ("INVALID_CORRELATIONID", InternalError),
           ("NO_DATA_FOUND", NotFoundError),
-          ("SERVER_ERROR", StandardDownstreamError),
-          ("SERVICE_UNAVAILABLE", StandardDownstreamError)
+          ("SERVER_ERROR", InternalError),
+          ("SERVICE_UNAVAILABLE", InternalError)
         )
 
-        input.foreach(args => (serviceError _).tupled(args))
+        errors.foreach((serviceError _).tupled)
       }
     }
   }
 
-  trait Test extends MockDeleteBenefitConnector {
-    implicit val hc: HeaderCarrier              = HeaderCarrier()
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    val service: DeleteBenefitService = new DeleteBenefitService(
-      connector = mockDeleteBenefitConnector
-    )
-
-    val request: DeleteBenefitRequestData = DeleteBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
-
+  private trait Test extends MockDeleteBenefitConnector {
+    val service: DeleteBenefitService = new DeleteBenefitService(mockDeleteBenefitConnector)
   }
 
 }

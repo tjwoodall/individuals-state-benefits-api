@@ -16,18 +16,25 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
-import api.services.ServiceSpec
+import api.services.{ServiceOutcome, ServiceSpec}
 import v1.connectors.MockAmendBenefitAmountsConnector
 import v1.models.domain.BenefitId
-import v1.models.request.amendBenefitAmounts.{AmendBenefitAmountsRequestData, AmendBenefitAmountsRequestBody}
+import v1.models.request.amendBenefitAmounts.{AmendBenefitAmountsRequestBody, AmendBenefitAmountsRequestData}
 
 import scala.concurrent.Future
 
 class AmendBenefitAmountsServiceSpec extends ServiceSpec {
+
+  private val nino      = "AA123456A"
+  private val taxYear   = "2021-22"
+  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
+
+  private val body = AmendBenefitAmountsRequestBody(999.99, Some(123.13))
+
+  private val requestData = AmendBenefitAmountsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), body)
 
   "AmendBenefitAmountsService" when {
     "AmendBenefitAmounts" must {
@@ -38,7 +45,7 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
           .amendBenefitAmounts(requestData)
           .returns(Future.successful(expectedOutcome))
 
-        val result: Either[ErrorWrapper, ResponseWrapper[Unit]] = await(service.amendBenefitAmounts(requestData))
+        val result: ServiceOutcome[Unit] = await(service.amendBenefitAmounts(requestData))
         result shouldBe expectedOutcome
       }
     }
@@ -51,7 +58,8 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
             .amendBenefitAmounts(requestData)
             .returns(Future.successful(Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode(downstreamErrorCode))))))
 
-          await(service.amendBenefitAmounts(requestData)) shouldBe Left(ErrorWrapper(correlationId, error))
+          val result: ServiceOutcome[Unit] = await(service.amendBenefitAmounts(requestData))
+          result shouldBe Left(ErrorWrapper(correlationId, error))
         }
 
       val errors = List(
@@ -59,46 +67,25 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
         ("INVALID_TAX_YEAR", TaxYearFormatError),
         ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-        ("INVALID_CORRELATIONID", StandardDownstreamError),
-        ("INVALID_PAYLOAD", StandardDownstreamError),
+        ("INVALID_CORRELATIONID", InternalError),
+        ("INVALID_PAYLOAD", InternalError),
         ("INVALID_REQUEST_BEFORE_TAX_YEAR", RuleTaxYearNotEndedError),
-        ("SERVER_ERROR", StandardDownstreamError),
-        ("SERVICE_UNAVAILABLE", StandardDownstreamError)
+        ("SERVER_ERROR", InternalError),
+        ("SERVICE_UNAVAILABLE", InternalError)
       )
 
       val extraTysErrors = List(
-        ("INVALID_CORRELATION_ID", StandardDownstreamError),
+        ("INVALID_CORRELATION_ID", InternalError),
         ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
       )
 
-      (errors ++ extraTysErrors).foreach(args => (serviceError _).tupled(args))
+      (errors ++ extraTysErrors).foreach((serviceError _).tupled)
 
     }
   }
 
-  trait Test extends MockAmendBenefitAmountsConnector {
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    private val nino      = "AA123456A"
-    private val taxYear   = "2021-22"
-    private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
-
-    val body: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
-      amount = 999.99,
-      taxPaid = Some(123.13)
-    )
-
-    val requestData: AmendBenefitAmountsRequestData = AmendBenefitAmountsRequestData(
-      nino = Nino(nino),
-      taxYear = TaxYear.fromMtd(taxYear),
-      benefitId = BenefitId(benefitId),
-      body = body
-    )
-
-    val service: AmendBenefitAmountsService = new AmendBenefitAmountsService(
-      connector = mockAmendBenefitAmountsConnector
-    )
-
+  private trait Test extends MockAmendBenefitAmountsConnector {
+    val service: AmendBenefitAmountsService = new AmendBenefitAmountsService(mockAmendBenefitAmountsConnector)
   }
 
 }

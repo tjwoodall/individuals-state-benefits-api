@@ -19,7 +19,7 @@ package api.controllers
 import api.controllers.ControllerTestRunner.validNino
 import api.mocks.MockIdGenerator
 import api.mocks.services.{MockAuditService, MockEnrolmentsAuthService, MockMtdIdLookupService}
-import api.models.audit.{AuditError, AuditEvent, AuditResponse}
+import api.models.audit.{AuditError, AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.errors.MtdError
 import play.api.http.{HeaderNames, MimeTypes, Status}
 import play.api.libs.json.JsValue
@@ -92,10 +92,10 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
     protected def callController(): Future[Result]
   }
 
-  trait AuditEventChecking[AUDIT] {
+  trait AuditEventChecking {
     _: ControllerTest =>
 
-    protected def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[AUDIT]
+    protected def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[GenericAuditDetail]
 
     protected def runOkTestWithAudit(expectedStatus: Int,
                                      maybeExpectedResponseBody: Option[JsValue] = None,
@@ -116,7 +116,7 @@ trait ControllerTestRunner extends MockEnrolmentsAuthService with MockMtdIdLooku
     }
 
     protected def checkAuditErrorEvent(expectedError: MtdError, maybeRequestBody: Option[JsValue]): Unit = {
-      val auditResponse: AuditResponse = AuditResponse(expectedError.httpStatus, Some(Seq(AuditError(expectedError.code))), None)
+      val auditResponse: AuditResponse = AuditResponse(expectedError.httpStatus, Some(List(AuditError(expectedError.code))), None)
       MockedAuditService.verifyAuditEvent(event(auditResponse, maybeRequestBody)).once()
     }
 

@@ -17,7 +17,7 @@
 package api.controllers
 
 import api.hateoas._
-import cats.Functor
+import cats.{Bifunctor, Functor}
 import play.api.http.{HttpEntity, Status}
 import play.api.libs.json.{JsValue, Json, Writes}
 import play.api.mvc.{ResponseHeader, Result, Results}
@@ -61,6 +61,17 @@ object ResultCreator {
       linksFactory: HateoasListLinksFactory[Output, I, HData],
       writes: Writes[HateoasWrapper[Output[HateoasWrapper[I]]]]): ResultCreator[Input, Output[I]] =
     (input: Input, output: Output[I]) => {
+      val wrapped = hateoasFactory.wrapList(output, data(input, output))
+
+      ResultWrapper(successStatus, Some(Json.toJson(wrapped)))
+    }
+
+  def hateoasListWrapping2[Input, Output[_, _]: Bifunctor, I1, I2, HData <: HateoasData](hateoasFactory: HateoasFactory,
+                                                                                         successStatus: Int = Status.OK)(
+      data: (Input, Output[I1, I2]) => HData)(implicit
+      linksFactory: HateoasListLinksFactory2[Output, I1, I2, HData],
+      writes: Writes[HateoasWrapper[Output[HateoasWrapper[I1], HateoasWrapper[I2]]]]): ResultCreator[Input, Output[I1, I2]] =
+    (input: Input, output: Output[I1, I2]) => {
       val wrapped = hateoasFactory.wrapList(output, data(input, output))
 
       ResultWrapper(successStatus, Some(Json.toJson(wrapped)))

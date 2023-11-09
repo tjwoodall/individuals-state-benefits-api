@@ -63,10 +63,10 @@ class AmendBenefitControllerSpec
   private val requestData = AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), requestBody)
 
   private val testHateoasLinks = List(
-    Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId", method = PUT, rel = "amend-state-benefit"),
-    Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
-    Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId", method = DELETE, rel = "delete-state-benefit"),
-    Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", method = PUT, rel = "amend-state-benefit-amounts")
+    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", PUT, "amend-state-benefit"),
+    Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, "self"),
+    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", DELETE, "delete-state-benefit"),
+    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", PUT, "amend-state-benefit-amounts")
   )
 
   private val responseJson = Json.parse(
@@ -139,9 +139,9 @@ class AmendBenefitControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
+  private trait Test extends ControllerTest with AuditEventChecking {
 
-    val controller = new AmendBenefitController(
+    private val controller = new AmendBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockAmendBenefitValidatorFactory,

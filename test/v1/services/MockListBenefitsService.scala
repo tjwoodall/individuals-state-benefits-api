@@ -21,7 +21,7 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.models.request.listBenefits.ListBenefitsRequest
+import v1.models.request.listBenefits.ListBenefitsRequestData
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,10 +32,10 @@ trait MockListBenefitsService extends MockFactory {
 
   object MockListBenefitsService {
 
-    def listBenefits(requestData: ListBenefitsRequest)
+    def listBenefits(requestData: ListBenefitsRequestData)
         : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]]] = {
       (mockListBenefitsService
-        .listBenefits(_: ListBenefitsRequest)(_: RequestContext, _: ExecutionContext))
+        .listBenefits(_: ListBenefitsRequestData)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
 

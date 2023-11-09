@@ -20,7 +20,7 @@ import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.models.request.createBenefit.CreateBenefitRequest
+import v1.models.request.createBenefit.CreateBenefitRequestData
 import v1.models.response.createBenefit.CreateBenefitResponse
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,9 +31,9 @@ trait MockCreateBenefitConnector extends MockFactory {
 
   object MockCreateBenefitConnector {
 
-    def createBenefit(request: CreateBenefitRequest): CallHandler[Future[DownstreamOutcome[CreateBenefitResponse]]] = {
+    def createBenefit(request: CreateBenefitRequestData): CallHandler[Future[DownstreamOutcome[CreateBenefitResponse]]] = {
       (mockCreateBenefitConnector
-        .createBenefit(_: CreateBenefitRequest)(_: HeaderCarrier, _: ExecutionContext, _: String))
+        .createBenefit(_: CreateBenefitRequestData)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(request, *, *, *)
     }
 

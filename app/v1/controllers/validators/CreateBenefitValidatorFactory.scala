@@ -17,30 +17,34 @@
 package v1.controllers.validators
 
 import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{DetailedResolveTaxYear, ResolveNino}
+import api.controllers.validators.resolvers.{DetailedResolveTaxYear, ResolveNino, ResolveNonEmptyJsonObject}
 import api.models.errors.MtdError
 import cats.data.Validated
-import cats.implicits.catsSyntaxTuple3Semigroupal
-import v1.controllers.validators.resolvers.ResolveBenefitId
-import v1.models.request.deleteBenefitAmounts.DeleteBenefitAmountsRequestData
+import cats.implicits._
+import play.api.libs.json.JsValue
+import v1.controllers.validators.CreateBenefitRulesValidator.validateBusinessRules
+import v1.models.request.createBenefit.{CreateBenefitRequestBody, CreateBenefitRequestData}
 
 import javax.inject.Singleton
+import scala.annotation.nowarn
 
 @Singleton
-class DeleteBenefitAmountsValidatorFactory {
+class CreateBenefitValidatorFactory {
+
+  @nowarn("cat=lint-byname-implicit")
+  private val resolveJson = new ResolveNonEmptyJsonObject[CreateBenefitRequestBody]()
 
   private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
 
-  def validator(nino: String, taxYear: String, benefitId: String): Validator[DeleteBenefitAmountsRequestData] =
-    new Validator[DeleteBenefitAmountsRequestData] {
+  def validator(nino: String, taxYear: String, body: JsValue): Validator[CreateBenefitRequestData] =
+    new Validator[CreateBenefitRequestData] {
 
-      def validate: Validated[Seq[MtdError], DeleteBenefitAmountsRequestData] = {
+      def validate: Validated[Seq[MtdError], CreateBenefitRequestData] =
         (
           ResolveNino(nino),
           resolveTaxYear(taxYear),
-          ResolveBenefitId(benefitId)
-        ) mapN DeleteBenefitAmountsRequestData
-      }
+          resolveJson(body)
+        ) mapN CreateBenefitRequestData andThen validateBusinessRules
 
     }
 

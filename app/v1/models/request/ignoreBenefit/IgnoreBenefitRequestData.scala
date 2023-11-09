@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators.validations
+package v1.models.request.ignoreBenefit
 
-protected[validators] trait ValueFormatErrorMessages {
-  val ZERO_MINIMUM_INCLUSIVE        = "The field should be between 0 and 99999999999.99"
-  val BIG_DECIMAL_MINIMUM_INCLUSIVE = "The field should be between -99999999999.99 and 99999999999.99"
-}
+import api.models.domain.{Nino, TaxYear}
+import v1.models.domain.BenefitId
+
+case class IgnoreBenefitRequestData(nino: Nino, taxYear: TaxYear, benefitId: BenefitId)

@@ -20,12 +20,15 @@ import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import api.hateoas.HateoasLinks
 import api.mocks.hateoas.MockHateoasFactory
 import api.mocks.services.MockAuditService
+import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.libs.json.JsObject
 import play.api.mvc.Result
+import v1.controllers.validators.MockListBenefitsValidatorFactory
 import v1.fixtures.ListBenefitsFixture._
-import v1.mocks.requestParsers.MockListBenefitsRequestParser
+import v1.models.domain.BenefitId
+import v1.models.request.listBenefits.ListBenefitsRequestData
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData}
 import v1.services.MockListBenefitsService
 
@@ -36,24 +39,24 @@ class ListBenefitsControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockListBenefitsService
-    with MockListBenefitsRequestParser
+    with MockListBenefitsValidatorFactory
     with MockHateoasFactory
     with MockAuditService
     with HateoasLinks {
 
+  private val requestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), Some(BenefitId(benefitId)))
+
   "ListBenefitsController" should {
     "return OK with full HATEOAS" when {
       "happy path" in new Test {
-        MockListBenefitsRequestParser
-          .parse(rawData(queryBenefitId))
-          .returns(Right(requestData(queryBenefitId)))
+        willUseValidator(returningSuccess(requestData))
 
         MockListBenefitsService
-          .listBenefits(requestData(queryBenefitId))
+          .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData))))
 
         MockHateoasFactory
-          .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Seq(benefitId)))
+          .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId)))
           .returns(hateoasResponse)
 
         runOkTest(
@@ -65,16 +68,14 @@ class ListBenefitsControllerSpec
 
     "return OK with no delete amount HATEOAS" when {
       "state benefits has no amount properties" in new Test {
-        MockListBenefitsRequestParser
-          .parse(rawData(queryBenefitId))
-          .returns(Right(requestData(queryBenefitId)))
+        willUseValidator(returningSuccess(requestData))
 
         MockListBenefitsService
-          .listBenefits(requestData(queryBenefitId))
+          .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseDataWithNoAmounts))))
 
         MockHateoasFactory
-          .wrapList(responseDataWithNoAmounts, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Seq(benefitId)))
+          .wrapList(responseDataWithNoAmounts, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId)))
           .returns(hateoasResponseWithOutAmounts)
 
         runOkTest(
@@ -86,19 +87,16 @@ class ListBenefitsControllerSpec
 
     "return OK with only HMRC state benefit HATEOAS" when {
       "only HMRC state benefits returned" in new Test {
-
-        MockListBenefitsRequestParser
-          .parse(rawData(queryBenefitId))
-          .returns(Right(requestData(queryBenefitId)))
+        willUseValidator(returningSuccess(requestData))
 
         MockListBenefitsService
-          .listBenefits(requestData(queryBenefitId))
+          .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(customerAddedStateBenefits = None)))))
 
         MockHateoasFactory
           .wrapList(
             responseData.copy(customerAddedStateBenefits = Option.empty[Seq[CustomerStateBenefit]]),
-            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Seq(benefitId))
+            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId))
           )
           .returns(hmrcOnlyHateoasResponse)
 
@@ -111,12 +109,10 @@ class ListBenefitsControllerSpec
 
     "return OK with only CUSTOM state benefit HATEOAS" when {
       "only CUSTOM state benefits returned" in new Test {
-        MockListBenefitsRequestParser
-          .parse(rawData(queryBenefitId))
-          .returns(Right(requestData(queryBenefitId)))
+        willUseValidator(returningSuccess(requestData))
 
         MockListBenefitsService
-          .listBenefits(requestData(queryBenefitId))
+          .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
         MockHateoasFactory
@@ -134,12 +130,10 @@ class ListBenefitsControllerSpec
 
     "return OK with single state benefit with HATEOAS" when {
       "benefitId is passed for single retrieval" in new Test {
-        MockListBenefitsRequestParser
-          .parse(rawData(queryBenefitId))
-          .returns(Right(requestData(queryBenefitId)))
+        willUseValidator(returningSuccess(requestData))
 
         MockListBenefitsService
-          .listBenefits(requestData(queryBenefitId))
+          .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
         MockHateoasFactory
@@ -157,20 +151,16 @@ class ListBenefitsControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-        MockListBenefitsRequestParser
-          .parse(rawData(queryBenefitId))
-          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
+        willUseValidator(returning(NinoFormatError))
 
         runErrorTest(NinoFormatError)
       }
 
       "the service returns an error" in new Test {
-        MockListBenefitsRequestParser
-          .parse(rawData(queryBenefitId))
-          .returns(Right(requestData(queryBenefitId)))
+        willUseValidator(returningSuccess(requestData))
 
         MockListBenefitsService
-          .listBenefits(requestData(queryBenefitId))
+          .listBenefits(requestData)
           .returns(Future.successful(Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))))
 
         runErrorTest(RuleTaxYearNotSupportedError)
@@ -178,12 +168,12 @@ class ListBenefitsControllerSpec
     }
   }
 
-  trait Test extends ControllerTest {
+  private trait Test extends ControllerTest {
 
-    val controller = new ListBenefitsController(
+    private val controller = new ListBenefitsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      parser = mockListBenefitsRequestParser,
+      validatorFactory = mockListBenefitsValidatorFactory,
       service = mockListBenefitsService,
       hateoasFactory = mockHateoasFactory,
       cc = cc,

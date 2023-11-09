@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package api.controllers.requestParsers.validators.validations
+package v1.models.request.createBenefit
 
-import api.models.errors.{BenefitIdFormatError, MtdError}
+import api.models.domain.{Nino, TaxYear}
 
-object BenefitIdValidation {
-
-  def validate(benefitId: String): List[MtdError] = {
-    val regex = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-    if (benefitId.matches(regex)) NoValidationErrors else List(BenefitIdFormatError)
-  }
-
-}
+case class CreateBenefitRequestData(nino: Nino, taxYear: TaxYear, body: CreateBenefitRequestBody)

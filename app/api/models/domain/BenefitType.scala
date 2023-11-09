@@ -38,4 +38,5 @@ object BenefitType {
   case object otherStateBenefits extends BenefitType
 
   implicit val format: Format[BenefitType] = Enums.format[BenefitType]
+
 }

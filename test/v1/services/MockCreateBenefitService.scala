@@ -21,7 +21,7 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.models.request.createBenefit.CreateBenefitRequest
+import v1.models.request.createBenefit.CreateBenefitRequestData
 import v1.models.response.createBenefit.CreateBenefitResponse
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,9 +32,9 @@ trait MockCreateBenefitService extends MockFactory {
 
   object MockCreateStateBenefitService {
 
-    def createStateBenefit(requestData: CreateBenefitRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateBenefitResponse]]]] = {
+    def createStateBenefit(requestData: CreateBenefitRequestData): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateBenefitResponse]]]] = {
       (mockCreateStateBenefitService
-        .createBenefit(_: CreateBenefitRequest)(_: RequestContext, _: ExecutionContext))
+        .createBenefit(_: CreateBenefitRequestData)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)
     }
 

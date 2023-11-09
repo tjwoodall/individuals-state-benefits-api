@@ -17,20 +17,19 @@
 package v1.controllers
 
 import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.hateoas.Method.{GET, POST}
 import api.hateoas.{HateoasWrapper, Link}
 import api.mocks.hateoas.MockHateoasFactory
 import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetailOld}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
-import api.hateoas.Method.{GET, POST}
 import api.models.outcomes.ResponseWrapper
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import routing.Version1
-import v1.mocks.requestParsers.MockIgnoreBenefitRequestParser
+import v1.controllers.validators.MockIgnoreBenefitValidatorFactory
 import v1.models.domain.BenefitId
-import v1.models.request.ignoreBenefit.{IgnoreBenefitRawData, IgnoreBenefitRequest}
+import v1.models.request.ignoreBenefit.IgnoreBenefitRequestData
 import v1.models.response.ignoreBenefit.IgnoreBenefitHateoasData
 import v1.services.MockIgnoreBenefitService
 
@@ -41,16 +40,19 @@ class IgnoreBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockIgnoreBenefitService
-    with MockIgnoreBenefitRequestParser
+    with MockIgnoreBenefitValidatorFactory
     with MockAuditService
     with MockHateoasFactory {
+
+  private val taxYear   = "2019-20"
+  private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+
+  private val requestData = IgnoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
   "IgnoreBenefitController" should {
     "return a successful response with status 200 (OK)" when {
       "happy path" in new Test {
-        MockIgnoreBenefitRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockIgnoreBenefitService
           .ignoreBenefit(requestData)
@@ -72,17 +74,13 @@ class IgnoreBenefitControllerSpec
 
     "return the error as per spec" when {
       "the parser validation fails" in new Test {
-        MockIgnoreBenefitRequestParser
-          .parse(rawData)
-          .returns(Left(ErrorWrapper(correlationId, NinoFormatError)))
+        willUseValidator(returning(NinoFormatError))
 
         runErrorTestWithAudit(NinoFormatError, None)
       }
 
       "the service returns an error" in new Test {
-        MockIgnoreBenefitRequestParser
-          .parse(rawData)
-          .returns(Right(requestData))
+        willUseValidator(returningSuccess(requestData))
 
         MockIgnoreBenefitService
           .ignoreBenefit(requestData)
@@ -93,18 +91,12 @@ class IgnoreBenefitControllerSpec
     }
   }
 
-  private trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetailOld] {
-    val taxYear: String   = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-
-    val rawData: IgnoreBenefitRawData = IgnoreBenefitRawData(nino, taxYear, benefitId)
-
-    val requestData: IgnoreBenefitRequest = IgnoreBenefitRequest(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
+  trait Test extends ControllerTest with AuditEventChecking {
 
     val controller = new IgnoreBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      parser = mockIgnoreBenefitRequestParser,
+      validatorFactory = mockIgnoreBenefitValidatorFactory,
       service = mockIgnoreBenefitService,
       hateoasFactory = mockHateoasFactory,
       auditService = mockAuditService,
@@ -114,25 +106,24 @@ class IgnoreBenefitControllerSpec
 
     protected def callController(): Future[Result] = controller.ignoreBenefit(nino, taxYear, benefitId)(fakeRequest)
 
-    def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetailOld] =
+    protected def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "IgnoreStateBenefit",
         transactionName = "ignore-state-benefit",
-        detail = GenericAuditDetailOld(
+        detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          pathParams = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
-          queryParams = None,
+          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = None,
           `X-CorrelationId` = correlationId,
-          versionNumber = Version1.name,
+          versionNumber = "1.0",
           auditResponse = auditResponse
         )
       )
 
     val testHateoasLinks: Seq[Link] = Seq(
-      Link(href = s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", method = GET, rel = "self"),
-      Link(href = s"/individuals/state-benefits/$nino/$taxYear/$benefitId/unignore", method = POST, rel = "unignore-state-benefit")
+      Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, "self"),
+      Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/unignore", POST, "unignore-state-benefit")
     )
 
     val hateoasResponse: JsValue = Json.parse(

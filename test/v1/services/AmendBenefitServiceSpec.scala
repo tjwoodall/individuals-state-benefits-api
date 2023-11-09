@@ -16,18 +16,25 @@
 
 package v1.services
 
-import api.controllers.EndpointLogContext
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.{ServiceOutcome, ServiceSpec}
 import v1.connectors.MockAmendBenefitConnector
 import v1.models.domain.BenefitId
-import v1.models.request.amendBenefit.{AmendBenefitRequestData, AmendBenefitRequestBody}
+import v1.models.request.amendBenefit.{AmendBenefitRequestBody, AmendBenefitRequestData}
 
 import scala.concurrent.Future
 
 class AmendBenefitServiceSpec extends ServiceSpec {
+
+  private val nino      = "AA123456A"
+  private val taxYear   = "2021-22"
+  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
+
+  private val amendBenefitRequestBody = AmendBenefitRequestBody("2020-08-03", Some("2020-12-03"))
+
+  private val requestData = AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitRequestBody)
 
   "AmendBenefitService" when {
     "amendBenefit" must {
@@ -59,35 +66,22 @@ class AmendBenefitServiceSpec extends ServiceSpec {
         ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
         ("INVALID_TAX_YEAR", TaxYearFormatError),
         ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-        ("INVALID_CORRELATIONID", StandardDownstreamError),
-        ("INVALID_PAYLOAD", StandardDownstreamError),
+        ("INVALID_CORRELATIONID", InternalError),
+        ("INVALID_PAYLOAD", InternalError),
         ("UPDATE_FORBIDDEN", RuleUpdateForbiddenError),
         ("NO_DATA_FOUND", NotFoundError),
         ("INVALID_START_DATE", RuleStartDateAfterTaxYearEndError),
         ("INVALID_CESSATION_DATE", RuleEndDateBeforeTaxYearStartError),
-        ("SERVER_ERROR", StandardDownstreamError),
-        ("SERVICE_UNAVAILABLE", StandardDownstreamError)
+        ("SERVER_ERROR", InternalError),
+        ("SERVICE_UNAVAILABLE", InternalError)
       )
 
-      errors.foreach(args => (serviceError _).tupled(args))
+      errors.foreach((serviceError _).tupled)
     }
   }
 
   private trait Test extends MockAmendBenefitConnector {
-    implicit val logContext: EndpointLogContext = EndpointLogContext("c", "ep")
-
-    val nino      = "AA123456A"
-    val taxYear   = "2021-22"
-    val benefitId = "123e4567-e89b-12d3-a456-426614174000"
-
-    val amendBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody("2020-08-03", Some("2020-12-03"))
-
-    val requestData: AmendBenefitRequestData = AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitRequestBody)
-
-    val service: AmendBenefitService = new AmendBenefitService(
-      connector = mockAmendBenefitConnector
-    )
-
+    val service: AmendBenefitService = new AmendBenefitService(mockAmendBenefitConnector)
   }
 
 }

@@ -21,7 +21,7 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.models.request.ignoreBenefit.IgnoreBenefitRequest
+import v1.models.request.ignoreBenefit.IgnoreBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,9 +31,9 @@ trait MockUnignoreBenefitService extends MockFactory {
 
   object MockUnignoreBenefitService {
 
-    def unignoreBenefit(request: IgnoreBenefitRequest): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
+    def unignoreBenefit(request: IgnoreBenefitRequestData): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[Unit]]]] = {
       (mockUnignoreBenefitService
-        .unignoreBenefit(_: IgnoreBenefitRequest)(_: RequestContext, _: ExecutionContext))
+        .unignoreBenefit(_: IgnoreBenefitRequestData)(_: RequestContext, _: ExecutionContext))
         .expects(request, *, *)
     }
 

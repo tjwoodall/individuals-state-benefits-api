@@ -26,6 +26,11 @@ import scala.concurrent.Future
 
 class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
+  private val nino      = "AA123456A"
+  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
+
+  private val body = AmendBenefitAmountsRequestBody(999.99, Some(123.13))
+
   "AmendBenefitAmountsConnector" should {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new Api1651Test with Test {
@@ -63,25 +68,9 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
   trait Test { _: ConnectorTest =>
     def taxYear: TaxYear
 
-    val nino: String      = "AA123456A"
-    val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
+    val request: AmendBenefitAmountsRequestData = AmendBenefitAmountsRequestData(Nino(nino), taxYear, BenefitId(benefitId), body)
 
-    val body: AmendBenefitAmountsRequestBody = AmendBenefitAmountsRequestBody(
-      amount = 999.99,
-      taxPaid = Some(123.13)
-    )
-
-    val request: AmendBenefitAmountsRequestData = AmendBenefitAmountsRequestData(
-      nino = Nino(nino),
-      taxYear = taxYear,
-      benefitId = BenefitId(benefitId),
-      body = body
-    )
-
-    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(
-      http = mockHttpClient,
-      appConfig = mockAppConfig
-    )
+    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockAppConfig)
 
   }
 

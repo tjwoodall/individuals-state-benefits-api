@@ -72,11 +72,10 @@ class GenericAuditDetailSpec extends UnitSpec {
     """.stripMargin
   )
 
-  val auditDetailModelSuccess: GenericAuditDetailOld = GenericAuditDetailOld(
+  val auditDetailModelSuccess: GenericAuditDetail = GenericAuditDetail(
     userType = userType,
     agentReferenceNumber = agentReferenceNumber,
-    pathParams = Map("nino" -> nino, "taxYear" -> taxYear),
-    queryParams = None,
+    params = Map("nino" -> nino, "taxYear" -> taxYear),
     requestBody = Some(
       Json.parse(
         """
@@ -142,11 +141,10 @@ class GenericAuditDetailSpec extends UnitSpec {
     """.stripMargin
   )
 
-  val invalidTaxYearAuditDetailModel: GenericAuditDetailOld = GenericAuditDetailOld(
+  val invalidTaxYearAuditDetailModel: GenericAuditDetail = GenericAuditDetail(
     userType = userType,
     agentReferenceNumber = agentReferenceNumber,
-    pathParams = Map("nino" -> nino, "taxYear" -> "2020-2021"),
-    queryParams = None,
+    params = Map("nino" -> nino, "taxYear" -> "2020-2021"),
     requestBody = Some(
       Json.parse(
         """

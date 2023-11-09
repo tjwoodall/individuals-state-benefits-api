@@ -21,8 +21,7 @@ import api.hateoas.HateoasFactory
 import api.services.{EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.IdGenerator
-import v1.controllers.requestParsers.ListBenefitsRequestParser
-import v1.models.request.listBenefits.ListBenefitsRawData
+import v1.controllers.validators.ListBenefitsValidatorFactory
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData, ListBenefitsResponse}
 import v1.services.ListBenefitsService
 
@@ -30,14 +29,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
-                                        val lookupService: MtdIdLookupService,
-                                        parser: ListBenefitsRequestParser,
-                                        service: ListBenefitsService,
-                                        hateoasFactory: HateoasFactory,
-                                        cc: ControllerComponents,
-                                        idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-    extends AuthorisedController(cc) {
+class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
+                                       val lookupService: MtdIdLookupService,
+                                       validatorFactory: ListBenefitsValidatorFactory,
+                                       service: ListBenefitsService,
+                                       hateoasFactory: HateoasFactory,
+                                       cc: ControllerComponents,
+                                       val idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+  extends AuthorisedController(cc) {
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
@@ -49,15 +48,15 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val rawData = ListBenefitsRawData(nino, taxYear, benefitId)
+      val validator = validatorFactory.validator(nino, taxYear, benefitId)
 
-      val requestHandler = RequestHandlerOld
-        .withParser(parser)
+      val requestHandler = RequestHandler
+        .withValidator(validator)
         .withService(service.listBenefits)
-        .withResultCreator(ResultCreatorOld.hateoasListWrapping2(hateoasFactory)((_, response) =>
+        .withResultCreator(ResultCreator.hateoasListWrapping2(hateoasFactory)((_, response) =>
           ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(response))))
 
-      requestHandler.handleRequest(rawData)
+      requestHandler.handleRequest()
     }
 
   private def hmrcBenefitIds(response: ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]): Seq[String] =

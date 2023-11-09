@@ -16,13 +16,13 @@
 
 package v1.connectors
 
-import api.connectors.ConnectorSpec
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
 import api.mocks.MockHttpClient
 import api.models.domain.{Nino, TaxYear, Timestamp}
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import v1.models.domain.BenefitId
-import v1.models.request.listBenefits.ListBenefitsRequest
+import v1.models.request.listBenefits.ListBenefitsRequestData
 import v1.models.response.listBenefits.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 
 import scala.concurrent.Future
@@ -67,13 +67,14 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     "listBenefits" when {
       "a benefitId query param is provided" must {
         "return a 200 status for a success scenario" in new IfsTest with Test {
-          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2019-20"), Some(BenefitId(benefitId)))
-          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+          val request: ListBenefitsRequestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd("2019-20"), Some(BenefitId(benefitId)))
+          val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =
+            Right(ResponseWrapper(correlationId, validResponse))
 
           willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear", parameters = Seq("benefitId" -> benefitId)) returns Future
             .successful(outcome)
 
-          val result = await(connector.listBenefits(request))
+          val result: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(connector.listBenefits(request))
 
           result shouldBe outcome
         }
@@ -81,12 +82,13 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
 
       "no benefitId query param is provided" must {
         "return a 200 status for a success scenario" in new IfsTest with Test {
-          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2019-20"), None)
-          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+          val request: ListBenefitsRequestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd("2019-20"), None)
+          val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =
+            Right(ResponseWrapper(correlationId, validResponse))
 
           willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear") returns Future.successful(outcome)
 
-          val result = await(connector.listBenefits(request))
+          val result: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(connector.listBenefits(request))
 
           result shouldBe outcome
         }
@@ -94,13 +96,14 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
       "a benefitId is provided for a TYS tax year" must {
         "return a 200 status for a success scenario" in new TysIfsTest with Test {
 
-          val request = ListBenefitsRequest(Nino(nino), TaxYear.fromMtd("2023-24"), Some(BenefitId(benefitId)))
-          val outcome = Right(ResponseWrapper(correlationId, validResponse))
+          val request: ListBenefitsRequestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd("2023-24"), Some(BenefitId(benefitId)))
+          val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =
+            Right(ResponseWrapper(correlationId, validResponse))
 
           willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino", parameters = Seq("benefitId" -> benefitId)) returns Future.successful(
             outcome)
 
-          val result = await(connector.listBenefits(request))
+          val result: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(connector.listBenefits(request))
 
           result shouldBe outcome
         }
@@ -110,12 +113,9 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
 
   trait Test extends MockHttpClient with MockAppConfig {
 
-    val connector: ListBenefitsConnector = new ListBenefitsConnector(
-      http = mockHttpClient,
-      appConfig = mockAppConfig
-    )
+    val connector: ListBenefitsConnector = new ListBenefitsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
-    val ifsRequestHeaders: Seq[(String, String)] = Seq(
+    val ifsRequestHeaders: Seq[(String, String)] = List(
       "Environment"   -> "release6-environment",
       "Authorization" -> s"Bearer release6-token"
     )

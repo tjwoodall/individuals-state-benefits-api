@@ -59,7 +59,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     val requiredHeaders: Seq[(String, String)] = Seq(
       "Environment"       -> "des-environment",
       "Authorization"     -> s"Bearer des-token",
-      "User-Agent"        -> "individuals-income-received-api",
+      "User-Agent"        -> "individuals-state-benefits-api",
       "CorrelationId"     -> correlationId,
       "Gov-Test-Scenario" -> "DEFAULT"
     )
@@ -75,7 +75,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         val requiredHeaders: Seq[(String, String)] = Seq(
           "Environment"   -> "des-environment",
           "Authorization" -> s"Bearer des-token",
-          "User-Agent"    -> "individuals-income-received-api",
+          "User-Agent"    -> "individuals-state-benefits-api",
           "CorrelationId" -> correlationId
         )
 
@@ -157,7 +157,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
     val requiredHeaders: Seq[(String, String)] = Seq(
       "Environment"       -> "ifs-environment",
       "Authorization"     -> s"Bearer ifs-token",
-      "User-Agent"        -> "individuals-income-received-api",
+      "User-Agent"        -> "individuals-state-benefits-api",
       "CorrelationId"     -> correlationId,
       "Gov-Test-Scenario" -> "DEFAULT"
     )
@@ -173,7 +173,7 @@ class BaseDownstreamConnectorSpec extends ConnectorSpec {
         val requiredHeaders: Seq[(String, String)] = Seq(
           "Environment"   -> "ifs-environment",
           "Authorization" -> s"Bearer ifs-token",
-          "User-Agent"    -> "individuals-income-received-api",
+          "User-Agent"    -> "individuals-state-benefits-api",
           "CorrelationId" -> correlationId
         )
 

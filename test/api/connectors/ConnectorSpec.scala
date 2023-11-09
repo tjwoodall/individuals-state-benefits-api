@@ -42,13 +42,13 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     HeaderCarrier.Config(
       Seq("^not-test-BaseUrl?$".r),
       Seq.empty[String],
-      Some("individuals-income-received-api")
+      Some("individuals-state-benefits-api")
     )
 
   val requiredDesHeaders: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer des-token",
     "Environment"       -> "des-environment",
-    "User-Agent"        -> "individuals-income-received-api",
+    "User-Agent"        -> "individuals-state-benefits-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
@@ -66,20 +66,20 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
     HeaderCarrier.Config(
       Seq("^not-test-BaseUrl?$".r),
       Seq.empty[String],
-      Some("individuals-income-received-api")
+      Some("individuals-state-benefits-api")
     )
 
   val dummyHeaderCarrierConfig: HeaderCarrier.Config =
     HeaderCarrier.Config(
       Seq("^not-test-BaseUrl?$".r),
       Seq.empty[String],
-      Some("individuals-income-received-api")
+      Some("individuals-state-benefits-api")
     )
 
   val requiredIfsHeaders: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer ifs-token",
     "Environment"       -> "ifs-environment",
-    "User-Agent"        -> "individuals-income-received-api",
+    "User-Agent"        -> "individuals-state-benefits-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
@@ -102,7 +102,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   val requiredRelease6Headers: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer release6-token",
     "Environment"       -> "release6-environment",
-    "User-Agent"        -> "individuals-income-received-api",
+    "User-Agent"        -> "individuals-state-benefits-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )
@@ -110,7 +110,7 @@ trait ConnectorSpec extends UnitSpec with Status with MimeTypes with HeaderNames
   val requiredApi1651Headers: Seq[(String, String)] = Seq(
     "Authorization"     -> "Bearer api1651-token",
     "Environment"       -> "api1651-environment",
-    "User-Agent"        -> "individuals-income-received-api",
+    "User-Agent"        -> "individuals-state-benefits-api",
     "CorrelationId"     -> correlationId,
     "Gov-Test-Scenario" -> "DEFAULT"
   )

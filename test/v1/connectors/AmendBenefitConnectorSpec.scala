@@ -16,34 +16,26 @@
 
 package v1.connectors
 
-import api.connectors.ConnectorSpec
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
 import api.mocks.MockHttpClient
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.models.domain.BenefitId
-import v1.models.request.amendBenefit.{AmendBenefitRequestData, AmendBenefitRequestBody}
+import v1.models.request.amendBenefit.{AmendBenefitRequestBody, AmendBenefitRequestData}
 
 import scala.concurrent.Future
 
 class AmendBenefitConnectorSpec extends ConnectorSpec {
 
-  val nino: String      = "AA123456A"
-  val taxYear: String   = "2021-22"
-  val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
+  private val nino      = "AA123456A"
+  private val taxYear   = "2021-22"
+  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
-  val amendBenefitRequestBody: AmendBenefitRequestBody = AmendBenefitRequestBody(
-    startDate = "2020-08-03",
-    endDate = Some("2020-12-03")
-  )
+  private val amendBenefitRequestBody = AmendBenefitRequestBody("2020-08-03", Some("2020-12-03"))
 
-  val request: AmendBenefitRequestData = AmendBenefitRequestData(
-    nino = Nino(nino),
-    taxYear = TaxYear.fromMtd(taxYear),
-    benefitId = BenefitId(benefitId),
-    body = amendBenefitRequestBody
-  )
+  private val request = AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitRequestBody)
 
   class Test extends MockHttpClient with MockAppConfig {
 
@@ -66,7 +58,7 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
   "AmendBenefitConnector" when {
     "amendBenefit" must {
       "return a 201 status for a success scenario" in new Test {
-        val outcome = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
         val requiredRelease6HeadersPut: Seq[(String, String)] = requiredRelease6Headers ++ Seq("Content-Type" -> "application/json")
@@ -81,7 +73,9 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
           )
           .returns(Future.successful(outcome))
 
-        await(connector.amendBenefit(request)) shouldBe outcome
+        val result: DownstreamOutcome[Unit] = await(connector.amendBenefit(request))
+
+        result shouldBe outcome
       }
     }
   }

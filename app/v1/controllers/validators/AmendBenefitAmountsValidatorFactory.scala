@@ -23,6 +23,7 @@ import cats.data.Validated
 import cats.data.Validated.Valid
 import cats.implicits.catsSyntaxTuple4Semigroupal
 import play.api.libs.json.JsValue
+import v1.controllers.validators.resolvers.ResolveBenefitId
 import v1.models.request.amendBenefitAmounts.{AmendBenefitAmountsRequestBody, AmendBenefitAmountsRequestData}
 
 import javax.inject.Singleton
@@ -46,7 +47,7 @@ class AmendBenefitAmountsValidatorFactory {
         (
           ResolveNino(nino),
           resolveTaxYear(taxYear),
-          resolvers.ResolveBenefitId(benefitId),
+          ResolveBenefitId(benefitId),
           resolveJson(body)
         ).mapN(AmendBenefitAmountsRequestData) andThen validateBusinessRules
 
