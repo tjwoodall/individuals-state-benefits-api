@@ -22,14 +22,14 @@ For certain scenarios, a request may not be made for a tax year which has not ye
 
 - Scala 2.13.x
 - Java 11
-- sbt 1.7.x
+- sbt 1.9.x
 - [Service Manager V2](https://github.com/hmrc/sm2)
 
 ## Development Setup
 
 Run the microservice from the console using: `sbt run` (starts on port 7789 by default)
 
-Start the service manager profile: `sm --start MTDFB_INDIVIDUALS_STATE_BENEFITS`
+Start the service manager profile: `sm2 --start MTDFB_INDIVIDUALS_STATE_BENEFITS`
 
 ## Run Tests
 
