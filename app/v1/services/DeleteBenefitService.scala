@@ -39,7 +39,6 @@ class DeleteBenefitService @Inject() (connector: DeleteBenefitConnector) extends
     "INVALID_TAX_YEAR"          -> TaxYearFormatError,
     "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
     "DELETE_FORBIDDEN"          -> RuleDeleteForbiddenError,
-    "INVALID_CORRELATIONID"     -> InternalError,
     "NO_DATA_FOUND"             -> NotFoundError,
     "SERVER_ERROR"              -> InternalError,
     "SERVICE_UNAVAILABLE"       -> InternalError

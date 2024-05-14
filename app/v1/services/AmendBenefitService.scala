@@ -38,7 +38,6 @@ class AmendBenefitService @Inject() (connector: AmendBenefitConnector) extends B
     "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
     "INVALID_TAX_YEAR"          -> TaxYearFormatError,
     "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-    "INVALID_CORRELATIONID"     -> InternalError,
     "INVALID_PAYLOAD"           -> InternalError,
     "UPDATE_FORBIDDEN"          -> RuleUpdateForbiddenError,
     "NO_DATA_FOUND"             -> NotFoundError,

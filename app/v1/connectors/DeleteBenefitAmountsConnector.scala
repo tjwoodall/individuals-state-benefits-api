@@ -16,7 +16,7 @@
 
 package v1.connectors
 
-import api.connectors.DownstreamUri.{DesUri, TaxYearSpecificIfsUri}
+import api.connectors.DownstreamUri.{DesUri, IfsUri, TaxYearSpecificIfsUri}
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
 import play.api.http.Status.NO_CONTENT
@@ -38,12 +38,15 @@ class DeleteBenefitAmountsConnector @Inject() (val http: HttpClient, val appConf
 
     implicit val successCode: SuccessCode = SuccessCode(NO_CONTENT)
 
-    val downstreamUri =
+    val downstreamUri = {
       if (request.taxYear.useTaxYearSpecificApi) {
         TaxYearSpecificIfsUri[Unit](s"income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/${request.nino}/${request.benefitId}")
+      } else if (featureSwitches.isDesIf_MigrationEnabled) {
+        IfsUri[Unit](s"income-tax/income/state-benefits/${request.nino}/${request.taxYear.asMtd}/${request.benefitId}")
       } else {
         DesUri[Unit](s"income-tax/income/state-benefits/${request.nino}/${request.taxYear.asMtd}/${request.benefitId}")
       }
+    }
 
     delete(uri = downstreamUri)
   }

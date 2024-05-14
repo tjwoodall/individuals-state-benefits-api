@@ -61,6 +61,7 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
           "INVALID_TAX_YEAR"          -> TaxYearFormatError,
           "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
           "INVALID_CORRELATIONID"     -> InternalError,
+          "INVALID_CORRELATION_ID"    -> InternalError,
           "NO_DATA_FOUND"             -> NotFoundError,
           "SERVER_ERROR"              -> InternalError,
           "SERVICE_UNAVAILABLE"       -> InternalError

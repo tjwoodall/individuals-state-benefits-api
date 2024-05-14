@@ -42,7 +42,6 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
       "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,
       "INVALID_TAX_YEAR"                -> TaxYearFormatError,
       "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
-      "INVALID_CORRELATIONID"           -> InternalError,
       "INVALID_PAYLOAD"                 -> InternalError,
       "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
       "SERVER_ERROR"                    -> InternalError,
@@ -50,7 +49,6 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
     )
 
     val extraTysErrors = Map(
-      "INVALID_CORRELATION_ID" -> InternalError,
       "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError
     )
 

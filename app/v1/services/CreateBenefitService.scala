@@ -39,7 +39,6 @@ class CreateBenefitService @Inject() (connector: CreateBenefitConnector) extends
   private val downstreamErrorMap: Map[String, MtdError] = Map(
     "INVALID_TAXABLE_ENTITY_ID"   -> NinoFormatError,
     "INVALID_TAX_YEAR"            -> TaxYearFormatError,
-    "INVALID_CORRELATIONID"       -> InternalError,
     "INVALID_PAYLOAD"             -> InternalError,
     "BENEFIT_TYPE_ALREADY_EXISTS" -> RuleBenefitTypeExists,
     "NOT_SUPPORTED_TAX_YEAR"      -> RuleTaxYearNotEndedError,

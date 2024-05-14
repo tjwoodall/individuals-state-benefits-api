@@ -38,7 +38,6 @@ class IgnoreBenefitService @Inject() (connector: IgnoreBenefitConnector) extends
     ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
     ("INVALID_TAX_YEAR", TaxYearFormatError),
     ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-    ("INVALID_CORRELATION_ID", InternalError),
     ("IGNORE_FORBIDDEN", RuleIgnoreForbiddenError),
     ("NO_DATA_FOUND", NotFoundError),
     ("NOT_SUPPORTED_TAX_YEAR", RuleTaxYearNotEndedError),

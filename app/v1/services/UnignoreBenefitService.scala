@@ -38,7 +38,6 @@ class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) ext
   private val downstreamErrorMap: Map[String, MtdError] = Map(
     ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
     ("INVALID_TAX_YEAR", TaxYearFormatError),
-    ("INVALID_CORRELATION_ID", InternalError),
     ("INVALID_BENEFIT_ID", BenefitIdFormatError),
     ("CUSTOMER_ADDED", RuleUnignoreForbiddenError),
     ("NO_DATA_FOUND", NotFoundError),

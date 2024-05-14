@@ -18,7 +18,15 @@ package config
 
 import play.api.Configuration
 
-case class FeatureSwitches(featureSwitchConfig: Configuration)
+case class FeatureSwitches(featureSwitchConfig: Configuration){
+
+  val isDesIf_MigrationEnabled: Boolean                = isEnabled("desIf_Migration")
+
+  def isEnabled(feature: String): Boolean              = isConfigTrue(feature + ".enabled")
+  def isReleasedInProduction(feature: String): Boolean = isConfigTrue(feature + ".released-in-production")
+
+  private def isConfigTrue(feature: String): Boolean = featureSwitchConfig.getOptional[Boolean](feature).getOrElse(true)
+}
 
 object FeatureSwitches {
   def apply()(implicit appConfig: AppConfig): FeatureSwitches = FeatureSwitches(appConfig.featureSwitches)
