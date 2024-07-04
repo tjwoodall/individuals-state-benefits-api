@@ -22,9 +22,8 @@ import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
-import v1.ignoreBenefit.IgnoreBenefitValidatorFactory
-import v1.models.response.unignoreBenefit.UnignoreBenefitHateoasData
-import v1.models.response.unignoreBenefit.UnignoreBenefitResponse.UnignoreBenefitLinksFactory
+import v1.unignoreBenefit.model.response.UnignoreBenefitHateoasData
+import v1.unignoreBenefit.model.response.UnignoreBenefitResponse.UnignoreBenefitLinksFactory
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -32,7 +31,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                            val lookupService: MtdIdLookupService,
-                                           validatorFactory: IgnoreBenefitValidatorFactory,
+                                           validatorFactory: UnignoreBenefitValidatorFactory,
                                            service: UnignoreBenefitService,
                                            auditService: AuditService,
                                            hateoasFactory: HateoasFactory,

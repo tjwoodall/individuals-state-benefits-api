@@ -19,8 +19,8 @@ package v1.unignoreBenefit
 import api.connectors.{ConnectorSpec, DownstreamOutcome}
 import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
-import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.models.domain.BenefitId
+import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
 
 import scala.concurrent.Future
 
@@ -51,7 +51,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
     _: ConnectorTest =>
     def taxYear: TaxYear
 
-    val request: Def1_IgnoreBenefitRequestData = Def1_IgnoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))
+    val request: Def1_UnignoreBenefitRequestData = Def1_UnignoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))
 
     val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
 

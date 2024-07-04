@@ -16,26 +16,16 @@
 
 package v1.unignoreBenefit
 
-import api.connectors.DownstreamOutcome
-import org.scalamock.handlers.CallHandler
-import org.scalamock.scalatest.MockFactory
-import uk.gov.hmrc.http.HeaderCarrier
+import api.controllers.validators.Validator
+import v1.unignoreBenefit.def1.Def1_UnignoreBenefitValidator
 import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.Singleton
 
-trait MockUnignoreBenefitConnector extends MockFactory {
-
-  val mockUnignoreBenefitConnector: UnignoreBenefitConnector = mock[UnignoreBenefitConnector]
-
-  object MockUnignoreBenefitConnector {
-
-    def unignoreBenefit(request: Def1_UnignoreBenefitRequestData): CallHandler[Future[DownstreamOutcome[Unit]]] = {
-      (mockUnignoreBenefitConnector
-        .unignoreBenefit(_: Def1_UnignoreBenefitRequestData)(_: HeaderCarrier, _: ExecutionContext, _: String))
-        .expects(request, *, *, *)
+@Singleton
+class UnignoreBenefitValidatorFactory {
+  def validator(nino: String, taxYear: String, benefitId: String): Validator[Def1_UnignoreBenefitRequestData] =
+    taxYear match {
+      case _ => new Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String)
     }
-
-  }
-
 }

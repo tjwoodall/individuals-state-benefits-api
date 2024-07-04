@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.models.response.unignoreBenefit
+package v1.unignoreBenefit.model.response
 
 import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
 import config.AppConfig

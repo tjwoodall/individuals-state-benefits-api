@@ -20,8 +20,8 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import api.services.{ServiceOutcome, ServiceSpec}
-import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.models.domain.BenefitId
+import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
 
 import scala.concurrent.Future
 
@@ -31,7 +31,7 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
   private val taxYear   = "2019-20"
   private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
-  private val request = Def1_IgnoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
+  private val request = Def1_UnignoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
   "UnignoreBenefitService" when {
     "unignoreBenefit" must {

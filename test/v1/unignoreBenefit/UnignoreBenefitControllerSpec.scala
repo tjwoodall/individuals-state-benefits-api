@@ -27,10 +27,9 @@ import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import v1.ignoreBenefit.MockIgnoreBenefitValidatorFactory
-import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.models.domain.BenefitId
-import v1.models.response.unignoreBenefit.UnignoreBenefitHateoasData
+import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
+import v1.unignoreBenefit.model.response.UnignoreBenefitHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -39,13 +38,13 @@ class UnignoreBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
     with MockUnignoreBenefitService
-    with MockIgnoreBenefitValidatorFactory
+    with MockUnignoreBenefitValidatorFactory
     with MockAuditService
     with MockHateoasFactory {
 
   private val taxYear     = "2019-20"
   private val benefitId   = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-  private val requestData = Def1_IgnoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
+  private val requestData = Def1_UnignoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
   "UnignoreBenefitController" should {
     "return a successful response with status 200 (OK)" when {
@@ -93,7 +92,7 @@ class UnignoreBenefitControllerSpec
     private val controller = new UnignoreBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
-      validatorFactory = mockIgnoreBenefitValidatorFactory,
+      validatorFactory = mockUnignoreBenefitValidatorFactory,
       service = mockUnignoreBenefitService,
       auditService = mockAuditService,
       hateoasFactory = mockHateoasFactory,
