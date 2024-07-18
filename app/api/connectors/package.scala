@@ -16,10 +16,9 @@
 
 package api
 
-import api.models.errors.{DownstreamError, MtdError}
+import api.models.errors.DownstreamError
 import api.models.outcomes.ResponseWrapper
 
 package object connectors {
-  type MtdIdLookupOutcome   = Either[MtdError, String]
   type DownstreamOutcome[A] = Either[ResponseWrapper[DownstreamError], ResponseWrapper[A]]
 }
