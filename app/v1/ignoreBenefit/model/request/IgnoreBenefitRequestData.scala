@@ -16,4 +16,11 @@
 
 package v1.ignoreBenefit.model.request
 
-trait IgnoreBenefitRequestData
+import api.models.domain.{Nino, TaxYear}
+import v1.models.domain.BenefitId
+
+trait IgnoreBenefitRequestData{
+  def nino: Nino
+  def taxYear: TaxYear
+  def benefitId: BenefitId
+}

@@ -16,83 +16,33 @@
 
 package v1.unignoreBenefit
 
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
+import api.controllers.validators.Validator
 import support.UnitSpec
-import v1.models.domain.BenefitId
-import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
+import v1.unignoreBenefit.def1.Def1_UnignoreBenefitValidator
+import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 class UnignoreBenefitValidatorFactorySpec extends UnitSpec {
 
-  private implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-
   private val validNino      = "AA123456B"
   private val validTaxYear   = "2021-22"
+  private val invalidTaxYear = "2021"
   private val validBenefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
-
-  private val parsedNino      = Nino(validNino)
-  private val parsedTaxYear   = TaxYear.fromMtd(validTaxYear)
-  private val parsedBenefitId = BenefitId(validBenefitId)
 
   private val validatorFactory = new UnignoreBenefitValidatorFactory
 
-  private def validator(nino: String, taxYear: String, benefitId: String) = validatorFactory.validator(nino, taxYear, benefitId)
-
   "validator" should {
-    "return the parsed domain object" when {
-      "passed a valid request" in {
-        val result = validator(validNino, validTaxYear, validBenefitId).validateAndWrapResult()
+    "return the Def1 validator" when {
+      "given a valid request" in {
+        val result: Validator[UnignoreBenefitRequestData] = validatorFactory.validator(validNino, validTaxYear, validBenefitId)
+        result shouldBe a[Def1_UnignoreBenefitValidator]
+      }
 
-        result shouldBe Right(Def1_UnignoreBenefitRequestData(parsedNino, parsedTaxYear, parsedBenefitId))
-
+      "given an invalid taxYear" in {
+        val result: Validator[UnignoreBenefitRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId)
+        result shouldBe a[Def1_UnignoreBenefitValidator]
       }
     }
 
-    "return a single error" when {
-      "passed an invalid nino" in {
-        val result = validator("A12344A", validTaxYear, validBenefitId).validateAndWrapResult()
-
-        result shouldBe Left(ErrorWrapper(correlationId, NinoFormatError))
-      }
-
-      "passed an invalid tax year" in {
-        val result = validator(validNino, "202223", validBenefitId).validateAndWrapResult()
-
-        result shouldBe Left(ErrorWrapper(correlationId, TaxYearFormatError))
-      }
-
-      "passed a tax year with an invalid range" in {
-        val result = validator(validNino, "2022-24", validBenefitId).validateAndWrapResult()
-
-        result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearRangeInvalidError))
-      }
-
-      "passed a tax year that precedes the minimum" in {
-        val result = validator(validNino, "2018-19", validBenefitId).validateAndWrapResult()
-
-        result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))
-      }
-
-      "passed an invalid benefitId" in {
-        val result = validator(validNino, validTaxYear, "invalid").validateAndWrapResult()
-
-        result shouldBe Left(ErrorWrapper(correlationId, BenefitIdFormatError))
-      }
-    }
-
-    "return multiple errors" when {
-      "passed multiple invalid fields" in {
-        val result = validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id").validateAndWrapResult()
-
-        result shouldBe Left(
-          ErrorWrapper(
-            correlationId,
-            BadRequestError,
-            Some(List(BenefitIdFormatError, NinoFormatError, TaxYearFormatError))
-          )
-        )
-      }
-    }
   }
 
 }

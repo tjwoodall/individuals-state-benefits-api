@@ -20,7 +20,7 @@ import api.hateoas.Link
 import api.hateoas.Method._
 import mocks.MockAppConfig
 import support.UnitSpec
-import v1.AmendBenefit.model.response.{AmendBenefitHateoasData, AmendBenefitResponse}
+import v1.amendBenefit.model.response.{AmendBenefitHateoasData, AmendBenefitResponse}
 
 class AmendBenefitResponseSpec extends UnitSpec with MockAppConfig {
 

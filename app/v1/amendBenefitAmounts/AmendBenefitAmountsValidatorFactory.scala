@@ -27,6 +27,6 @@ import javax.inject.Singleton
 class AmendBenefitAmountsValidatorFactory {
   def validator(nino: String, taxYear: String, benefitId: String, body: JsValue): Validator[AmendBenefitAmountsRequestData] =
     taxYear match {
-      case _ => new Def1_AmendBenefitAmountsValidator (nino: String, taxYear: String, benefitId: String, body: JsValue)
+      case _ => new Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)
     }
 }

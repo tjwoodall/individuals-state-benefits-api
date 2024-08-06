@@ -28,9 +28,9 @@ import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import v1.AmendBenefit.AmendBenefitController
-import v1.AmendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
-import v1.AmendBenefit.model.response.AmendBenefitHateoasData
+import v1.amendBenefit.AmendBenefitController
+import v1.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
+import v1.amendBenefit.model.response.AmendBenefitHateoasData
 import v1.models.domain.BenefitId
 
 import scala.concurrent.ExecutionContext.Implicits.global

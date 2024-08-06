@@ -28,7 +28,7 @@ import api.models.outcomes.ResponseWrapper
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v1.models.domain.BenefitId
-import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
+import v1.unignoreBenefit.def1.model.request.Def1_UnignoreBenefitRequestData
 import v1.unignoreBenefit.model.response.UnignoreBenefitHateoasData
 
 import scala.concurrent.ExecutionContext.Implicits.global

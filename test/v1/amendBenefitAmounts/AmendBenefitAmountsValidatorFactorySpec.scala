@@ -16,17 +16,14 @@
 
 package v1.amendBenefitAmounts
 
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
+import api.controllers.validators.Validator
 import api.models.utils.JsonErrorValidators
-import play.api.libs.json.{JsNumber, JsObject, JsValue, Json}
+import play.api.libs.json.Json
 import support.UnitSpec
-import v1.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
-import v1.models.domain.BenefitId
+import v1.amendBenefitAmounts.def1.Def1_AmendBenefitAmountsValidator
+import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 
 class AmendBenefitAmountsValidatorFactorySpec extends UnitSpec with JsonErrorValidators {
-
-  private implicit val correlationId: String = "1234"
 
   private val validNino      = "AA123456A"
   private val validTaxYear   = "2023-24"
@@ -38,84 +35,25 @@ class AmendBenefitAmountsValidatorFactorySpec extends UnitSpec with JsonErrorVal
       |  "taxPaid": 1095.55
       |}""".stripMargin)
 
-  private val parsedNino      = Nino(validNino)
-  private val parsedTaxYear   = TaxYear.fromMtd(validTaxYear)
-  private val parsedBenefitId = BenefitId(validBenefitId)
-  private val parsedBody      = Def1_AmendBenefitAmountsRequestBody(2050.45, Some(1095.55))
+  private val invalidTaxYear = "2023"
 
   private val validatorFactory = new AmendBenefitAmountsValidatorFactory
 
-  private def validator(nino: String, taxYear: String, benefitId: String, body: JsValue) = validatorFactory.validator(nino, taxYear, benefitId, body)
-
   "validator" should {
-    "return the parsed domain object" when {
-      "passed a valid request" in {
-        val result = validator(validNino, validTaxYear, validBenefitId, validBody).validateAndWrapResult()
-        result shouldBe Right(Def1_AmendBenefitAmountsRequestData(parsedNino, parsedTaxYear, parsedBenefitId, parsedBody))
+    "return the Def1 validator" when {
+      "given a valid request" in {
+        val result: Validator[AmendBenefitAmountsRequestData] = validatorFactory.validator(validNino, validTaxYear, validBenefitId, validBody)
+        result shouldBe a[Def1_AmendBenefitAmountsValidator]
+
+      }
+
+      "given an invalid taxYear" in {
+        val result: Validator[AmendBenefitAmountsRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId, validBody)
+        result shouldBe a[Def1_AmendBenefitAmountsValidator]
+
       }
     }
 
-    "return a single error" when {
-      "passed an invalid nino" in {
-        val result = validator("A12344A", validTaxYear, validBenefitId, validBody).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, NinoFormatError))
-      }
-
-      "passed an invalid tax year" in {
-        val result = validator(validNino, "202223", validBenefitId, validBody).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, TaxYearFormatError))
-      }
-
-      "passed a tax year with an invalid range" in {
-        val result = validator(validNino, "2022-24", validBenefitId, validBody).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearRangeInvalidError))
-      }
-
-      "passed a tax year that precedes the minimum" in {
-        val result = validator(validNino, "2018-19", validBenefitId, validBody).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))
-      }
-
-      "passed an invalid benefitId" in {
-        val result = validator(validNino, validTaxYear, "invalid", validBody).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, BenefitIdFormatError))
-      }
-
-      "passed an empty body" in {
-        val result = validator(validNino, validTaxYear, validBenefitId, JsObject.empty).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, RuleIncorrectOrEmptyBodyError))
-      }
-
-      "passed a body missing a mandatory field" in {
-        val result = validator(validNino, validTaxYear, validBenefitId, validBody.removeProperty("/amount")).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, RuleIncorrectOrEmptyBodyError.withPath("/amount")))
-      }
-
-      "passed a body with an incorrect formatted amount field" in {
-        val result = validator(validNino, validTaxYear, validBenefitId, validBody.update("/amount", JsNumber(-1))).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, ValueFormatError.forPathAndRange("/amount", "0", "99999999999.99")))
-      }
-
-      "passed a body with an incorrect formatted taxPaid field" in {
-        val result =
-          validator(validNino, validTaxYear, validBenefitId, validBody.update("/taxPaid", JsNumber(-99999999999.99 - 1))).validateAndWrapResult()
-        result shouldBe Left(ErrorWrapper(correlationId, ValueFormatError.forPathAndRange("/taxPaid", "-99999999999.99", "99999999999.99")))
-      }
-    }
-
-    "return multiple errors" when {
-      "passed multiple invalid fields" in {
-        val result = validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id", validBody).validateAndWrapResult()
-
-        result shouldBe Left(
-          ErrorWrapper(
-            correlationId,
-            BadRequestError,
-            Some(List(BenefitIdFormatError, NinoFormatError, TaxYearFormatError))
-          )
-        )
-      }
-    }
   }
 
 }

@@ -25,11 +25,12 @@ import cats.implicits._
 import v1.controllers.validators.minimumPermittedTaxYear
 import v1.controllers.validators.resolvers.ResolveBenefitId
 import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
+import v1.ignoreBenefit.model.request.IgnoreBenefitRequestData
 
 import javax.inject.Singleton
 
 @Singleton
-class Def1_IgnoreBenefitValidator(nino: String, taxYear: String, benefitId: String) extends Validator[Def1_IgnoreBenefitRequestData] {
+class Def1_IgnoreBenefitValidator(nino: String, taxYear: String, benefitId: String) extends Validator[IgnoreBenefitRequestData] {
 
   private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
 

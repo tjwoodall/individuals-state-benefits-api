@@ -20,8 +20,7 @@ import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.AmendBenefit.AmendBenefitConnector
-import v1.AmendBenefit.model.request.AmendBenefitRequestData
+import v1.amendBenefit.model.request.AmendBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 

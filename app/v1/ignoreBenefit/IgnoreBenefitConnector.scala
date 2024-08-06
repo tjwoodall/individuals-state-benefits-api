@@ -23,7 +23,6 @@ import api.models.request.EmptyBody
 import config.AppConfig
 import play.api.http.Status.CREATED
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.ignoreBenefit.model.request.IgnoreBenefitRequestData
 
 import javax.inject.{Inject, Singleton}
@@ -37,14 +36,10 @@ class IgnoreBenefitConnector @Inject() (val http: HttpClient, val appConfig: App
 
     implicit val successCode: SuccessCode = SuccessCode(CREATED)
 
-    request match {
-      case def1: Def1_IgnoreBenefitRequestData =>
-        import def1._
-        val downstreamUri = TaxYearSpecificIfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
-        put(EmptyBody, downstreamUri)
-      case _ => throw new IllegalArgumentException("Request type is not known")
+    import request._
+    val downstreamUri = TaxYearSpecificIfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
+    put(EmptyBody, downstreamUri)
 
-    }
   }
 
 }

@@ -20,7 +20,7 @@ import api.controllers.RequestContext
 import api.models.errors._
 import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
-import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
+import v1.ignoreBenefit.model.request.IgnoreBenefitRequestData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class IgnoreBenefitService @Inject() (connector: IgnoreBenefitConnector) extends BaseService {
 
-  def ignoreBenefit(request: Def1_IgnoreBenefitRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
+  def ignoreBenefit(request: IgnoreBenefitRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
 
     connector.ignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }

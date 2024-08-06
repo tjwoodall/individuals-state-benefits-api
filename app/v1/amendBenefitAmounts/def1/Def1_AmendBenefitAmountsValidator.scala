@@ -32,7 +32,8 @@ import javax.inject.Singleton
 import scala.annotation.nowarn
 
 @Singleton
-class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue) extends Validator[AmendBenefitAmountsRequestData] {
+class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)
+    extends Validator[AmendBenefitAmountsRequestData] {
 
   @nowarn("cat=lint-byname-implicit")
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_AmendBenefitAmountsRequestBody]()
@@ -42,20 +43,21 @@ class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId
   private val resolveAmountNumber = ResolveParsedNumber()
   private val resolveTaxPaid      = ResolveParsedNumber(min = -99999999999.99)
 
-      def validate: Validated[Seq[MtdError], Def1_AmendBenefitAmountsRequestData] =
-        (
-          ResolveNino(nino),
-          resolveTaxYear(taxYear),
-          ResolveBenefitId(benefitId),
-          resolveJson(body)
-        ).mapN(Def1_AmendBenefitAmountsRequestData) andThen validateBusinessRules
+  def validate: Validated[Seq[MtdError], Def1_AmendBenefitAmountsRequestData] =
+    (
+      ResolveNino(nino),
+      resolveTaxYear(taxYear),
+      ResolveBenefitId(benefitId),
+      resolveJson(body)
+    ).mapN(Def1_AmendBenefitAmountsRequestData) andThen validateBusinessRules
 
-      private def validateBusinessRules(parsed: Def1_AmendBenefitAmountsRequestData): Validated[Seq[MtdError], Def1_AmendBenefitAmountsRequestData] = {
-        import parsed.body._
+  private def validateBusinessRules(parsed: Def1_AmendBenefitAmountsRequestData): Validated[Seq[MtdError], Def1_AmendBenefitAmountsRequestData] = {
+    import parsed.body._
 
-        combine(
-          resolveAmountNumber(amount, path = Some("/amount")),
-          taxPaid.map(resolveTaxPaid(_, path = Some("/taxPaid"))).getOrElse(Valid(()))
-        ).map(_ => parsed)
-      }
+    combine(
+      resolveAmountNumber(amount, path = Some("/amount")),
+      taxPaid.map(resolveTaxPaid(_, path = Some("/taxPaid"))).getOrElse(Valid(()))
+    ).map(_ => parsed)
+  }
+
 }

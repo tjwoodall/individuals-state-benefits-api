@@ -17,15 +17,22 @@
 package v1.unignoreBenefit
 
 import api.controllers.validators.Validator
+import v1.unignoreBenefit.UnignoreBenefitSchema.Def1
 import v1.unignoreBenefit.def1.Def1_UnignoreBenefitValidator
-import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
+import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 import javax.inject.Singleton
 
 @Singleton
 class UnignoreBenefitValidatorFactory {
-  def validator(nino: String, taxYear: String, benefitId: String): Validator[Def1_UnignoreBenefitRequestData] =
-    taxYear match {
-      case _ => new Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String)
+
+  def validator(nino: String, taxYear: String, benefitId: String): Validator[UnignoreBenefitRequestData] = {
+
+    val schema = UnignoreBenefitSchema.schemaFor(Some(taxYear))
+
+    schema match {
+      case Def1 => new Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String)
     }
+  }
+
 }

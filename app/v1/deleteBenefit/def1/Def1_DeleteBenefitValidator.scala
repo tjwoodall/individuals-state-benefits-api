@@ -24,11 +24,12 @@ import cats.implicits.catsSyntaxTuple3Semigroupal
 import v1.controllers.validators.minimumPermittedTaxYear
 import v1.controllers.validators.resolvers.ResolveBenefitId
 import v1.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
+import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 
 import javax.inject.Singleton
 
 @Singleton
-class Def1_DeleteBenefitValidator(nino: String, taxYear: String, benefitId: String) extends Validator[Def1_DeleteBenefitRequestData]{
+class Def1_DeleteBenefitValidator(nino: String, taxYear: String, benefitId: String) extends Validator[DeleteBenefitRequestData]{
 
   private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
 

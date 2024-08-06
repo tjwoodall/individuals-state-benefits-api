@@ -22,7 +22,7 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.unignoreBenefit.model.request.Def1_UnignoreBenefitRequestData
+import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 trait MockUnignoreBenefitValidatorFactory extends MockFactory {
 
@@ -31,28 +31,28 @@ trait MockUnignoreBenefitValidatorFactory extends MockFactory {
 
   object MockedIgnoreBenefitValidatorFactory {
 
-    def validator(): CallHandler[Validator[Def1_UnignoreBenefitRequestData]] =
+    def validator(): CallHandler[Validator[UnignoreBenefitRequestData]] =
       (mockUnignoreBenefitValidatorFactory.validator(_: String, _: String, _: String)).expects(*, *, *)
 
   }
 
-  def willUseValidator(use: Validator[Def1_UnignoreBenefitRequestData]): CallHandler[Validator[Def1_UnignoreBenefitRequestData]] = {
+  def willUseValidator(use: Validator[UnignoreBenefitRequestData]): CallHandler[Validator[UnignoreBenefitRequestData]] = {
     MockedIgnoreBenefitValidatorFactory
       .validator()
       .anyNumberOfTimes()
       .returns(use)
   }
 
-  def returningSuccess(result: Def1_UnignoreBenefitRequestData): Validator[Def1_UnignoreBenefitRequestData] =
-    new Validator[Def1_UnignoreBenefitRequestData] {
-      def validate: Validated[Seq[MtdError], Def1_UnignoreBenefitRequestData] = Valid(result)
+  def returningSuccess(result: UnignoreBenefitRequestData): Validator[UnignoreBenefitRequestData] =
+    new Validator[UnignoreBenefitRequestData] {
+      def validate: Validated[Seq[MtdError], UnignoreBenefitRequestData] = Valid(result)
     }
 
-  def returning(result: MtdError*): Validator[Def1_UnignoreBenefitRequestData] = returningErrors(result)
+  def returning(result: MtdError*): Validator[UnignoreBenefitRequestData] = returningErrors(result)
 
-  def returningErrors(result: Seq[MtdError]): Validator[Def1_UnignoreBenefitRequestData] =
-    new Validator[Def1_UnignoreBenefitRequestData] {
-      def validate: Validated[Seq[MtdError], Def1_UnignoreBenefitRequestData] = Invalid(result)
+  def returningErrors(result: Seq[MtdError]): Validator[UnignoreBenefitRequestData] =
+    new Validator[UnignoreBenefitRequestData] {
+      def validate: Validated[Seq[MtdError], UnignoreBenefitRequestData] = Invalid(result)
     }
 
 }

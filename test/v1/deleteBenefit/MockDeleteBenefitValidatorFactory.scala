@@ -22,7 +22,7 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
+import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 
 trait MockDeleteBenefitValidatorFactory extends MockFactory {
 
@@ -31,28 +31,28 @@ trait MockDeleteBenefitValidatorFactory extends MockFactory {
 
   object MockedDeleteBenefitValidatorFactory {
 
-    def validator(): CallHandler[Validator[Def1_DeleteBenefitRequestData]] =
+    def validator(): CallHandler[Validator[DeleteBenefitRequestData]] =
       (mockDeleteBenefitValidatorFactory.validator(_: String, _: String, _: String)).expects(*, *, *)
 
   }
 
-  def willUseValidator(use: Validator[Def1_DeleteBenefitRequestData]): CallHandler[Validator[Def1_DeleteBenefitRequestData]] = {
+  def willUseValidator(use: Validator[DeleteBenefitRequestData]): CallHandler[Validator[DeleteBenefitRequestData]] = {
     MockedDeleteBenefitValidatorFactory
       .validator()
       .anyNumberOfTimes()
       .returns(use)
   }
 
-  def returningSuccess(result: Def1_DeleteBenefitRequestData): Validator[Def1_DeleteBenefitRequestData] =
-    new Validator[Def1_DeleteBenefitRequestData] {
-      def validate: Validated[Seq[MtdError], Def1_DeleteBenefitRequestData] = Valid(result)
+  def returningSuccess(result: DeleteBenefitRequestData): Validator[DeleteBenefitRequestData] =
+    new Validator[DeleteBenefitRequestData] {
+      def validate: Validated[Seq[MtdError], DeleteBenefitRequestData] = Valid(result)
     }
 
-  def returning(result: MtdError*): Validator[Def1_DeleteBenefitRequestData] = returningErrors(result)
+  def returning(result: MtdError*): Validator[DeleteBenefitRequestData] = returningErrors(result)
 
-  def returningErrors(result: Seq[MtdError]): Validator[Def1_DeleteBenefitRequestData] =
-    new Validator[Def1_DeleteBenefitRequestData] {
-      def validate: Validated[Seq[MtdError], Def1_DeleteBenefitRequestData] = Invalid(result)
+  def returningErrors(result: Seq[MtdError]): Validator[DeleteBenefitRequestData] =
+    new Validator[DeleteBenefitRequestData] {
+      def validate: Validated[Seq[MtdError], DeleteBenefitRequestData] = Invalid(result)
     }
 
 }

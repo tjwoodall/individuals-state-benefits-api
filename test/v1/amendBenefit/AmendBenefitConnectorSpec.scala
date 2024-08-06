@@ -22,8 +22,8 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
 import uk.gov.hmrc.http.HeaderCarrier
-import v1.AmendBenefit.AmendBenefitConnector
-import v1.AmendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
+import v1.amendBenefit.AmendBenefitConnector
+import v1.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v1.models.domain.BenefitId
 
 import scala.concurrent.Future

@@ -21,7 +21,6 @@ import api.connectors.httpparsers.StandardDownstreamHttpParser._
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import config.AppConfig
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.amendBenefitAmounts.def1.model.request.Def1_AmendBenefitAmountsRequestData
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 
 import javax.inject.{Inject, Singleton}
@@ -31,9 +30,9 @@ import scala.concurrent.{ExecutionContext, Future}
 class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def amendBenefitAmounts(request: AmendBenefitAmountsRequestData)(implicit
-                                                                   hc: HeaderCarrier,
-                                                                   ec: ExecutionContext,
-                                                                   correlationId: String): Future[DownstreamOutcome[Unit]] = {
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import request._
 
@@ -44,13 +43,7 @@ class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfi
         Api1651Uri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
       }
 
-    request match {
-      case def1: Def1_AmendBenefitAmountsRequestData =>
-        import def1._
-        put(body, downstreamUri)
-      case _ => throw new IllegalArgumentException("Request type is not known")
-
-    }
+    put(body, downstreamUri)
 
   }
 

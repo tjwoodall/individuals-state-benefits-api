@@ -20,4 +20,5 @@ import api.models.domain.{Nino, TaxYear}
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 
-case class Def1_AmendBenefitAmountsRequestData(nino: Nino, taxYear: TaxYear, benefitId: BenefitId, body: Def1_AmendBenefitAmountsRequestBody) extends AmendBenefitAmountsRequestData
+case class Def1_AmendBenefitAmountsRequestData(nino: Nino, taxYear: TaxYear, benefitId: BenefitId, body: Def1_AmendBenefitAmountsRequestBody)
+    extends AmendBenefitAmountsRequestData

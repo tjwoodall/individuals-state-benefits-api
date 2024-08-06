@@ -21,8 +21,7 @@ import api.models.errors.ErrorWrapper
 import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.AmendBenefit.AmendBenefitService
-import v1.AmendBenefit.model.request.AmendBenefitRequestData
+import v1.amendBenefit.model.request.AmendBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 

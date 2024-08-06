@@ -22,7 +22,7 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
+import v1.ignoreBenefit.model.request.IgnoreBenefitRequestData
 
 trait MockIgnoreBenefitValidatorFactory extends MockFactory {
 
@@ -31,28 +31,28 @@ trait MockIgnoreBenefitValidatorFactory extends MockFactory {
 
   object MockedIgnoreBenefitValidatorFactory {
 
-    def validator(): CallHandler[Validator[Def1_IgnoreBenefitRequestData]] =
+    def validator(): CallHandler[Validator[IgnoreBenefitRequestData]] =
       (mockIgnoreBenefitValidatorFactory.validator(_: String, _: String, _: String)).expects(*, *, *)
 
   }
 
-  def willUseValidator(use: Validator[Def1_IgnoreBenefitRequestData]): CallHandler[Validator[Def1_IgnoreBenefitRequestData]] = {
+  def willUseValidator(use: Validator[IgnoreBenefitRequestData]): CallHandler[Validator[IgnoreBenefitRequestData]] = {
     MockedIgnoreBenefitValidatorFactory
       .validator()
       .anyNumberOfTimes()
       .returns(use)
   }
 
-  def returningSuccess(result: Def1_IgnoreBenefitRequestData): Validator[Def1_IgnoreBenefitRequestData] =
-    new Validator[Def1_IgnoreBenefitRequestData] {
-      def validate: Validated[Seq[MtdError], Def1_IgnoreBenefitRequestData] = Valid(result)
+  def returningSuccess(result: IgnoreBenefitRequestData): Validator[IgnoreBenefitRequestData] =
+    new Validator[IgnoreBenefitRequestData] {
+      def validate: Validated[Seq[MtdError], IgnoreBenefitRequestData] = Valid(result)
     }
 
-  def returning(result: MtdError*): Validator[Def1_IgnoreBenefitRequestData] = returningErrors(result)
+  def returning(result: MtdError*): Validator[IgnoreBenefitRequestData] = returningErrors(result)
 
-  def returningErrors(result: Seq[MtdError]): Validator[Def1_IgnoreBenefitRequestData] =
-    new Validator[Def1_IgnoreBenefitRequestData] {
-      def validate: Validated[Seq[MtdError], Def1_IgnoreBenefitRequestData] = Invalid(result)
+  def returningErrors(result: Seq[MtdError]): Validator[IgnoreBenefitRequestData] =
+    new Validator[IgnoreBenefitRequestData] {
+      def validate: Validated[Seq[MtdError], IgnoreBenefitRequestData] = Invalid(result)
     }
 
 }

@@ -18,13 +18,10 @@ package v1.deleteBenefitAmounts
 
 import api.connectors.DownstreamUri.{DesUri, IfsUri, TaxYearSpecificIfsUri}
 import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
-import api.models.domain.{Nino, TaxYear}
 import config.AppConfig
 import play.api.http.Status.NO_CONTENT
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
-import v1.deleteBenefitAmounts.def1.model.request.Def1_DeleteBenefitAmountsRequestData
 import v1.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
-import v1.models.domain.BenefitId
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -32,14 +29,16 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class DeleteBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
-  private def completeRequest(nino: Nino, taxYear: TaxYear, benefitId: BenefitId)(implicit
-                                                                     hc: HeaderCarrier,
-                                                                     ec: ExecutionContext,
-                                                                     correlationId: String): Future[DownstreamOutcome[Unit]] = {
+  def deleteBenefitAmounts(request: DeleteBenefitAmountsRequestData)(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import api.connectors.httpparsers.StandardDownstreamHttpParser._
 
     implicit val successCode: SuccessCode = SuccessCode(NO_CONTENT)
+
+    import request._
 
     val downstreamUri = {
       if (taxYear.useTaxYearSpecificApi) {
@@ -54,15 +53,4 @@ class DeleteBenefitAmountsConnector @Inject() (val http: HttpClient, val appConf
     delete(uri = downstreamUri)
   }
 
-  def deleteBenefitAmounts(request: DeleteBenefitAmountsRequestData)(implicit
-                                                       hc: HeaderCarrier,
-                                                       ec: ExecutionContext,
-                                                       correlationId: String): Future[DownstreamOutcome[Unit]] =
-    request match {
-      case def1: Def1_DeleteBenefitAmountsRequestData =>
-        import def1._
-        completeRequest(nino, taxYear,benefitId)
-      case _ =>
-        Future.failed(new IllegalArgumentException("Request type is not known"))
-    }
 }

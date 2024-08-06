@@ -16,6 +16,11 @@
 
 package v1.deleteBenefit.model.request
 
-trait DeleteBenefitRequestData {
+import api.models.domain.{Nino, TaxYear}
+import v1.models.domain.BenefitId
 
+trait DeleteBenefitRequestData{
+  def nino: Nino
+  def taxYear: TaxYear
+  def benefitId: BenefitId
 }

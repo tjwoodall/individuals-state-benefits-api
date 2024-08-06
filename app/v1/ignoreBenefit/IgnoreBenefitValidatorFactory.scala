@@ -18,13 +18,13 @@ package v1.ignoreBenefit
 
 import api.controllers.validators.Validator
 import v1.ignoreBenefit.def1.Def1_IgnoreBenefitValidator
-import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
+import v1.ignoreBenefit.model.request.IgnoreBenefitRequestData
 
 import javax.inject.Singleton
 
 @Singleton
 class IgnoreBenefitValidatorFactory {
-  def validator(nino: String, taxYear: String, benefitId: String): Validator[Def1_IgnoreBenefitRequestData] =
+  def validator(nino: String, taxYear: String, benefitId: String): Validator[IgnoreBenefitRequestData] =
     taxYear match {
       case _ => new Def1_IgnoreBenefitValidator(nino: String, taxYear: String, benefitId: String)
     }

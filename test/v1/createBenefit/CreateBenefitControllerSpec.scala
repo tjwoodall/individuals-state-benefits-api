@@ -29,7 +29,6 @@ import mocks.MockAppConfig
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
-import v1.createBenefit.model.request.CreateBenefitRequestData
 import v1.createBenefit.model.response.{CreateBenefitHateoasData, CreateBenefitResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -65,7 +64,7 @@ class CreateBenefitControllerSpec
     benefitType = BenefitType.incapacityBenefit.toString
   )
 
-  val requestData: CreateBenefitRequestData = Def1_CreateBenefitRequestData(
+  val requestData: Def1_CreateBenefitRequestData = Def1_CreateBenefitRequestData(
     nino = Nino(nino),
     taxYear = TaxYear.fromMtd(taxYear),
     body = createStateBenefitRequestBody

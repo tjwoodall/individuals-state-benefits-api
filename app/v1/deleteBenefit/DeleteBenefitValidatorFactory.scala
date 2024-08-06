@@ -18,14 +18,14 @@ package v1.deleteBenefit
 
 import api.controllers.validators.Validator
 import v1.deleteBenefit.def1.Def1_DeleteBenefitValidator
-import v1.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
+import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 
 import javax.inject.Singleton
 
 @Singleton
 class DeleteBenefitValidatorFactory {
 
-  def validator(nino: String, taxYear: String, benefitId: String): Validator[Def1_DeleteBenefitRequestData] =
+  def validator(nino: String, taxYear: String, benefitId: String): Validator[DeleteBenefitRequestData] =
     taxYear match {
       case _ => new Def1_DeleteBenefitValidator (nino: String, taxYear: String, benefitId: String)
     }

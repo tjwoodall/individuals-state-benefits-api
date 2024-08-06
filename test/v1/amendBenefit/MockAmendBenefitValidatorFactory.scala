@@ -23,8 +23,7 @@ import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import play.api.libs.json.JsValue
-import v1.AmendBenefit.AmendBenefitValidatorFactory
-import v1.AmendBenefit.model.request.AmendBenefitRequestData
+import v1.amendBenefit.model.request.AmendBenefitRequestData
 
 trait MockAmendBenefitValidatorFactory extends MockFactory {
 
