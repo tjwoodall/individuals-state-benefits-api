@@ -18,6 +18,7 @@ package v1.deleteBenefitAmounts
 
 import api.controllers._
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
@@ -32,8 +33,10 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
                                                 service: DeleteBenefitAmountsService,
                                                 auditService: AuditService,
                                                 cc: ControllerComponents,
-                                                idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+                                                idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
+
+  val endpointName = "delete-benefit-amounts"
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(

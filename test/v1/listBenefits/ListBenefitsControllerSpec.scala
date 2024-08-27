@@ -23,6 +23,7 @@ import api.mocks.services.MockAuditService
 import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
+import play.api.Configuration
 import play.api.libs.json.JsObject
 import play.api.mvc.Result
 import v1.fixtures.ListBenefitsFixture._
@@ -168,7 +169,7 @@ class ListBenefitsControllerSpec
 
   private trait Test extends ControllerTest {
 
-    private val controller = new ListBenefitsController(
+    val controller = new ListBenefitsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockListBenefitsValidatorFactory,
@@ -178,6 +179,11 @@ class ListBenefitsControllerSpec
       idGenerator = mockIdGenerator
     )
 
+    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+      "supporting-agents-access-control.enabled" -> true
+    )
+
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
     protected def callController(): Future[Result] = controller.listBenefits(nino, taxYear, Some(benefitId))(fakeGetRequest)
 
   }

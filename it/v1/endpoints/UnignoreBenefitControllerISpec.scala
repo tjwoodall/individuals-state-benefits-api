@@ -23,7 +23,7 @@ import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
-import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import api.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
 
@@ -141,6 +141,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
     def setupStubs(): Unit = {}
 
     def request(): WSRequest = {
+      AuthStub.resetAll()
       AuditStub.audit()
       AuthStub.authorised()
       MtdIdLookupStub.ninoFound(nino)

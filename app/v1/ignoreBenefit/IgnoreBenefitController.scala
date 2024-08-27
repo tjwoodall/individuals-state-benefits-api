@@ -19,6 +19,7 @@ package v1.ignoreBenefit
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import routing.{Version, Version1}
 import utils.IdGenerator
@@ -36,8 +37,10 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          auditService: AuditService,
                                          hateoasFactory: HateoasFactory,
                                          cc: ControllerComponents,
-                                         idGenerator: IdGenerator)(implicit ec: ExecutionContext)
+                                         idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
+
+  val endpointName = "ignore-benefit"
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(

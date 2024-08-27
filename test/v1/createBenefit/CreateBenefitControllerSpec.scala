@@ -26,6 +26,7 @@ import api.models.domain.{BenefitType, Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
+import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
@@ -73,7 +74,7 @@ class CreateBenefitControllerSpec
   val responseData: CreateBenefitResponse = CreateBenefitResponse(benefitId)
 
   private val testHateoasLinks = List(
-    Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",GET, rel = "self"),
+    Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, rel = "self"),
     api.hateoas.Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", PUT, rel = "amend-state-benefit"),
     api.hateoas.Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", DELETE, rel = "delete-state-benefit")
   )
@@ -146,7 +147,7 @@ class CreateBenefitControllerSpec
 
   private trait Test extends ControllerTest with AuditEventChecking {
 
-    private val controller = new CreateBenefitController(
+    val controller = new CreateBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockCreateBenefitValidatorFactory,
@@ -156,6 +157,12 @@ class CreateBenefitControllerSpec
       cc = cc,
       idGenerator = mockIdGenerator
     )
+
+    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+      "supporting-agents-access-control.enabled" -> true
+    )
+
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     protected def callController(): Future[Result] = controller.createStateBenefit(nino, taxYear)(fakePostRequest(requestBodyJson))
 

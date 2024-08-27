@@ -16,13 +16,15 @@
 
 package support
 
-import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.{MappingBuilder, WireMock}
 import com.github.tomakehurst.wiremock.matching.UrlPattern
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.Writes
 
 trait WireMockMethods {
+
+  def resetAll(): Unit = WireMock.reset()
 
   def when(method: HTTPMethod, uri: String, queryParams: Map[String, String] = Map.empty, headers: Map[String, String] = Map.empty): Mapping = {
     new Mapping(method, uri, queryParams, headers, None)
@@ -50,6 +52,11 @@ trait WireMockMethods {
     def thenReturn[T](status: Int, body: T)(implicit writes: Writes[T]): StubMapping = {
       val stringBody = writes.writes(body).toString()
       thenReturnInternal(status, Map.empty, Some(stringBody))
+    }
+
+    def withRequestBody[T](body: T)(implicit writes: Writes[T]): Mapping = {
+      val stringBody = writes.writes(body).toString()
+      new Mapping(method, uri, queryParams, headers, Some(stringBody))
     }
 
     def thenReturn(status: Int, body: String): StubMapping = {

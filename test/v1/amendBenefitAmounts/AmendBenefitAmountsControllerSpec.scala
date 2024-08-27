@@ -26,6 +26,7 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
+import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import v1.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
@@ -58,7 +59,8 @@ class AmendBenefitAmountsControllerSpec
 
   private val amendBenefitAmountsRequestBody = Def1_AmendBenefitAmountsRequestBody(2050.45, Some(1095.55))
 
-  private val requestData = Def1_AmendBenefitAmountsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitAmountsRequestBody)
+  private val requestData =
+    Def1_AmendBenefitAmountsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitAmountsRequestBody)
 
   private val testHateoasLinks = List(
     Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, "self"),
@@ -133,7 +135,7 @@ class AmendBenefitAmountsControllerSpec
 
   private trait Test extends ControllerTest with AuditEventChecking {
 
-    private val controller = new AmendBenefitAmountsController(
+    val controller = new AmendBenefitAmountsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockAmendBenefitAmountsValidatorFactory,
@@ -143,6 +145,12 @@ class AmendBenefitAmountsControllerSpec
       cc = cc,
       idGenerator = mockIdGenerator
     )
+
+    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+      "supporting-agents-access-control.enabled" -> true
+    )
+
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     protected def callController(): Future[Result] = controller.amendBenefitAmounts(nino, taxYear, benefitId)(fakePutRequest(requestBodyJson))
 

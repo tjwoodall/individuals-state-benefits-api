@@ -26,9 +26,9 @@ import api.models.domain.{Nino, TaxYear}
 import api.models.errors._
 import api.models.outcomes.ResponseWrapper
 import mocks.MockAppConfig
+import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import v1.amendBenefit.AmendBenefitController
 import v1.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v1.amendBenefit.model.response.AmendBenefitHateoasData
 import v1.models.domain.BenefitId
@@ -138,9 +138,9 @@ class AmendBenefitControllerSpec
     }
   }
 
-  private trait Test extends ControllerTest with AuditEventChecking {
+  class Test extends ControllerTest with AuditEventChecking with MockAppConfig {
 
-    private val controller = new AmendBenefitController(
+    val controller = new AmendBenefitController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockAmendBenefitValidatorFactory,
@@ -150,6 +150,12 @@ class AmendBenefitControllerSpec
       cc = cc,
       idGenerator = mockIdGenerator
     )
+
+    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+      "supporting-agents-access-control.enabled" -> true
+    )
+
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     protected def callController(): Future[Result] = controller.amendBenefit(nino, taxYear, benefitId)(fakePutRequest(requestBodyJson))
 

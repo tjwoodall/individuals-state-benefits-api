@@ -25,7 +25,7 @@ import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import support.IntegrationBaseSpec
 import v1.fixtures.ListBenefitsFixture._
-import v1.stubs.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import api.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 
 class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
@@ -48,6 +48,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
             (k, v)
           }
 
+      AuthStub.resetAll()
       setupStubs()
       buildRequest(mtdUri)
         .addQueryStringParameters(queryParams: _*)

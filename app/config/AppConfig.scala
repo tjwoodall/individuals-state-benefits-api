@@ -26,6 +26,7 @@ import javax.inject.{Inject, Singleton}
 
 trait AppConfig {
 
+  // MTD ID Lookup Config
   def mtdIdBaseUrl: String
 
   // DES Config
@@ -70,13 +71,16 @@ trait AppConfig {
   def isApiDeprecated(version: Version): Boolean = apiStatus(version) == "DEPRECATED"
   def featureSwitches: Configuration
   def endpointsEnabled(version: Version): Boolean
+  def safeEndpointsEnabled(version: String): Boolean
 
   def confidenceLevelConfig: ConfidenceLevelConfig
   def apiDocumentationUrl: String
+
+  def endpointAllowsSupportingAgents(endpointName: String): Boolean
 }
 
 @Singleton
-class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configuration) extends AppConfig {
+class AppConfigImpl @Inject() (config: ServicesConfig, protected[config] val configuration: Configuration) extends AppConfig {
 
   // MTD ID Lookup Config
   val mtdIdBaseUrl: String = config.baseUrl("mtd-id-lookup")
@@ -118,6 +122,18 @@ class AppConfigImpl @Inject() (config: ServicesConfig, configuration: Configurat
   val apiDocumentationUrl: String =
     config.getConfString("api.documentation-url", defString = "https://developer.service.hmrc.gov.uk/api-documentation/docs/api")
 
+  def safeEndpointsEnabled(version: String): Boolean =
+    configuration
+      .getOptional[Boolean](s"api.$version.endpoints.enabled")
+      .getOrElse(false)
+
+  def endpointAllowsSupportingAgents(endpointName: String): Boolean =
+    supportingAgentEndpoints.getOrElse(endpointName, false)
+
+  private val supportingAgentEndpoints: Map[String, Boolean] =
+    configuration
+      .getOptional[Map[String, Boolean]]("api.supporting-agent-endpoints")
+      .getOrElse(Map.empty)
 }
 
 case class ConfidenceLevelConfig(confidenceLevel: ConfidenceLevel, definitionEnabled: Boolean, authValidationEnabled: Boolean)

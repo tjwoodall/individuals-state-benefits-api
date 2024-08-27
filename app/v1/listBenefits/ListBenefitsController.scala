@@ -19,6 +19,7 @@ package v1.listBenefits
 import api.controllers._
 import api.hateoas.HateoasFactory
 import api.services.{EnrolmentsAuthService, MtdIdLookupService}
+import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import utils.IdGenerator
 import v1.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData, ListBenefitsResponse}
@@ -27,14 +28,16 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ListBenefitsController @Inject()(val authService: EnrolmentsAuthService,
-                                       val lookupService: MtdIdLookupService,
-                                       validatorFactory: ListBenefitsValidatorFactory,
-                                       service: ListBenefitsService,
-                                       hateoasFactory: HateoasFactory,
-                                       cc: ControllerComponents,
-                                       val idGenerator: IdGenerator)(implicit ec: ExecutionContext)
-  extends AuthorisedController(cc) {
+class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
+                                        val lookupService: MtdIdLookupService,
+                                        validatorFactory: ListBenefitsValidatorFactory,
+                                        service: ListBenefitsService,
+                                        hateoasFactory: HateoasFactory,
+                                        cc: ControllerComponents,
+                                        val idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+    extends AuthorisedController(cc) {
+
+  val endpointName = "list-benefits"
 
   implicit val endpointLogContext: EndpointLogContext =
     EndpointLogContext(
