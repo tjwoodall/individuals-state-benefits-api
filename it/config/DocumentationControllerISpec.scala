@@ -29,39 +29,24 @@ class DocumentationControllerISpec extends IntegrationBaseSpec {
 
   val config: AppConfig                = app.injector.instanceOf[AppConfig]
   val confidenceLevel: ConfidenceLevel = config.confidenceLevelConfig.confidenceLevel
-
   val apiDefinitionJson: JsValue = Json.parse(
     s"""
     |{
-    |   "scopes":[
-    |      {
-    |         "key":"read:self-assessment",
-    |         "name":"View your Self Assessment information",
-    |         "description":"Allow read access to self assessment data",
-    |         "confidenceLevel": $confidenceLevel
-    |      },
-    |      {
-    |         "key":"write:self-assessment",
-    |         "name":"Change your Self Assessment information",
-    |         "description":"Allow write access to self assessment data",
-    |         "confidenceLevel": $confidenceLevel
-    |      }
-    |   ],
-    |   "api":{
-    |      "name":"Individuals State Benefits (MTD)",
-    |      "description":"An API for providing individual state benefit data",
-    |      "context":"individuals/state-benefits",
-    |      "categories":[
-    |         "INCOME_TAX_MTD"
-    |      ],
-    |      "versions":[
-    |         {
-    |            "version":"1.0",
-    |            "status":"BETA",
-    |            "endpointsEnabled":true
-    |         }
-    |      ]
-    |   }
+    |  "api":{
+    |     "name":"Individuals State Benefits (MTD)",
+    |     "description":"An API for providing individual state benefit data",
+    |     "context":"individuals/state-benefits",
+    |     "categories":[
+    |        "INCOME_TAX_MTD"
+    |     ],
+    |     "versions":[
+    |        {
+    |           "version":"1.0",
+    |           "status":"BETA",
+    |           "endpointsEnabled":true
+    |        }
+    |     ]
+    |  }
     |}
     """.stripMargin
   )
