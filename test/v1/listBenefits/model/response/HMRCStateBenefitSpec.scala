@@ -16,10 +16,10 @@
 
 package v1.listBenefits.model.response
 
-import api.models.domain.Timestamp
-import api.models.utils.JsonErrorValidators
 import play.api.libs.json.{JsObject, JsValue, Json}
-import support.UnitSpec
+import shared.models.domain.Timestamp
+import shared.models.utils.JsonErrorValidators
+import shared.utils.UnitSpec
 
 class HMRCStateBenefitSpec extends UnitSpec with JsonErrorValidators {
 
@@ -45,13 +45,13 @@ class HMRCStateBenefitSpec extends UnitSpec with JsonErrorValidators {
     taxPaid = Some(345.55)
   )
 
-  testJsonProperties[HMRCStateBenefit](json)(
-    mandatoryProperties = Seq(
+  testJsonFields[HMRCStateBenefit](json)(
+    mandatoryFields = Seq(
       "benefitType",
       "benefitId",
       "startDate"
     ),
-    optionalProperties = Seq(
+    optionalFields = Seq(
       "dateIgnored",
       "submittedOn",
       "endDate",

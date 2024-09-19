@@ -16,12 +16,14 @@
 
 package v1.createBenefit
 
-import api.models.domain.{BenefitType, Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
-import api.services.{ServiceOutcome, ServiceSpec}
+import common.errors._
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.{ServiceOutcome, ServiceSpec}
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 import v1.createBenefit.model.response.CreateBenefitResponse
+import v1.models.domain.BenefitType
 
 import scala.concurrent.Future
 

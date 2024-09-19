@@ -16,7 +16,7 @@
 
 package v1.amendBenefitAmounts.def1.model.request
 
-import api.models.domain.{Nino, TaxYear}
+import shared.models.domain.{Nino, TaxYear}
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 

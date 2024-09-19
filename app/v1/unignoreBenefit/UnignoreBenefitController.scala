@@ -16,13 +16,13 @@
 
 package v1.unignoreBenefit
 
-import api.controllers._
-import api.hateoas.HateoasFactory
-import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import routing.{Version, Version1}
-import utils.IdGenerator
+import shared.config.AppConfig
+import shared.controllers._
+import shared.hateoas.HateoasFactory
+import shared.routing.Version
+import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import shared.utils.IdGenerator
 import v1.unignoreBenefit.model.response.UnignoreBenefitHateoasData
 import v1.unignoreBenefit.model.response.UnignoreBenefitResponse.UnignoreBenefitLinksFactory
 
@@ -61,7 +61,7 @@ class UnignoreBenefitController @Inject() (val authService: EnrolmentsAuthServic
           auditService = auditService,
           auditType = "UnignoreStateBenefit",
           transactionName = "unignore-state-benefit",
-          apiVersion = Version.from(request, orElse = Version1),
+          apiVersion = Version(request),
           params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = None,
           includeResponse = true

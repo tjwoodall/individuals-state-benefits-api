@@ -16,10 +16,10 @@
 
 package v1.amendBenefitAmounts
 
-import api.controllers.validators.Validator
-import api.models.utils.JsonErrorValidators
 import play.api.libs.json.Json
-import support.UnitSpec
+import shared.controllers.validators.Validator
+import shared.models.utils.JsonErrorValidators
+import shared.utils.UnitSpec
 import v1.amendBenefitAmounts.def1.Def1_AmendBenefitAmountsValidator
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 

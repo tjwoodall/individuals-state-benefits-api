@@ -16,15 +16,16 @@
 
 package v1.endpoints
 
-import api.models.errors._
-import api.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import shared.models.errors._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import common.errors.{BenefitIdFormatError, RuleUpdateForbiddenError}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import support.IntegrationBaseSpec
+import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import shared.support.IntegrationBaseSpec
 
 class AmendBenefitControllerISpec extends IntegrationBaseSpec {
 
@@ -127,11 +128,11 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
             |	"errors": [
             |     {
             |		"code": "FORMAT_END_DATE",
-            |		"message": "The provided end date is invalid"
+            |		"message": "The provided End date is invalid"
             |	  },
             |     {
             |		"code": "FORMAT_START_DATE",
-            |		"message": "The provided start date is invalid"
+            |		"message": "The provided Start date is invalid"
             |	  }
             |   ]
             |}

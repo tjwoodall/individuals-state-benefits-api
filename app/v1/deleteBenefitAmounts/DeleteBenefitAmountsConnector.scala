@@ -16,10 +16,11 @@
 
 package v1.deleteBenefitAmounts
 
-import api.connectors.DownstreamUri.{DesUri, IfsUri, TaxYearSpecificIfsUri}
-import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
-import config.AppConfig
+import config.StateBenefitsFeatureSwitches
 import play.api.http.Status.NO_CONTENT
+import shared.config.AppConfig
+import shared.connectors.DownstreamUri.{DesUri, IfsUri, TaxYearSpecificIfsUri}
+import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
 
@@ -34,7 +35,7 @@ class DeleteBenefitAmountsConnector @Inject() (val http: HttpClient, val appConf
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import api.connectors.httpparsers.StandardDownstreamHttpParser._
+    import shared.connectors.httpparsers.StandardDownstreamHttpParser._
 
     implicit val successCode: SuccessCode = SuccessCode(NO_CONTENT)
 
@@ -42,11 +43,11 @@ class DeleteBenefitAmountsConnector @Inject() (val http: HttpClient, val appConf
 
     val downstreamUri = {
       if (taxYear.useTaxYearSpecificApi) {
-        TaxYearSpecificIfsUri[Unit](s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/${nino}/${benefitId}")
-      } else if (featureSwitches.isDesIf_MigrationEnabled) {
-        IfsUri[Unit](s"income-tax/income/state-benefits/${nino}/${taxYear.asMtd}/${benefitId}")
+        TaxYearSpecificIfsUri[Unit](s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/$nino/$benefitId")
+      } else if (StateBenefitsFeatureSwitches().isDesIf_MigrationEnabled) {
+        IfsUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
       } else {
-        DesUri[Unit](s"income-tax/income/state-benefits/${nino}/${taxYear.asMtd}/${benefitId}")
+        DesUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
       }
     }
 

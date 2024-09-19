@@ -16,17 +16,17 @@
 
 package v1.listBenefits
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.hateoas.HateoasLinks
-import api.mocks.hateoas.MockHateoasFactory
-import api.mocks.services.MockAuditService
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
 import play.api.Configuration
 import play.api.libs.json.JsObject
 import play.api.mvc.Result
+import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.MockAuditService
+import v1.HateoasLinks
 import v1.fixtures.ListBenefitsFixture._
+import v1.hateoas.MockHateoasFactory2
 import v1.listBenefits.model.request.ListBenefitsRequestData
 import v1.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData}
 import v1.models.domain.BenefitId
@@ -39,7 +39,7 @@ class ListBenefitsControllerSpec
     with ControllerTestRunner
     with MockListBenefitsService
     with MockListBenefitsValidatorFactory
-    with MockHateoasFactory
+    with MockHateoasFactory2
     with MockAuditService
     with HateoasLinks {
 
@@ -54,7 +54,7 @@ class ListBenefitsControllerSpec
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData))))
 
-        MockHateoasFactory
+        MockHateoasFactory2
           .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId)))
           .returns(hateoasResponse)
 
@@ -73,7 +73,7 @@ class ListBenefitsControllerSpec
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseDataWithNoAmounts))))
 
-        MockHateoasFactory
+        MockHateoasFactory2
           .wrapList(responseDataWithNoAmounts, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId)))
           .returns(hateoasResponseWithOutAmounts)
 
@@ -92,7 +92,7 @@ class ListBenefitsControllerSpec
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(customerAddedStateBenefits = None)))))
 
-        MockHateoasFactory
+        MockHateoasFactory2
           .wrapList(
             responseData.copy(customerAddedStateBenefits = Option.empty[Seq[CustomerStateBenefit]]),
             ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId))
@@ -114,7 +114,7 @@ class ListBenefitsControllerSpec
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
-        MockHateoasFactory
+        MockHateoasFactory2
           .wrapList(
             responseData.copy(stateBenefits = Option.empty[Seq[HMRCStateBenefit]]),
             ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Nil))
@@ -135,7 +135,7 @@ class ListBenefitsControllerSpec
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
-        MockHateoasFactory
+        MockHateoasFactory2
           .wrapList(
             responseData.copy(stateBenefits = Option.empty[Seq[HMRCStateBenefit]]),
             ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Nil))
@@ -179,7 +179,7 @@ class ListBenefitsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 

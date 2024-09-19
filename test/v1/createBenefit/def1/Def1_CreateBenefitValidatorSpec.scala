@@ -16,11 +16,12 @@
 
 package v1.createBenefit.def1
 
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.utils.JsonErrorValidators
+import common.errors.BenefitTypeFormatError
 import play.api.libs.json._
-import support.UnitSpec
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import shared.models.utils.JsonErrorValidators
+import shared.utils.UnitSpec
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 
 class Def1_CreateBenefitValidatorSpec extends UnitSpec with JsonErrorValidators {
@@ -127,7 +128,7 @@ class Def1_CreateBenefitValidatorSpec extends UnitSpec with JsonErrorValidators 
       }
 
       "passed a start date that is before 1900" in {
-        val body = requestBody.update("/startDate", JsString("1809-02-01"))
+        val body = requestBody.update("/startDate", JsString("1899-02-01"))
 
         val result = validator(validNino, validTaxYear, body).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, StartDateFormatError))
@@ -135,7 +136,7 @@ class Def1_CreateBenefitValidatorSpec extends UnitSpec with JsonErrorValidators 
 
       "passed a start date that is after 2100 and no end date is provided" in {
         val body = requestBody
-          .update("/startDate", JsString("2100-01-01"))
+          .update("/startDate", JsString("2101-01-01"))
           .removeProperty("/endDate")
 
         val result = validator(validNino, validTaxYear, body).validateAndWrapResult()
@@ -143,7 +144,7 @@ class Def1_CreateBenefitValidatorSpec extends UnitSpec with JsonErrorValidators 
       }
 
       "passed an end date that is after 2100" in {
-        val body = requestBody.update("/endDate", JsString("2100-01-01"))
+        val body = requestBody.update("/endDate", JsString("2101-01-01"))
 
         val result = validator(validNino, validTaxYear, body).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, EndDateFormatError))

@@ -16,12 +16,12 @@
 
 package v1.deleteBenefitAmounts
 
-import api.controllers._
-import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import routing.{Version, Version1}
-import utils.IdGenerator
+import shared.config.AppConfig
+import shared.controllers._
+import shared.routing.Version
+import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import shared.utils.IdGenerator
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -57,7 +57,7 @@ class DeleteBenefitAmountsController @Inject() (val authService: EnrolmentsAuthS
           auditService = auditService,
           auditType = "DeleteStateBenefitAmounts",
           transactionName = "delete-state-benefit-amounts",
-          apiVersion = Version.from(request, orElse = Version1),
+          apiVersion = Version(request),
           params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = None
         ))

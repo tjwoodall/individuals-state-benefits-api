@@ -16,11 +16,12 @@
 
 package v1.listBenefits.model.response
 
-import api.hateoas.{HateoasLinks, HateoasListLinksFactory2}
-import api.models.domain.Timestamp
-import mocks.MockAppConfig
 import org.scalatest.prop.TableDrivenPropertyChecks
-import support.UnitSpec
+import shared.config.MockAppConfig
+import shared.models.domain.Timestamp
+import shared.utils.UnitSpec
+import v1.HateoasLinks
+import v1.hateoas.HateoasListLinksFactory2
 
 class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with MockAppConfig with TableDrivenPropertyChecks {
 

@@ -16,12 +16,12 @@
 
 package v1.createBenefit.def1
 
-import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{DetailedResolveTaxYear, ResolveNino, ResolveNonEmptyJsonObject}
-import api.models.errors.MtdError
 import cats.data.Validated
 import cats.implicits._
 import play.api.libs.json.JsValue
+import shared.controllers.validators.Validator
+import shared.controllers.validators.resolvers.{ResolveNino, ResolveNonEmptyJsonObject, ResolveTaxYearMinimum}
+import shared.models.errors.MtdError
 import v1.controllers.validators.minimumPermittedTaxYear
 import v1.createBenefit.def1.Def1_CreateBenefitRulesValidator.validateBusinessRules
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
@@ -34,7 +34,7 @@ class Def1_CreateBenefitValidator(nino: String, taxYear: String, body: JsValue) 
 
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_CreateBenefitRequestBody]()
 
-  private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
+  private val resolveTaxYear = ResolveTaxYearMinimum(minimumPermittedTaxYear)
 
       def validate: Validated[Seq[MtdError], Def1_CreateBenefitRequestData] =
         (

@@ -16,9 +16,10 @@
 
 package v1.createBenefit.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
-import config.AppConfig
 import play.api.libs.json.{Json, OFormat}
+import shared.config.AppConfig
+import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import v1.HateoasLinks
 
 case class CreateBenefitResponse(benefitId: String)
 

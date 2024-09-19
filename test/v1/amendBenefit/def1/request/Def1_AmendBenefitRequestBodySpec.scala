@@ -16,9 +16,9 @@
 
 package v1.amendBenefit.def1.request
 
-import api.models.utils.JsonErrorValidators
 import play.api.libs.json._
-import support.UnitSpec
+import shared.models.utils.JsonErrorValidators
+import shared.utils.UnitSpec
 import v1.amendBenefit.def1.model.request.Def1_AmendBenefitRequestBody
 
 class Def1_AmendBenefitRequestBodySpec extends UnitSpec with JsonErrorValidators {
@@ -38,7 +38,7 @@ class Def1_AmendBenefitRequestBodySpec extends UnitSpec with JsonErrorValidators
         inputJson.as[Def1_AmendBenefitRequestBody] shouldBe Def1_AmendBenefitRequestBody("2019-04-06", Some("2020-01-01"))
       }
 
-      testMandatoryProperty[Def1_AmendBenefitRequestBody](inputJson)("/startDate")
+      testMandatoryFields[Def1_AmendBenefitRequestBody](inputJson)("/startDate")
 
       testPropertyType[Def1_AmendBenefitRequestBody](inputJson)(
         path = "/startDate",

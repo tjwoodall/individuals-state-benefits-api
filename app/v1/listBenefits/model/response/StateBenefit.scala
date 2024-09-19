@@ -16,9 +16,8 @@
 
 package v1.listBenefits.model.response
 
-import api.models.domain.Timestamp
 import play.api.libs.json.{Json, OFormat}
-import utils.JsonUtils
+import shared.models.domain.Timestamp
 
 sealed trait StateBenefit {
   def benefitId: String
@@ -34,7 +33,7 @@ case class HMRCStateBenefit(benefitType: String,
                             taxPaid: Option[BigDecimal])
     extends StateBenefit
 
-object HMRCStateBenefit extends JsonUtils {
+object HMRCStateBenefit {
   implicit val format: OFormat[HMRCStateBenefit] = Json.format[HMRCStateBenefit]
 }
 
@@ -50,6 +49,6 @@ case class CustomerStateBenefit(benefitType: String,
   val hasAmounts: Boolean = amount.isDefined || taxPaid.isDefined
 }
 
-object CustomerStateBenefit extends JsonUtils {
+object CustomerStateBenefit {
   implicit val format: OFormat[CustomerStateBenefit] = Json.format[CustomerStateBenefit]
 }

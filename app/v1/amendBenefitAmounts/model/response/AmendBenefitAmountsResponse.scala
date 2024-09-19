@@ -16,8 +16,9 @@
 
 package v1.amendBenefitAmounts.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
-import config.AppConfig
+import shared.config.AppConfig
+import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import v1.HateoasLinks
 
 object AmendBenefitAmountsResponse extends HateoasLinks {
 

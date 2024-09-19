@@ -16,9 +16,9 @@
 
 package v1.createBenefit.def1.request
 
-import api.models.utils.JsonErrorValidators
 import play.api.libs.json.Json
-import support.UnitSpec
+import shared.models.utils.JsonErrorValidators
+import shared.utils.UnitSpec
 import v1.createBenefit.def1.model.request.Def1_CreateBenefitRequestBody
 
 class Def1_CreateBenefitRequestBodySpec extends UnitSpec with JsonErrorValidators {

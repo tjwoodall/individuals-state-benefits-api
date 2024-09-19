@@ -16,9 +16,9 @@
 
 package v1.deleteBenefit
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
-import api.models.domain.{Nino, TaxYear}
-import api.models.outcomes.ResponseWrapper
+import shared.connectors.{ConnectorSpec, DownstreamOutcome}
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.outcomes.ResponseWrapper
 import v1.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 import v1.models.domain.BenefitId
 
@@ -36,12 +36,8 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
 
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        MockedHttpClient
-          .delete(
-            url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
-            config = dummyIfsHeaderCarrierConfig,
-            requiredHeaders = requiredIfsHeaders,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+        willDelete(
+            url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
           )
           .returns(Future.successful(outcome))
 

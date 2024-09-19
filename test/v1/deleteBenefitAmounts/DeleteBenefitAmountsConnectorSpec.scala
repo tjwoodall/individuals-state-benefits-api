@@ -16,10 +16,10 @@
 
 package v1.deleteBenefitAmounts
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
-import api.models.domain.{Nino, TaxYear}
-import api.models.outcomes.ResponseWrapper
 import play.api.Configuration
+import shared.connectors.{ConnectorSpec, DownstreamOutcome}
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.outcomes.ResponseWrapper
 import v1.deleteBenefitAmounts.def1.model.request.Def1_DeleteBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 
@@ -36,7 +36,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         def taxYear: TaxYear                               = TaxYear.fromMtd("2017-18")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        MockedAppConfig.featureSwitches returns Configuration("desIf_Migration.enabled" -> false)
+        MockedAppConfig.featureSwitchConfig returns Configuration("desIf_Migration.enabled" -> false)
 
         willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
           outcome)
@@ -50,7 +50,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         def taxYear: TaxYear = TaxYear.fromMtd("2017-18")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        MockedAppConfig.featureSwitches returns Configuration("desIf_Migration.enabled" -> true)
+        MockedAppConfig.featureSwitchConfig returns Configuration("desIf_Migration.enabled" -> true)
 
         willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
           outcome)

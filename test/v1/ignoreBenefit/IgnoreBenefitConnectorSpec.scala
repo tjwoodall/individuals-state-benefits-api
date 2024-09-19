@@ -16,10 +16,9 @@
 
 package v1.ignoreBenefit
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
-import api.models.domain.{Nino, TaxYear}
-import api.models.outcomes.ResponseWrapper
-import api.models.request.EmptyBody
+import shared.connectors.{ConnectorSpec, DownstreamOutcome}
+import shared.models.domain.{EmptyJsonBody, Nino, TaxYear}
+import shared.models.outcomes.ResponseWrapper
 import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.models.domain.BenefitId
 
@@ -39,7 +38,7 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
 
         willPut(
           url = s"$baseUrl/income-tax/19-20/income/state-benefits/$nino/ignore/$benefitId",
-          EmptyBody
+          EmptyJsonBody
         ).returns(Future.successful(outcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.ignoreBenefit(request))

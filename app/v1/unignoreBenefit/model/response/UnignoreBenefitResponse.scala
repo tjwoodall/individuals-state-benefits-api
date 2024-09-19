@@ -16,8 +16,9 @@
 
 package v1.unignoreBenefit.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
-import config.AppConfig
+import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import shared.config.AppConfig
+import v1.HateoasLinks
 
 object UnignoreBenefitResponse extends HateoasLinks {
 

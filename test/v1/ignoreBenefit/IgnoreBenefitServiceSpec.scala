@@ -16,10 +16,11 @@
 
 package v1.ignoreBenefit
 
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
-import api.services.{ServiceOutcome, ServiceSpec}
+import common.errors.{BenefitIdFormatError, RuleIgnoreForbiddenError}
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.{ServiceOutcome, ServiceSpec}
 import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.models.domain.BenefitId
 

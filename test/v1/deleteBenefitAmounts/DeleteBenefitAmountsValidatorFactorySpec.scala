@@ -16,8 +16,8 @@
 
 package v1.deleteBenefitAmounts
 
-import api.controllers.validators.Validator
-import support.UnitSpec
+import shared.controllers.validators.Validator
+import shared.utils.UnitSpec
 import v1.deleteBenefitAmounts.def1.Def1_DeleteBenefitAmountsValidator
 import v1.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
 

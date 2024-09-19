@@ -16,10 +16,11 @@
 
 package v1.createBenefit
 
-import api.controllers.RequestContext
-import api.models.errors._
-import api.services.{BaseService, ServiceOutcome}
+import shared.controllers.RequestContext
+import shared.models.errors._
+import shared.services.{BaseService, ServiceOutcome}
 import cats.implicits._
+import common.errors._
 import v1.createBenefit.model.request.CreateBenefitRequestData
 import v1.createBenefit.model.response.CreateBenefitResponse
 

@@ -16,10 +16,10 @@
 
 package v1.ignoreBenefit.model.response
 
-import api.hateoas.Link
-import api.hateoas.Method._
-import mocks.MockAppConfig
-import support.UnitSpec
+import shared.hateoas.Link
+import shared.hateoas.Method._
+import shared.config.MockAppConfig
+import shared.utils.UnitSpec
 
 class IgnoreBenefitResponseSpec extends UnitSpec with MockAppConfig {
 
@@ -32,8 +32,7 @@ class IgnoreBenefitResponseSpec extends UnitSpec with MockAppConfig {
 
         IgnoreBenefitResponse.IgnoreBenefitLinksFactory.links(mockAppConfig, data) shouldBe Seq(
           Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
-          api.hateoas
-            .Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/unignore", method = POST, rel = "unignore-state-benefit")
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/unignore", method = POST, rel = "unignore-state-benefit")
         )
       }
     }

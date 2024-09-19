@@ -16,18 +16,17 @@
 
 package v1.ignoreBenefit
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.hateoas.Method.{GET, POST}
-import api.hateoas.{HateoasWrapper, Link}
-import api.mocks.hateoas.MockHateoasFactory
-import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
+import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import shared.hateoas.Method.{GET, POST}
+import shared.hateoas.{HateoasWrapper, Link, MockHateoasFactory}
+import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import shared.models.domain.TaxYear
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.MockAuditService
 import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.ignoreBenefit.model.response.IgnoreBenefitHateoasData
 import v1.models.domain.BenefitId
@@ -46,7 +45,7 @@ class IgnoreBenefitControllerSpec
   private val taxYear   = "2019-20"
   private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  private val requestData = Def1_IgnoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
+  private val requestData = Def1_IgnoreBenefitRequestData(parsedNino, TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
   "IgnoreBenefitController" should {
     "return a successful response with status 200 (OK)" when {
@@ -58,7 +57,7 @@ class IgnoreBenefitControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         MockHateoasFactory
-          .wrap((), IgnoreBenefitHateoasData(nino, taxYear, benefitId))
+          .wrap((), IgnoreBenefitHateoasData(validNino, taxYear, benefitId))
           .returns(HateoasWrapper((), testHateoasLinks))
 
         runOkTestWithAudit(
@@ -90,7 +89,7 @@ class IgnoreBenefitControllerSpec
     }
   }
 
-  trait Test extends ControllerTest with AuditEventChecking {
+  trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller = new IgnoreBenefitController(
       authService = mockEnrolmentsAuthService,
@@ -103,13 +102,13 @@ class IgnoreBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
     MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
-    protected def callController(): Future[Result] = controller.ignoreBenefit(nino, taxYear, benefitId)(fakeRequest)
+    protected def callController(): Future[Result] = controller.ignoreBenefit(validNino, taxYear, benefitId)(fakeRequest)
 
     protected def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
@@ -118,17 +117,17 @@ class IgnoreBenefitControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          params = Map("nino" -> validNino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = None,
           `X-CorrelationId` = correlationId,
-          versionNumber = "1.0",
+          versionNumber = apiVersion.name,
           auditResponse = auditResponse
         )
       )
 
     val testHateoasLinks: Seq[Link] = Seq(
-      Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, "self"),
-      Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/unignore", POST, "unignore-state-benefit")
+      Link(s"/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId", GET, "self"),
+      Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId/unignore", POST, "unignore-state-benefit")
     )
 
     val hateoasResponse: JsValue = Json.parse(
@@ -136,12 +135,12 @@ class IgnoreBenefitControllerSpec
          |{
          |   "links":[
          |      {
-         |         "href":"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+         |         "href":"/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId",
          |         "rel":"self",
          |         "method":"GET"
          |      },
          |      {
-         |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/unignore",
+         |         "href":"/individuals/state-benefits/$validNino/$taxYear/$benefitId/unignore",
          |         "rel":"unignore-state-benefit",
          |         "method":"POST"
          |      }

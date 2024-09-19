@@ -16,23 +16,19 @@
 
 package v1.createBenefit.def1
 
-import api.controllers.validators.RulesValidator
-import api.controllers.validators.resolvers.{ResolveDateRange, ResolveIsoDate}
-import api.models.domain.BenefitType._
-import api.models.errors.{BenefitTypeFormatError, MtdError, StartDateFormatError}
 import cats.data.Validated
 import cats.data.Validated.Invalid
+import common.errors.BenefitTypeFormatError
+import shared.controllers.validators.RulesValidator
+import shared.controllers.validators.resolvers.{ResolveDateRange, ResolveIsoDate}
+import shared.models.errors.{MtdError, StartDateFormatError}
 import v1.createBenefit.def1.model.request.Def1_CreateBenefitRequestData
-
-import java.time.LocalDate
+import v1.models.domain.BenefitType._
 
 object Def1_CreateBenefitRulesValidator extends RulesValidator[Def1_CreateBenefitRequestData] {
 
   private val minYear = 1900
   private val maxYear = 2100
-
-  private lazy val minDate = LocalDate.ofYearDay(minYear, 1)
-  private lazy val maxDate = LocalDate.ofYearDay(maxYear, 1)
 
   private val availableBenefitTypes = List(
     statePension,
@@ -55,14 +51,8 @@ object Def1_CreateBenefitRulesValidator extends RulesValidator[Def1_CreateBenefi
 
   private def validateDates(startDate: String, endDate: Option[String]): Validated[Seq[MtdError], Unit] =
     endDate match {
-      case Some(endDate) => ResolveDateRange.withLimits(minYear, maxYear)(startDate -> endDate).toUnit
-      case None =>
-        ResolveIsoDate(startDate, Some(StartDateFormatError), None)
-          .andThen(date =>
-            if (date.isBefore(minDate) || !date.isBefore(maxDate))
-              Invalid(List(StartDateFormatError))
-            else
-              valid)
+      case Some(endDate) => ResolveDateRange().withYearsLimitedTo(minYear, maxYear)(startDate -> endDate).toUnit
+      case None          => ResolveIsoDate.withMinMaxCheck(startDate, StartDateFormatError, StartDateFormatError).toUnit
     }
 
 }

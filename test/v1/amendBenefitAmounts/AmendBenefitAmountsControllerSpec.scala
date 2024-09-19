@@ -16,19 +16,19 @@
 
 package v1.amendBenefitAmounts
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.hateoas.Method.{DELETE, GET, PUT}
-import api.hateoas.{HateoasWrapper, Link}
-import api.mocks.hateoas.MockHateoasFactory
-import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
+
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
+import shared.config.MockAppConfig
+import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import shared.hateoas.Method.{DELETE, GET, PUT}
+import shared.hateoas.{HateoasWrapper, Link, MockHateoasFactory}
+import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import shared.models.domain.TaxYear
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.MockAuditService
 import v1.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v1.amendBenefitAmounts.model.response.AmendBenefitAmountsHateoasData
 import v1.models.domain.BenefitId
@@ -60,12 +60,12 @@ class AmendBenefitAmountsControllerSpec
   private val amendBenefitAmountsRequestBody = Def1_AmendBenefitAmountsRequestBody(2050.45, Some(1095.55))
 
   private val requestData =
-    Def1_AmendBenefitAmountsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitAmountsRequestBody)
+    Def1_AmendBenefitAmountsRequestData(parsedNino, TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitAmountsRequestBody)
 
   private val testHateoasLinks = List(
-    Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, "self"),
-    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", PUT, "amend-state-benefit-amounts"),
-    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", DELETE, "delete-state-benefit-amounts")
+    Link(s"/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId", GET, "self"),
+    Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId/amounts", PUT, "amend-state-benefit-amounts"),
+    Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId/amounts", DELETE, "delete-state-benefit-amounts")
   )
 
   private val hateoasResponse = Json.parse(
@@ -73,17 +73,17 @@ class AmendBenefitAmountsControllerSpec
        |{
        |   "links":[
        |      {
-       |         "href":"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+       |         "href":"/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId",
        |         "rel":"self",
        |         "method":"GET"
        |      },
        |      {
-       |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
+       |         "href": "/individuals/state-benefits/$validNino/$taxYear/$benefitId/amounts",
        |         "method": "PUT",
        |         "rel": "amend-state-benefit-amounts"
        |      },
        |      {
-       |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
+       |         "href": "/individuals/state-benefits/$validNino/$taxYear/$benefitId/amounts",
        |         "method": "DELETE",
        |         "rel": "delete-state-benefit-amounts"
        |      }
@@ -102,7 +102,7 @@ class AmendBenefitAmountsControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         MockHateoasFactory
-          .wrap((), AmendBenefitAmountsHateoasData(nino, taxYear, benefitId))
+          .wrap((), AmendBenefitAmountsHateoasData(validNino, taxYear, benefitId))
           .returns(HateoasWrapper((), testHateoasLinks))
 
         runOkTestWithAudit(
@@ -133,7 +133,7 @@ class AmendBenefitAmountsControllerSpec
     }
   }
 
-  private trait Test extends ControllerTest with AuditEventChecking {
+  private trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller = new AmendBenefitAmountsController(
       authService = mockEnrolmentsAuthService,
@@ -146,23 +146,23 @@ class AmendBenefitAmountsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
     MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
-    protected def callController(): Future[Result] = controller.amendBenefitAmounts(nino, taxYear, benefitId)(fakePutRequest(requestBodyJson))
+    protected def callController(): Future[Result] = controller.amendBenefitAmounts(validNino, taxYear, benefitId)(fakeRequest.withBody(requestBodyJson))
 
     def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "AmendStateBenefitAmounts",
         transactionName = "amend-state-benefit-amounts",
         detail = GenericAuditDetail(
-          versionNumber = "1.0",
+          versionNumber = apiVersion.name,
           userType = "Individual",
           agentReferenceNumber = None,
-          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          params = Map("nino" -> validNino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = maybeRequestBody,
           `X-CorrelationId` = correlationId,
           auditResponse = auditResponse

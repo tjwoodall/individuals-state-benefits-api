@@ -16,9 +16,9 @@
 
 package v1.listBenefits
 
-import api.connectors.DownstreamUri._
-import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
-import config.AppConfig
+import shared.connectors.DownstreamUri._
+import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
+import shared.config.AppConfig
 import play.api.http.Status
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.listBenefits.model.request.ListBenefitsRequestData
@@ -35,7 +35,7 @@ class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: AppC
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
-    import api.connectors.httpparsers.StandardDownstreamHttpParser._
+    import shared.connectors.httpparsers.StandardDownstreamHttpParser._
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
     import request._

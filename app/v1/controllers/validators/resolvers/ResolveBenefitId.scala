@@ -16,20 +16,19 @@
 
 package v1.controllers.validators.resolvers
 
-import api.controllers.validators.resolvers.Resolver
-import api.models.errors.{BenefitIdFormatError, MtdError}
 import cats.data.Validated
-import cats.data.Validated.{Invalid, Valid}
+import common.errors.BenefitIdFormatError
+import shared.controllers.validators.resolvers.{ResolveStringPattern, ResolverSupport}
+import shared.models.errors.MtdError
 import v1.models.domain.BenefitId
 
-object ResolveBenefitId extends Resolver[String, BenefitId] {
+object ResolveBenefitId extends  ResolverSupport {
 
   private val benefitIdRegex = "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$".r
 
-  def apply(value: String, maybeError: Option[MtdError], errorPath: Option[String]): Validated[Seq[MtdError], BenefitId] =
-    if (benefitIdRegex.matches(value))
-      Valid(BenefitId(value))
-    else
-      Invalid(List(maybeError.getOrElse(BenefitIdFormatError).maybeWithExtraPath(errorPath)))
+  val resolver: Resolver[String, BenefitId] =
+    ResolveStringPattern(benefitIdRegex, BenefitIdFormatError).resolver.map(BenefitId)
+
+  def apply(value: String): Validated[Seq[MtdError], BenefitId] = resolver(value)
 
 }

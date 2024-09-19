@@ -16,7 +16,7 @@
 
 package v1.listBenefits
 
-import api.controllers.validators.Validator
+import shared.controllers.validators.Validator
 import v1.listBenefits.def1.Def1_ListBenefitsValidator
 import v1.listBenefits.model.request.ListBenefitsRequestData
 

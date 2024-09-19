@@ -16,12 +16,12 @@
 
 package v1.listBenefits.def1
 
-import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{DetailedResolveTaxYear, ResolveNino}
-import api.models.errors.MtdError
 import cats.data.Validated
 import cats.data.Validated._
 import cats.implicits._
+import shared.controllers.validators.Validator
+import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum, ResolverSupport}
+import shared.models.errors.MtdError
 import v1.controllers.validators.minimumPermittedTaxYear
 import v1.controllers.validators.resolvers.ResolveBenefitId
 import v1.listBenefits.model.request.ListBenefitsRequestData
@@ -29,15 +29,20 @@ import v1.listBenefits.model.request.ListBenefitsRequestData
 import javax.inject.Singleton
 
 @Singleton
-class Def1_ListBenefitsValidator(nino: String, taxYear: String, benefitId: Option[String]) extends Validator[ListBenefitsRequestData] {
+class Def1_ListBenefitsValidator(nino: String, taxYear: String, benefitId: Option[String])
+    extends Validator[ListBenefitsRequestData]
+    with ResolverSupport {
 
-  private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
+  private val resolveBenefitId = ResolveBenefitId.resolver.resolveOptionally
 
-      def validate: Validated[Seq[MtdError], ListBenefitsRequestData] = {
-        (
-          ResolveNino(nino),
-          resolveTaxYear(taxYear),
-          ResolveBenefitId(benefitId)
-        ) mapN ListBenefitsRequestData
-      }
+  private val resolveTaxYear = ResolveTaxYearMinimum(minimumPermittedTaxYear)
+
+  def validate: Validated[Seq[MtdError], ListBenefitsRequestData] = {
+    (
+      ResolveNino(nino),
+      resolveTaxYear(taxYear),
+      resolveBenefitId(benefitId)
+    ) mapN ListBenefitsRequestData
+  }
+
 }

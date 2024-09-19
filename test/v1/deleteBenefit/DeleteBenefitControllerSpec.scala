@@ -16,15 +16,15 @@
 
 package v1.deleteBenefit
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
 import play.api.Configuration
 import play.api.libs.json.JsValue
 import play.api.mvc.Result
+import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import shared.models.domain.TaxYear
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.MockAuditService
 import v1.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 import v1.models.domain.BenefitId
 
@@ -41,7 +41,7 @@ class DeleteBenefitControllerSpec
   private val taxYear   = "2019-20"
   private val benefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  private val requestData = Def1_DeleteBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
+  private val requestData = Def1_DeleteBenefitRequestData(parsedNino, TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
   "DeleteBenefitController" should {
     "return a successful response with status 204 (No Content)" when {
@@ -75,7 +75,7 @@ class DeleteBenefitControllerSpec
     }
   }
 
-  private trait Test extends ControllerTest with AuditEventChecking {
+  private trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller = new DeleteBenefitController(
       authService = mockEnrolmentsAuthService,
@@ -87,23 +87,23 @@ class DeleteBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
     MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
-    protected def callController(): Future[Result] = controller.deleteBenefit(nino, taxYear, benefitId)(fakeDeleteRequest)
+    protected def callController(): Future[Result] = controller.deleteBenefit(validNino, taxYear, benefitId)(fakeRequest)
 
     override protected def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "DeleteStateBenefit",
         transactionName = "delete-state-benefit",
         detail = GenericAuditDetail(
-          versionNumber = "1.0",
+          versionNumber = apiVersion.name,
           userType = "Individual",
           agentReferenceNumber = None,
-          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          params = Map("nino" -> validNino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = maybeRequestBody,
           `X-CorrelationId` = correlationId,
           auditResponse = auditResponse

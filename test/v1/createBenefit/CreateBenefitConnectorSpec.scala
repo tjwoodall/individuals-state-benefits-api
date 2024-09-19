@@ -16,13 +16,14 @@
 
 package v1.createBenefit
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
-import api.mocks.MockHttpClient
-import api.models.domain.{BenefitType, Nino, TaxYear}
-import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
+import shared.config.MockAppConfig
+import shared.connectors.{ConnectorSpec, DownstreamOutcome}
+import shared.mocks.MockHttpClient
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.outcomes.ResponseWrapper
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 import v1.createBenefit.model.response.CreateBenefitResponse
+import v1.models.domain.BenefitType
 
 import scala.concurrent.Future
 
@@ -37,31 +38,23 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
 
   private val response = CreateBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253")
 
-  class Test extends MockHttpClient with MockAppConfig {
+  trait Test extends MockHttpClient with MockAppConfig {
 
     val connector: CreateBenefitConnector = new CreateBenefitConnector(
       http = mockHttpClient,
       appConfig = mockAppConfig
     )
 
-    MockedAppConfig.ifsBaseUrl returns baseUrl
-    MockedAppConfig.ifsToken returns "release6-token"
-    MockedAppConfig.ifsEnvironment returns "release6-environment"
-    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "CreateBenefitConnector" when {
     "createBenefit" should {
-      "return a 200 status upon HttpClient success" in new Test {
+      "return a 200 status upon HttpClient success" in new IfsTest with Test {
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
-        MockedHttpClient
-          .post(
+        willPost(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
-            config = dummyIfsHeaderCarrierConfig,
-            body = createBenefitRequestBody,
-            requiredHeaders = requiredRelease6Headers,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+            body = createBenefitRequestBody
           )
           .returns(Future.successful(outcome))
 

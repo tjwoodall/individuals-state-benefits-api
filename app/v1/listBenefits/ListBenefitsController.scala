@@ -16,13 +16,14 @@
 
 package v1.listBenefits
 
-import api.controllers._
-import api.hateoas.HateoasFactory
-import api.services.{EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import utils.IdGenerator
-import v1.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData, ListBenefitsResponse}
+import shared.config.AppConfig
+import shared.controllers._
+import shared.services.{EnrolmentsAuthService, MtdIdLookupService}
+import shared.utils.IdGenerator
+import v1.hateoas.HateoasFactory2
+import v1.listBenefits.model.response.ListBenefitsHateoasData
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
@@ -32,7 +33,7 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
                                         val lookupService: MtdIdLookupService,
                                         validatorFactory: ListBenefitsValidatorFactory,
                                         service: ListBenefitsService,
-                                        hateoasFactory: HateoasFactory,
+                                        hateoasFactory: HateoasFactory2,
                                         cc: ControllerComponents,
                                         val idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
@@ -54,13 +55,14 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
       val requestHandler = RequestHandler
         .withValidator(validator)
         .withService(service.listBenefits)
-        .withResultCreator(ResultCreator.hateoasListWrapping2(hateoasFactory)((_, response) =>
-          ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds(response))))
+        .withResultCreator { (_, response) =>
+          val hmrcBenefitIds = response.stateBenefits.getOrElse(Nil).map(_.benefitId)
+          val wrapped        = hateoasFactory.wrapList(response, ListBenefitsHateoasData(nino, taxYear, benefitId.isDefined, hmrcBenefitIds))
+
+          ResultWrapper(OK, Some(Json.toJson(wrapped)))
+        }
 
       requestHandler.handleRequest()
     }
-
-  private def hmrcBenefitIds(response: ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]): Seq[String] =
-    response.stateBenefits.getOrElse(Nil).map(_.benefitId)
 
 }

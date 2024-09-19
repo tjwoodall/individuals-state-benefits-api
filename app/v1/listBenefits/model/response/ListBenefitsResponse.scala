@@ -16,11 +16,13 @@
 
 package v1.listBenefits.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasListLinksFactory2, Link}
 import cats._
-import config.AppConfig
 import play.api.libs.json._
+import shared.config.AppConfig
+import shared.hateoas.{HateoasData, Link}
 import utils.JsonUtils
+import v1.HateoasLinks
+import v1.hateoas.HateoasListLinksFactory2
 
 case class ListBenefitsResponse[H, C](stateBenefits: Option[Seq[H]], customerAddedStateBenefits: Option[Seq[C]])
 
@@ -80,8 +82,8 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
 
   implicit object ResponseBifunctor extends Bifunctor[ListBenefitsResponse] {
 
-    override def bimap[A, B, C, D](fab: ListBenefitsResponse[A, B])(f: A => C, g: B => D): ListBenefitsResponse[C, D] =
-      ListBenefitsResponse(fab.stateBenefits.map(x => x.map(f)), fab.customerAddedStateBenefits.map(y => y.map(g)))
+    override def bimap[A, B, C, D](resp: ListBenefitsResponse[A, B])(f: A => C, g: B => D): ListBenefitsResponse[C, D] =
+      ListBenefitsResponse(resp.stateBenefits.map(_.map(f)), resp.customerAddedStateBenefits.map(_.map(g)))
 
   }
 
