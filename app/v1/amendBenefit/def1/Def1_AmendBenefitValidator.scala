@@ -30,7 +30,6 @@ import v1.controllers.validators.resolvers.ResolveBenefitId
 
 import java.time.LocalDate
 import javax.inject.Singleton
-import scala.annotation.nowarn
 
 @Singleton
 class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: String, body: JsValue) extends Validator[AmendBenefitRequestData] {
@@ -38,7 +37,6 @@ class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: Strin
   private val minYear = 1900
   private val maxYear = 2100
 
-  @nowarn("cat=lint-byname-implicit")
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_AmendBenefitRequestBody]()
 
   private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))

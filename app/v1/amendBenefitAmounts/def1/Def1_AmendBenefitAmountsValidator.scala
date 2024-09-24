@@ -29,13 +29,11 @@ import v1.controllers.validators.minimumPermittedTaxYear
 import v1.controllers.validators.resolvers.ResolveBenefitId
 
 import javax.inject.Singleton
-import scala.annotation.nowarn
 
 @Singleton
 class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)
     extends Validator[AmendBenefitAmountsRequestData] {
 
-  @nowarn("cat=lint-byname-implicit")
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_AmendBenefitAmountsRequestBody]()
 
   private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))

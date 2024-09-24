@@ -28,12 +28,10 @@ import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_
 import v1.createBenefit.model.request.CreateBenefitRequestData
 
 import javax.inject.Singleton
-import scala.annotation.nowarn
 
 @Singleton
 class Def1_CreateBenefitValidator(nino: String, taxYear: String, body: JsValue) extends Validator[CreateBenefitRequestData] {
 
-  @nowarn("cat=lint-byname-implicit")
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_CreateBenefitRequestBody]()
 
   private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
