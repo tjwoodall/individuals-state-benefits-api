@@ -18,7 +18,7 @@ package v1.listBenefits.model.response
 
 import cats._
 import play.api.libs.json._
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.hateoas.{HateoasData, Link}
 import utils.JsonUtils
 import v1.HateoasLinks
@@ -31,7 +31,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
   implicit object ListBenefitsLinksFactory
       extends HateoasListLinksFactory2[ListBenefitsResponse, HMRCStateBenefit, CustomerStateBenefit, ListBenefitsHateoasData] {
 
-    private class Links(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: StateBenefit) {
+    private class Links(appConfig: SharedAppConfig, data: ListBenefitsHateoasData, stateBenefit: StateBenefit) {
 
       import data._
 
@@ -46,7 +46,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       lazy val commonLinks: Seq[Link] = Seq(retrieveLink, amendAmountsLink)
     }
 
-    override def itemLinks1(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: HMRCStateBenefit): Seq[Link] = {
+    override def itemLinks1(appConfig: SharedAppConfig, data: ListBenefitsHateoasData, stateBenefit: HMRCStateBenefit): Seq[Link] = {
       val links = new Links(appConfig, data, stateBenefit)
 
       if (!data.queryIsFiltered) {
@@ -57,7 +57,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       }
     }
 
-    override def itemLinks2(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: CustomerStateBenefit): Seq[Link] = {
+    override def itemLinks2(appConfig: SharedAppConfig, data: ListBenefitsHateoasData, stateBenefit: CustomerStateBenefit): Seq[Link] = {
       val links = new Links(appConfig, data, stateBenefit)
 
       if (!data.queryIsFiltered) {
@@ -69,7 +69,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       }
     }
 
-    override def links(appConfig: AppConfig, data: ListBenefitsHateoasData): Seq[Link] = {
+    override def links(appConfig: SharedAppConfig, data: ListBenefitsHateoasData): Seq[Link] = {
       import data._
 
       Seq(

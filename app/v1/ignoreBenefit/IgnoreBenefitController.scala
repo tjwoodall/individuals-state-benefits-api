@@ -17,7 +17,7 @@
 package v1.ignoreBenefit
 
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.controllers._
 import shared.hateoas.HateoasFactory
 import shared.routing.Version
@@ -37,7 +37,7 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          auditService: AuditService,
                                          hateoasFactory: HateoasFactory,
                                          cc: ControllerComponents,
-                                         idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                         idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName = "ignore-benefit"

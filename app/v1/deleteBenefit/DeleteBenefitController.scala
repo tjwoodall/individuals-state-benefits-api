@@ -17,7 +17,7 @@
 package v1.deleteBenefit
 
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.controllers._
 import shared.routing.Version
 import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
@@ -33,7 +33,7 @@ class DeleteBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          service: DeleteBenefitService,
                                          auditService: AuditService,
                                          cc: ControllerComponents,
-                                         idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                         idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName = "delete-benefit"

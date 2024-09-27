@@ -17,13 +17,14 @@
 package config
 
 import play.api.Configuration
-import shared.config.{AppConfig, DownstreamConfig}
+import shared.config.{AppConfigBase, DownstreamConfig}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class StateBenefitsAppConfig @Inject() (config: ServicesConfig, configuration: Configuration) extends AppConfig(config, configuration) {
+class StateBenefitsAppConfig @Inject() (protected val config: ServicesConfig, protected val configuration: Configuration) extends AppConfigBase {
+  private def featureSwitchConfig: Configuration = configuration.getOptional[Configuration]("feature-switch").getOrElse(Configuration.empty)
 
   def featureSwitches: StateBenefitsFeatureSwitches = StateBenefitsFeatureSwitches(featureSwitchConfig)
 

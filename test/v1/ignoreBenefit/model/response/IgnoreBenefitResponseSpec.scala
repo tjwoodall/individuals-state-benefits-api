@@ -18,19 +18,19 @@ package v1.ignoreBenefit.model.response
 
 import shared.hateoas.Link
 import shared.hateoas.Method._
-import shared.config.MockAppConfig
+import shared.config.MockSharedAppConfig
 import shared.utils.UnitSpec
 
-class IgnoreBenefitResponseSpec extends UnitSpec with MockAppConfig {
+class IgnoreBenefitResponseSpec extends UnitSpec with MockSharedAppConfig {
 
   "LinksFactory" should {
     "produce the correct links" when {
       "called" in {
         val data: IgnoreBenefitHateoasData = IgnoreBenefitHateoasData("mynino", "mytaxyear", "mybenefitid")
 
-        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+        MockedSharedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
-        IgnoreBenefitResponse.IgnoreBenefitLinksFactory.links(mockAppConfig, data) shouldBe Seq(
+        IgnoreBenefitResponse.IgnoreBenefitLinksFactory.links(mockSharedAppConfig, data) shouldBe Seq(
           Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
           Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/unignore", method = POST, rel = "unignore-state-benefit")
         )

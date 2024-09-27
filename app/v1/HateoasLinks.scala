@@ -16,7 +16,7 @@
 
 package v1
 
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.hateoas.Link
 import shared.hateoas.Method._
 
@@ -35,76 +35,76 @@ trait HateoasLinks {
   }
 
   // Uris
-  private def baseUri(appConfig: AppConfig, nino: String, taxYear: String) =
+  private def baseUri(appConfig: SharedAppConfig, nino: String, taxYear: String) =
     s"/${appConfig.apiGatewayContext}/$nino/$taxYear"
 
-  private def baseUriWithBenefitIdParam(appConfig: AppConfig, nino: String, taxYear: String, id: String) =
+  private def baseUriWithBenefitIdParam(appConfig: SharedAppConfig, nino: String, taxYear: String, id: String) =
     s"""/${appConfig.apiGatewayContext}/$nino/$taxYear?benefitId=$id"""
 
-  private def uriWithId(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String) =
+  private def uriWithId(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String) =
     s"/${appConfig.apiGatewayContext}/$nino/$taxYear/$benefitId"
 
-  private def uriWithAmounts(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String) =
+  private def uriWithAmounts(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String) =
     s"/${appConfig.apiGatewayContext}/$nino/$taxYear/$benefitId/amounts"
 
   // Links
-  def createBenefit(appConfig: AppConfig, nino: String, taxYear: String): Link =
+  def createBenefit(appConfig: SharedAppConfig, nino: String, taxYear: String): Link =
     Link(
       href = baseUri(appConfig, nino, taxYear),
       method = POST,
       rel = RelType.CREATE_STATE_BENEFIT
     )
 
-  def amendBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def amendBenefit(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = uriWithId(appConfig, nino, taxYear, benefitId),
       method = PUT,
       rel = RelType.AMEND_STATE_BENEFIT
     )
 
-  def deleteBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def deleteBenefit(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = uriWithId(appConfig, nino, taxYear, benefitId),
       method = DELETE,
       rel = RelType.DELETE_STATE_BENEFIT
     )
 
-  def listBenefits(appConfig: AppConfig, nino: String, taxYear: String): Link =
+  def listBenefits(appConfig: SharedAppConfig, nino: String, taxYear: String): Link =
     Link(
       href = baseUri(appConfig, nino, taxYear),
       method = GET,
       rel = RelType.SELF
     )
 
-  def listSingleBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def listSingleBenefit(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = baseUriWithBenefitIdParam(appConfig, nino, taxYear, benefitId),
       method = GET,
       rel = RelType.SELF
     )
 
-  def amendBenefitAmounts(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def amendBenefitAmounts(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = uriWithAmounts(appConfig, nino, taxYear, benefitId),
       method = PUT,
       rel = RelType.AMEND_STATE_BENEFIT_AMOUNTS
     )
 
-  def deleteBenefitAmounts(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def deleteBenefitAmounts(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = uriWithAmounts(appConfig, nino, taxYear, benefitId),
       method = DELETE,
       rel = RelType.DELETE_STATE_BENEFIT_AMOUNTS
     )
 
-  def ignoreBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def ignoreBenefit(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = s"${uriWithId(appConfig, nino, taxYear, benefitId)}/ignore",
       method = POST,
       rel = RelType.IGNORE_STATE_BENEFIT
     )
 
-  def unignoreBenefit(appConfig: AppConfig, nino: String, taxYear: String, benefitId: String): Link =
+  def unignoreBenefit(appConfig: SharedAppConfig, nino: String, taxYear: String, benefitId: String): Link =
     Link(
       href = s"${uriWithId(appConfig, nino, taxYear, benefitId)}/unignore",
       method = POST,

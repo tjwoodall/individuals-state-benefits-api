@@ -16,7 +16,7 @@
 
 package v1.listBenefits
 
-import shared.config.MockAppConfig
+import shared.config.MockSharedAppConfig
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.mocks.MockHttpClient
 import shared.models.domain.{Nino, TaxYear, Timestamp}
@@ -111,9 +111,9 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     }
   }
 
-  trait Test extends MockHttpClient with MockAppConfig {
+  trait Test extends MockHttpClient with MockSharedAppConfig {
 
-    val connector: ListBenefitsConnector = new ListBenefitsConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    val connector: ListBenefitsConnector = new ListBenefitsConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)
 
     val ifsRequestHeaders: Seq[(String, String)] = List(
       "Environment"   -> "release6-environment",

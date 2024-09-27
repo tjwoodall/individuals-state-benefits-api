@@ -17,14 +17,14 @@
 package routing
 
 import play.api.routing.Router
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.routing.{Version, Version1, VersionRoutingMap}
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 case class StateBenefitsVersionRoutingMap @Inject() (
-    appConfig: AppConfig,
+    appConfig: SharedAppConfig,
     defaultRouter: Router,
     v1Router: v1.Routes
 ) extends VersionRoutingMap {

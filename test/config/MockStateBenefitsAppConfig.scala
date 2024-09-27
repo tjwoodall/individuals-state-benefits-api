@@ -16,7 +16,7 @@
 
 package config
 
-import org.scalamock.handlers.{CallHandler, CallHandler0}
+import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import shared.config.DownstreamConfig
 
@@ -28,7 +28,6 @@ trait MockStateBenefitsAppConfig extends MockFactory {
 
     def api1651DownstreamConfig: CallHandler[DownstreamConfig] = (() => mockStateBenefitsAppConfig.api1651DownstreamConfig).expects()
 
-    def tysIfsDownstreamConfig: CallHandler0[DownstreamConfig] = (() => mockStateBenefitsAppConfig.tysIfsDownstreamConfig: DownstreamConfig).expects()
   }
 
 }

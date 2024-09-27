@@ -18,7 +18,7 @@ package definition
 
 import cats.implicits.catsSyntaxValidatedId
 import shared.config.Deprecation.NotDeprecated
-import shared.config.MockAppConfig
+import shared.config.MockSharedAppConfig
 import shared.definition.APIStatus.BETA
 import shared.definition.{APIDefinition, APIVersion, Definition}
 import shared.mocks.MockHttpClient
@@ -27,17 +27,17 @@ import shared.utils.UnitSpec
 
 class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
 
-  class Test extends MockHttpClient with MockAppConfig {
-    val apiDefinitionFactory = new StateBenefitsApiDefinitionFactory(mockAppConfig)
-    MockedAppConfig.apiGatewayContext returns "individuals/state-benefits"
+  class Test extends MockHttpClient with MockSharedAppConfig {
+    val apiDefinitionFactory = new StateBenefitsApiDefinitionFactory(mockSharedAppConfig)
+    MockedSharedAppConfig.apiGatewayContext returns "individuals/state-benefits"
   }
 
   "definition" when {
     "called" should {
       "return a valid Definition case class" in new Test {
-        MockedAppConfig.apiStatus(Version1) returns "BETA"
-        MockedAppConfig.endpointsEnabled(Version1) returns true
-        MockedAppConfig.deprecationFor(Version1).returns(NotDeprecated.valid).anyNumberOfTimes()
+        MockedSharedAppConfig.apiStatus(Version1) returns "BETA"
+        MockedSharedAppConfig.endpointsEnabled(Version1) returns true
+        MockedSharedAppConfig.deprecationFor(Version1).returns(NotDeprecated.valid).anyNumberOfTimes()
 
         apiDefinitionFactory.definition shouldBe
           Definition(

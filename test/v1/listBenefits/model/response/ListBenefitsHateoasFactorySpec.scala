@@ -17,13 +17,13 @@
 package v1.listBenefits.model.response
 
 import org.scalatest.prop.TableDrivenPropertyChecks
-import shared.config.MockAppConfig
+import shared.config.MockSharedAppConfig
 import shared.models.domain.Timestamp
 import shared.utils.UnitSpec
 import v1.HateoasLinks
 import v1.hateoas.HateoasListLinksFactory2
 
-class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with MockAppConfig with TableDrivenPropertyChecks {
+class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with MockSharedAppConfig with TableDrivenPropertyChecks {
 
   private val nino      = "nino"
   private val taxYear   = "2020-21"
@@ -32,7 +32,7 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
   private val dateIgnored = Some(Timestamp("2019-04-04T01:01:01.000Z"))
 
   class Test {
-    MockedAppConfig.apiGatewayContext.returns("gatewayContext").anyNumberOfTimes()
+    MockedSharedAppConfig.apiGatewayContext.returns("gatewayContext").anyNumberOfTimes()
 
     val hateoasFactory: HateoasListLinksFactory2[ListBenefitsResponse, HMRCStateBenefit, CustomerStateBenefit, ListBenefitsHateoasData] = implicitly
   }
@@ -42,10 +42,10 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
       val hateoasData = ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds = Nil)
 
       "be self and add" in new Test {
-        hateoasFactory.links(mockAppConfig, hateoasData) should
+        hateoasFactory.links(mockSharedAppConfig, hateoasData) should
           contain theSameElementsAs Seq(
-            createBenefit(mockAppConfig, nino, taxYear),
-            listBenefits(mockAppConfig, nino, taxYear)
+            createBenefit(mockSharedAppConfig, nino, taxYear),
+            listBenefits(mockSharedAppConfig, nino, taxYear)
           )
       }
     }
@@ -72,9 +72,9 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
         "any scenario" must {
           "just return list link with query param" in new Test {
             forAll(Table("benefit", benefitNotIgnored, benefitIgnored)) { benefit =>
-              hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefit) should
+              hateoasFactory.itemLinks1(mockSharedAppConfig, hateoasData, benefit) should
                 contain theSameElementsAs Seq(
-                  listSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
+                  listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId)
                 )
             }
           }
@@ -86,22 +86,22 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
 
         "no dateIgnored is set" must {
           "include ignore link" in new Test {
-            hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitNotIgnored) should
+            hateoasFactory.itemLinks1(mockSharedAppConfig, hateoasData, benefitNotIgnored) should
               contain theSameElementsAs Seq(
-                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-                ignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
+                listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId),
+                ignoreBenefit(mockSharedAppConfig, nino, taxYear, benefitId)
               )
           }
         }
 
         "a dateIgnored is set" must {
           "include unignore link" in new Test {
-            hateoasFactory.itemLinks1(mockAppConfig, hateoasData, benefitIgnored) should
+            hateoasFactory.itemLinks1(mockSharedAppConfig, hateoasData, benefitIgnored) should
               contain theSameElementsAs Seq(
-                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-                unignoreBenefit(mockAppConfig, nino, taxYear, benefitId)
+                listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId),
+                unignoreBenefit(mockSharedAppConfig, nino, taxYear, benefitId)
               )
           }
         }
@@ -130,11 +130,11 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
               Table(("benefit", "hmrcBenefitIds"), (benefit, Nil), (benefit, Seq(benefitId)), (benefitWithAmount, Nil), (benefitWithTaxPaid, Nil))) {
               case (benefit, hmrcBenefitIds) =>
                 hateoasFactory.itemLinks2(
-                  mockAppConfig,
+                  mockSharedAppConfig,
                   ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = false, hmrcBenefitIds),
                   benefit) should
                   contain theSameElementsAs Seq(
-                    listSingleBenefit(mockAppConfig, nino, taxYear, benefitId)
+                    listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId)
                   )
             }
           }
@@ -147,48 +147,48 @@ class ListBenefitsHateoasFactorySpec extends UnitSpec with HateoasLinks with Moc
 
         "a benefit is not duplicated in HMRC benefits" must {
           "include amend and delete links" in new Test {
-            hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq("otherBenefitId")), benefit) should
+            hateoasFactory.itemLinks2(mockSharedAppConfig, hateoasData(hmrcBenefitIds = Seq("otherBenefitId")), benefit) should
               contain theSameElementsAs Seq(
-                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefit(mockAppConfig, nino, taxYear, benefitId),
-                deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+                listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                deleteBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId)
               )
           }
         }
 
         "a benefit is duplicated in HMRC benefits" must {
           "not include amend and delete links" in new Test {
-            hateoasFactory.itemLinks2(mockAppConfig, hateoasData(hmrcBenefitIds = Seq(benefitId)), benefit) should
+            hateoasFactory.itemLinks2(mockSharedAppConfig, hateoasData(hmrcBenefitIds = Seq(benefitId)), benefit) should
               contain theSameElementsAs Seq(
-                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+                listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId)
               )
           }
         }
 
         "benefit has amount" must {
           "include delete amount link" in new Test {
-            hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithAmount) should
+            hateoasFactory.itemLinks2(mockSharedAppConfig, hateoasData(), benefitWithAmount) should
               contain theSameElementsAs Seq(
-                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefit(mockAppConfig, nino, taxYear, benefitId),
-                deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-                deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+                listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                deleteBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId),
+                deleteBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId)
               )
           }
         }
 
         "benefit has taxPaid" must {
           "include delete amount link" in new Test {
-            hateoasFactory.itemLinks2(mockAppConfig, hateoasData(), benefitWithTaxPaid) should
+            hateoasFactory.itemLinks2(mockSharedAppConfig, hateoasData(), benefitWithTaxPaid) should
               contain theSameElementsAs Seq(
-                listSingleBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefit(mockAppConfig, nino, taxYear, benefitId),
-                deleteBenefit(mockAppConfig, nino, taxYear, benefitId),
-                amendBenefitAmounts(mockAppConfig, nino, taxYear, benefitId),
-                deleteBenefitAmounts(mockAppConfig, nino, taxYear, benefitId)
+                listSingleBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                deleteBenefit(mockSharedAppConfig, nino, taxYear, benefitId),
+                amendBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId),
+                deleteBenefitAmounts(mockSharedAppConfig, nino, taxYear, benefitId)
               )
           }
         }

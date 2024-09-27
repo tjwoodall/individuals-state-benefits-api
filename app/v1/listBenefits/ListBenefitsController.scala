@@ -18,7 +18,7 @@ package v1.listBenefits
 
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.controllers._
 import shared.services.{EnrolmentsAuthService, MtdIdLookupService}
 import shared.utils.IdGenerator
@@ -35,7 +35,7 @@ class ListBenefitsController @Inject() (val authService: EnrolmentsAuthService,
                                         service: ListBenefitsService,
                                         hateoasFactory: HateoasFactory2,
                                         cc: ControllerComponents,
-                                        val idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                        val idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName = "list-benefits"

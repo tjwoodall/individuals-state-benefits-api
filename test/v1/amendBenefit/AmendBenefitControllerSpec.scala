@@ -16,7 +16,7 @@
 
 package v1.amendBenefit
 
-import shared.config.MockAppConfig
+import shared.config.MockSharedAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class AmendBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with MockAppConfig
+    with MockSharedAppConfig
     with MockAmendBenefitService
     with MockAmendBenefitValidatorFactory
     with MockAuditService
@@ -150,11 +150,11 @@ class AmendBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
-    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+    MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     protected def callController(): Future[Result] = controller.amendBenefit(validNino, taxYear, benefitId)(fakeRequest.withBody(requestBodyJson))
 

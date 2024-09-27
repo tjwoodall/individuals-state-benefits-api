@@ -17,14 +17,14 @@
 package config
 
 import play.api.Configuration
-import shared.config.{AppConfig, FeatureSwitches}
+import shared.config.{FeatureSwitches, SharedAppConfig}
 
 import javax.inject.Inject
 
 case class StateBenefitsFeatureSwitches(protected val featureSwitchConfig: Configuration) extends FeatureSwitches {
 
   @Inject
-  def this(appConfig: AppConfig) = this(appConfig.featureSwitchConfig)
+  def this(appConfig: SharedAppConfig) = this(appConfig.featureSwitchConfig)
 
   def isDesIf_MigrationEnabled: Boolean = isEnabled("desIf_Migration")
 
@@ -33,5 +33,5 @@ case class StateBenefitsFeatureSwitches(protected val featureSwitchConfig: Confi
 object StateBenefitsFeatureSwitches {
   def apply(configuration: Configuration): StateBenefitsFeatureSwitches = new StateBenefitsFeatureSwitches(configuration)
 
-  def apply()(implicit appConfig: AppConfig): StateBenefitsFeatureSwitches = new StateBenefitsFeatureSwitches(appConfig)
+  def apply()(implicit appConfig: SharedAppConfig): StateBenefitsFeatureSwitches = new StateBenefitsFeatureSwitches(appConfig)
 }

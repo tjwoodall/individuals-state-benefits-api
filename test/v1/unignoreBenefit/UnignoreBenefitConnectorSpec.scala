@@ -54,7 +54,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
 
     val request: UnignoreBenefitRequestData = Def1_UnignoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))
 
-    val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)
 
   }
 

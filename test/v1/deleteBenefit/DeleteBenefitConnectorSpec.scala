@@ -52,7 +52,7 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
 
     protected val request: Def1_DeleteBenefitRequestData = Def1_DeleteBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
-    val connector: DeleteBenefitConnector = new DeleteBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    val connector: DeleteBenefitConnector = new DeleteBenefitConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)
 
   }
 

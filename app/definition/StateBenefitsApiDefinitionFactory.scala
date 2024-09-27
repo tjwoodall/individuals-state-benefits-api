@@ -16,14 +16,14 @@
 
 package definition
 
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.definition.{APIDefinition, APIVersion, ApiDefinitionFactory, Definition}
 import shared.routing.Version1
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class StateBenefitsApiDefinitionFactory @Inject() (protected val appConfig: AppConfig) extends ApiDefinitionFactory {
+class StateBenefitsApiDefinitionFactory @Inject() (protected val appConfig: SharedAppConfig) extends ApiDefinitionFactory {
 
   lazy val definition: Definition =
     Definition(

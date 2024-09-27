@@ -51,7 +51,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenef
     }
 
     "return the expected response for a TYS request" when {
-      "a valid request is made" in new CustomTysIfsTest with Test {
+      "a valid request is made" in new TysIfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
 
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
@@ -72,7 +72,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenef
 
     val request: AmendBenefitAmountsRequestData = Def1_AmendBenefitAmountsRequestData(Nino(nino), taxYear, BenefitId(benefitId), body)
 
-    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockStateBenefitsAppConfig)
+    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockSharedAppConfig, mockStateBenefitsAppConfig)
 
   }
 
@@ -80,13 +80,6 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenef
     override val name = "api1651"
 
     MockedStateBenefitsAppConfig.api1651DownstreamConfig.anyNumberOfTimes() returns config
-  }
-
-  // Only because the connector needs to use a StateBenefitsAppConfig (not a plain AppConfig) that we have to mock...
-  protected trait CustomTysIfsTest extends StandardConnectorTest {
-    override val name = "tys-ifs"
-
-    MockedStateBenefitsAppConfig.tysIfsDownstreamConfig.anyNumberOfTimes() returns config
   }
 
 }

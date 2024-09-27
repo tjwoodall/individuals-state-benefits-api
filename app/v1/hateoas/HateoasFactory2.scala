@@ -18,13 +18,13 @@ package v1.hateoas
 
 import cats.Bifunctor
 import cats.implicits.toBifunctorOps
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.hateoas.{HateoasLinksFactory, HateoasWrapper, Link}
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class HateoasFactory2 @Inject() (appConfig: AppConfig) {
+class HateoasFactory2 @Inject() (appConfig: SharedAppConfig) {
 
   def wrapList[A[_, _]: Bifunctor, I1, I2, D](payload: A[I1, I2], data: D)(implicit
       lf: HateoasListLinksFactory2[A, I1, I2, D]): HateoasWrapper[A[HateoasWrapper[I1], HateoasWrapper[I2]]] = {
@@ -39,7 +39,7 @@ class HateoasFactory2 @Inject() (appConfig: AppConfig) {
 }
 
 trait HateoasListLinksFactory2[A[_, _], I1, I2, D] extends HateoasLinksFactory[A[_, _], D] {
-  def itemLinks1(appConfig: AppConfig, data: D, item: I1): Seq[Link]
+  def itemLinks1(appConfig: SharedAppConfig, data: D, item: I1): Seq[Link]
 
-  def itemLinks2(appConfig: AppConfig, data: D, item: I2): Seq[Link]
+  def itemLinks2(appConfig: SharedAppConfig, data: D, item: I2): Seq[Link]
 }

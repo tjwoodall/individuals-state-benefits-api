@@ -16,7 +16,7 @@
 
 package v1.createBenefit
 
-import shared.config.MockAppConfig
+import shared.config.MockSharedAppConfig
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.mocks.MockHttpClient
 import shared.models.domain.{Nino, TaxYear}
@@ -38,11 +38,11 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
 
   private val response = CreateBenefitResponse("b1e8057e-fbbc-47a8-a8b4-78d9f015c253")
 
-  trait Test extends MockHttpClient with MockAppConfig {
+  trait Test extends MockHttpClient with MockSharedAppConfig {
 
     val connector: CreateBenefitConnector = new CreateBenefitConnector(
       http = mockHttpClient,
-      appConfig = mockAppConfig
+      appConfig = mockSharedAppConfig
     )
 
   }

@@ -18,7 +18,7 @@ package v1.amendBenefitAmounts
 
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
-import shared.config.AppConfig
+import shared.config.SharedAppConfig
 import shared.controllers._
 import shared.hateoas.HateoasFactory
 import shared.routing.Version
@@ -38,7 +38,7 @@ class AmendBenefitAmountsController @Inject() (val authService: EnrolmentsAuthSe
                                                auditService: AuditService,
                                                hateoasFactory: HateoasFactory,
                                                cc: ControllerComponents,
-                                               val idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                               val idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName = "amend-benefit-amounts"
