@@ -22,7 +22,7 @@ import routing.StateBenefitsVersionRoutingMap
 import shared.definition.ApiDefinitionFactory
 import shared.routing.VersionRoutingMap
 
-class StatBenefitsPlayModule extends AbstractModule {
+class StateBenefitsPlayModule extends AbstractModule {
 
   override def configure(): Unit = {
     bind(classOf[ApiDefinitionFactory]).to(classOf[StateBenefitsApiDefinitionFactory]).asEagerSingleton()
