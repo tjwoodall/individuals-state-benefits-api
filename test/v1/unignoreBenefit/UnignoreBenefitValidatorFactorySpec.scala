@@ -16,8 +16,8 @@
 
 package v1.unignoreBenefit
 
-import api.controllers.validators.Validator
-import support.UnitSpec
+import shared.controllers.validators.Validator
+import shared.utils.UnitSpec
 import v1.unignoreBenefit.def1.Def1_UnignoreBenefitValidator
 import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 

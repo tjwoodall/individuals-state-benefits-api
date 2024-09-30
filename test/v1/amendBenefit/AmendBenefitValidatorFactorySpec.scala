@@ -16,9 +16,9 @@
 
 package v1.amendBenefit
 
-import api.controllers.validators.Validator
+import shared.controllers.validators.Validator
 import play.api.libs.json.Json
-import support.UnitSpec
+import shared.utils.UnitSpec
 import v1.amendBenefit.def1.Def1_AmendBenefitValidator
 import v1.amendBenefit.model.request.AmendBenefitRequestData
 

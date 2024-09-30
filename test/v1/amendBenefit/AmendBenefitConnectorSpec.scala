@@ -16,13 +16,11 @@
 
 package v1.amendBenefit
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
-import api.mocks.MockHttpClient
-import api.models.domain.{Nino, TaxYear}
-import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
-import uk.gov.hmrc.http.HeaderCarrier
-import v1.amendBenefit.AmendBenefitConnector
+import shared.config.MockSharedAppConfig
+import shared.connectors.{ConnectorSpec, DownstreamOutcome}
+import shared.mocks.MockHttpClient
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.outcomes.ResponseWrapper
 import v1.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v1.models.domain.BenefitId
 
@@ -38,39 +36,22 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
 
   private val request = Def1_AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitRequestBody)
 
-  class Test extends MockHttpClient with MockAppConfig {
+  trait Test extends MockHttpClient with MockSharedAppConfig {
 
     val connector: AmendBenefitConnector = new AmendBenefitConnector(
       http = mockHttpClient,
-      appConfig = mockAppConfig
+      appConfig = mockSharedAppConfig
     )
-
-    val ifsRequestHeaders: Seq[(String, String)] = Seq(
-      "Environment"   -> "ifs-environment",
-      "Authorization" -> s"Bearer ifs-token"
-    )
-
-    MockedAppConfig.ifsBaseUrl returns baseUrl
-    MockedAppConfig.ifsToken returns "release6-token"
-    MockedAppConfig.ifsEnvironment returns "release6-environment"
-    MockedAppConfig.ifsEnvironmentHeaders returns Some(allowedIfsHeaders)
   }
 
   "AmendBenefitConnector" when {
     "amendBenefit" must {
-      "return a 201 status for a success scenario" in new Test {
+      "return a 201 status for a success scenario" in new IfsTest with Test {
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        implicit val hc: HeaderCarrier = HeaderCarrier(otherHeaders = otherHeaders ++ Seq("Content-Type" -> "application/json"))
-        val requiredRelease6HeadersPut: Seq[(String, String)] = requiredRelease6Headers ++ Seq("Content-Type" -> "application/json")
-
-        MockedHttpClient
-          .put(
+        willPut(
             url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
-            config = dummyIfsHeaderCarrierConfig,
-            body = request.body,
-            requiredHeaders = requiredRelease6HeadersPut,
-            excludedHeaders = Seq("AnotherHeader" -> "HeaderValue")
+            body = request.body
           )
           .returns(Future.successful(outcome))
 

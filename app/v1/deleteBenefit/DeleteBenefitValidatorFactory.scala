@@ -16,7 +16,7 @@
 
 package v1.deleteBenefit
 
-import api.controllers.validators.Validator
+import shared.controllers.validators.Validator
 import v1.deleteBenefit.def1.Def1_DeleteBenefitValidator
 import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 

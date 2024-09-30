@@ -16,9 +16,9 @@
 
 package v1.unignoreBenefit
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
-import api.models.domain.{Nino, TaxYear}
-import api.models.outcomes.ResponseWrapper
+import shared.connectors.{ConnectorSpec, DownstreamOutcome}
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.outcomes.ResponseWrapper
 import v1.models.domain.BenefitId
 import v1.unignoreBenefit.def1.model.request.Def1_UnignoreBenefitRequestData
 import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
@@ -54,7 +54,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
 
     val request: UnignoreBenefitRequestData = Def1_UnignoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))
 
-    val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
+    val connector: UnignoreBenefitConnector = new UnignoreBenefitConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)
 
   }
 

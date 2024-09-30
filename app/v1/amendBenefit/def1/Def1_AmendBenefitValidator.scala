@@ -16,19 +16,17 @@
 
 package v1.amendBenefit.def1
 
-import api.controllers.validators.Validator
-import api.controllers.validators.resolvers._
-import api.models.errors.{MtdError, StartDateFormatError}
 import cats.data.Validated
-import cats.data.Validated.{Invalid, Valid}
 import cats.implicits.catsSyntaxTuple4Semigroupal
 import play.api.libs.json.JsValue
+import shared.controllers.validators.Validator
+import shared.controllers.validators.resolvers._
+import shared.models.errors.{MtdError, StartDateFormatError}
 import v1.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v1.amendBenefit.model.request.AmendBenefitRequestData
 import v1.controllers.validators.minimumPermittedTaxYear
 import v1.controllers.validators.resolvers.ResolveBenefitId
 
-import java.time.LocalDate
 import javax.inject.Singleton
 
 @Singleton
@@ -39,7 +37,7 @@ class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: Strin
 
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_AmendBenefitRequestBody]()
 
-  private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
+  private val resolveTaxYear = ResolveTaxYearMinimum(minimumPermittedTaxYear)
 
   def validate: Validated[Seq[MtdError], Def1_AmendBenefitRequestData] =
     (
@@ -53,16 +51,8 @@ class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: Strin
     import parsed.body._
 
     val validatedDates = endDate match {
-      case Some(endDate) => ResolveDateRange.withLimits(minYear, maxYear)(startDate -> endDate)
-      case None =>
-        ResolveIsoDate(startDate, Some(StartDateFormatError), None)
-          .andThen(date =>
-            if (date.isBefore(LocalDate.ofYearDay(minYear, 1))) {
-
-              Invalid(List(StartDateFormatError))
-            } else {
-              Valid(date)
-            })
+      case Some(endDate) => ResolveDateRange().withYearsLimitedTo(minYear, maxYear)(startDate -> endDate)
+      case None          => ResolveIsoDate.withMinMaxCheck(startDate, StartDateFormatError, StartDateFormatError)
     }
 
     validatedDates.map(_ => parsed)

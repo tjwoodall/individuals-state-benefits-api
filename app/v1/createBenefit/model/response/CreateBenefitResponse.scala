@@ -16,9 +16,10 @@
 
 package v1.createBenefit.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
-import config.AppConfig
 import play.api.libs.json.{Json, OFormat}
+import shared.config.SharedAppConfig
+import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import v1.HateoasLinks
 
 case class CreateBenefitResponse(benefitId: String)
 
@@ -28,7 +29,7 @@ object CreateBenefitResponse extends HateoasLinks {
 
   implicit object CreateBenefitLinksFactory extends HateoasLinksFactory[CreateBenefitResponse, CreateBenefitHateoasData] {
 
-    override def links(appConfig: AppConfig, data: CreateBenefitHateoasData): Seq[Link] = {
+    override def links(appConfig: SharedAppConfig, data: CreateBenefitHateoasData): Seq[Link] = {
       import data._
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),

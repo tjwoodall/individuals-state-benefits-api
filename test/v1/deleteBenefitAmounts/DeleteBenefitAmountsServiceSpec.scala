@@ -16,10 +16,11 @@
 
 package v1.deleteBenefitAmounts
 
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
-import api.services.{ServiceOutcome, ServiceSpec}
+import common.errors.BenefitIdFormatError
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.{ServiceOutcome, ServiceSpec}
 import v1.deleteBenefitAmounts.def1.model.request.Def1_DeleteBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 
@@ -33,7 +34,9 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
   "DeleteOtherEmploymentIncomeServiceSpec" when {
     "the downstream request is successful" must {
       "return a success result" in new Test {
-        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
+        val outcome: Right[Nothing, ResponseWrapper[Unit]] = {
+          Right(ResponseWrapper(correlationId, ()))
+        }
 
         MockDeleteBenefitAmountsConnector
           .deleteBenefitAmounts(request)

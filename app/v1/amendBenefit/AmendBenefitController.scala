@@ -16,14 +16,14 @@
 
 package v1.amendBenefit
 
-import api.controllers._
-import api.hateoas.HateoasFactory
-import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
-import routing.{Version, Version1}
-import utils.IdGenerator
+import shared.config.SharedAppConfig
+import shared.controllers._
+import shared.hateoas.HateoasFactory
+import shared.routing.Version
+import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import shared.utils.IdGenerator
 import v1.amendBenefit.model.response.AmendBenefitHateoasData
 import v1.amendBenefit.model.response.AmendBenefitResponse.AmendBenefitLinksFactory
 
@@ -38,7 +38,7 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                         auditService: AuditService,
                                         hateoasFactory: HateoasFactory,
                                         cc: ControllerComponents,
-                                        val idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                        val idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName = "amend-benefit"
@@ -62,7 +62,7 @@ class AmendBenefitController @Inject() (val authService: EnrolmentsAuthService,
           auditService = auditService,
           auditType = "AmendStateBenefit",
           transactionName = "amend-state-benefit",
-          apiVersion = Version.from(request, orElse = Version1),
+          apiVersion = Version(request),
           params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = Some(request.body),
           includeResponse = true

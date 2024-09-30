@@ -16,9 +16,9 @@
 
 package v1.deleteBenefit
 
-import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import shared.connectors.DownstreamOutcome
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 

@@ -16,7 +16,7 @@
 
 package v1.createBenefit.def1.model.request
 
-import api.models.domain.{Nino, TaxYear}
+import shared.models.domain.{Nino, TaxYear}
 import v1.createBenefit.model.request.CreateBenefitRequestData
 
 case class Def1_CreateBenefitRequestData(nino: Nino, taxYear: TaxYear, body: Def1_CreateBenefitRequestBody) extends CreateBenefitRequestData

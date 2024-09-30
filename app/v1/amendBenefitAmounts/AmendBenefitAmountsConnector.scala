@@ -16,10 +16,11 @@
 
 package v1.amendBenefitAmounts
 
-import api.connectors.DownstreamUri._
-import api.connectors.httpparsers.StandardDownstreamHttpParser._
-import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
-import config.AppConfig
+import config.StateBenefitsAppConfig
+import shared.config.SharedAppConfig
+import shared.connectors.DownstreamUri._
+import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamStrategy, DownstreamUri}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 
@@ -27,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: AppConfig) extends BaseDownstreamConnector {
+class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: SharedAppConfig, stateBenefitsAppConfig: StateBenefitsAppConfig) extends BaseDownstreamConnector {
 
   def amendBenefitAmounts(request: AmendBenefitAmountsRequestData)(implicit
       hc: HeaderCarrier,
@@ -40,7 +41,9 @@ class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfi
       if (taxYear.useTaxYearSpecificApi) {
         TaxYearSpecificIfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
       } else {
-        Api1651Uri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
+        DownstreamUri(
+          s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId",
+          DownstreamStrategy.standardStrategy(stateBenefitsAppConfig.api1651DownstreamConfig))
       }
 
     put(body, downstreamUri)

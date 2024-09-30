@@ -16,7 +16,7 @@
 
 package v1.amendBenefitAmounts
 
-import api.controllers.validators.Validator
+import shared.controllers.validators.Validator
 import play.api.libs.json.JsValue
 import v1.amendBenefitAmounts.def1.Def1_AmendBenefitAmountsValidator
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData

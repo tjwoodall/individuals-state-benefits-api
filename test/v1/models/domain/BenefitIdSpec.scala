@@ -16,7 +16,7 @@
 
 package v1.models.domain
 
-import support.UnitSpec
+import shared.utils.UnitSpec
 
 class BenefitIdSpec extends UnitSpec {
 

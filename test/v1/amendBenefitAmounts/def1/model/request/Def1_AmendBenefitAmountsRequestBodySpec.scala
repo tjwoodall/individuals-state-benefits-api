@@ -16,9 +16,9 @@
 
 package v1.amendBenefitAmounts.def1.model.request
 
-import api.models.utils.JsonErrorValidators
 import play.api.libs.json._
-import support.UnitSpec
+import shared.models.utils.JsonErrorValidators
+import shared.utils.UnitSpec
 
 class Def1_AmendBenefitAmountsRequestBodySpec extends UnitSpec with JsonErrorValidators {
 
@@ -37,7 +37,7 @@ class Def1_AmendBenefitAmountsRequestBodySpec extends UnitSpec with JsonErrorVal
         inputJson.as[Def1_AmendBenefitAmountsRequestBody] shouldBe Def1_AmendBenefitAmountsRequestBody(amount = 999.99, taxPaid = Some(123.13))
       }
 
-      testMandatoryProperty[Def1_AmendBenefitAmountsRequestBody](inputJson)("/amount")
+      testMandatoryFields[Def1_AmendBenefitAmountsRequestBody](inputJson)("/amount")
 
       testPropertyType[Def1_AmendBenefitAmountsRequestBody](inputJson)(
         path = "/amount",

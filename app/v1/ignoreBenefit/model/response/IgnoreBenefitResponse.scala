@@ -16,14 +16,15 @@
 
 package v1.ignoreBenefit.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
-import config.AppConfig
+import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import shared.config.SharedAppConfig
+import v1.HateoasLinks
 
 object IgnoreBenefitResponse extends HateoasLinks {
 
   implicit object IgnoreBenefitLinksFactory extends HateoasLinksFactory[Unit, IgnoreBenefitHateoasData] {
 
-    override def links(appConfig: AppConfig, data: IgnoreBenefitHateoasData): Seq[Link] = {
+    override def links(appConfig: SharedAppConfig, data: IgnoreBenefitHateoasData): Seq[Link] = {
       import data._
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),

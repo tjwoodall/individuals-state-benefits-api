@@ -16,16 +16,23 @@
 
 package v1.endpoints
 
-import api.models.errors._
-import api.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import common.errors.BenefitIdFormatError
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import support.IntegrationBaseSpec
+import shared.models.errors._
+import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
+import shared.support.IntegrationBaseSpec
 
 class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
+
+  override def servicesConfig: Map[String, Any] =  Map(
+    "microservice.services.api1651.host"       -> mockHost,
+    "microservice.services.api1651.port"       -> mockPort
+  ) ++ super.servicesConfig
+
 
   "Calling the 'amend benefit amounts' endpoint" should {
     "return a 200 status code" when {
@@ -151,12 +158,12 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
       val allInvalidValueErrors: Seq[MtdError] = List(
         ValueFormatError.copy(
-          message = "The field should be between -99999999999.99 and 99999999999.99",
-          paths = Some(List("/taxPaid"))
+          message = "The value must be between 0 and 99999999999.99",
+          paths = Some(List("/amount"))
         ),
         ValueFormatError.copy(
-          message = "The field should be between 0 and 99999999999.99",
-          paths = Some(List("/amount"))
+          message = "The value must be between -99999999999.99 and 99999999999.99",
+          paths = Some(List("/taxPaid"))
         )
       )
 

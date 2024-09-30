@@ -16,11 +16,13 @@
 
 package v1.listBenefits.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasListLinksFactory2, Link}
 import cats._
-import config.AppConfig
 import play.api.libs.json._
+import shared.config.SharedAppConfig
+import shared.hateoas.{HateoasData, Link}
 import utils.JsonUtils
+import v1.HateoasLinks
+import v1.hateoas.HateoasListLinksFactory2
 
 case class ListBenefitsResponse[H, C](stateBenefits: Option[Seq[H]], customerAddedStateBenefits: Option[Seq[C]])
 
@@ -29,7 +31,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
   implicit object ListBenefitsLinksFactory
       extends HateoasListLinksFactory2[ListBenefitsResponse, HMRCStateBenefit, CustomerStateBenefit, ListBenefitsHateoasData] {
 
-    private class Links(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: StateBenefit) {
+    private class Links(appConfig: SharedAppConfig, data: ListBenefitsHateoasData, stateBenefit: StateBenefit) {
 
       import data._
 
@@ -44,7 +46,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       lazy val commonLinks: Seq[Link] = Seq(retrieveLink, amendAmountsLink)
     }
 
-    override def itemLinks1(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: HMRCStateBenefit): Seq[Link] = {
+    override def itemLinks1(appConfig: SharedAppConfig, data: ListBenefitsHateoasData, stateBenefit: HMRCStateBenefit): Seq[Link] = {
       val links = new Links(appConfig, data, stateBenefit)
 
       if (!data.queryIsFiltered) {
@@ -55,7 +57,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       }
     }
 
-    override def itemLinks2(appConfig: AppConfig, data: ListBenefitsHateoasData, stateBenefit: CustomerStateBenefit): Seq[Link] = {
+    override def itemLinks2(appConfig: SharedAppConfig, data: ListBenefitsHateoasData, stateBenefit: CustomerStateBenefit): Seq[Link] = {
       val links = new Links(appConfig, data, stateBenefit)
 
       if (!data.queryIsFiltered) {
@@ -67,7 +69,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
       }
     }
 
-    override def links(appConfig: AppConfig, data: ListBenefitsHateoasData): Seq[Link] = {
+    override def links(appConfig: SharedAppConfig, data: ListBenefitsHateoasData): Seq[Link] = {
       import data._
 
       Seq(
@@ -80,8 +82,8 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
 
   implicit object ResponseBifunctor extends Bifunctor[ListBenefitsResponse] {
 
-    override def bimap[A, B, C, D](fab: ListBenefitsResponse[A, B])(f: A => C, g: B => D): ListBenefitsResponse[C, D] =
-      ListBenefitsResponse(fab.stateBenefits.map(x => x.map(f)), fab.customerAddedStateBenefits.map(y => y.map(g)))
+    override def bimap[A, B, C, D](resp: ListBenefitsResponse[A, B])(f: A => C, g: B => D): ListBenefitsResponse[C, D] =
+      ListBenefitsResponse(resp.stateBenefits.map(_.map(f)), resp.customerAddedStateBenefits.map(_.map(g)))
 
   }
 

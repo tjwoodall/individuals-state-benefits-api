@@ -16,14 +16,15 @@
 
 package v1.amendBenefitAmounts.model.response
 
-import api.hateoas.{HateoasData, HateoasLinks, HateoasLinksFactory, Link}
-import config.AppConfig
+import shared.config.SharedAppConfig
+import shared.hateoas.{HateoasData, HateoasLinksFactory, Link}
+import v1.HateoasLinks
 
 object AmendBenefitAmountsResponse extends HateoasLinks {
 
   implicit object AmendBenefitAmountsLinksFactory extends HateoasLinksFactory[Unit, AmendBenefitAmountsHateoasData] {
 
-    override def links(appConfig: AppConfig, data: AmendBenefitAmountsHateoasData): Seq[Link] = {
+    override def links(appConfig: SharedAppConfig, data: AmendBenefitAmountsHateoasData): Seq[Link] = {
       import data._
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),

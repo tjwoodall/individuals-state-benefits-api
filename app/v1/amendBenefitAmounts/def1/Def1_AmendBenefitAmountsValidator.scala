@@ -16,13 +16,13 @@
 
 package v1.amendBenefitAmounts.def1
 
-import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{DetailedResolveTaxYear, ResolveNino, ResolveNonEmptyJsonObject, ResolveParsedNumber}
-import api.models.errors.MtdError
 import cats.data.Validated
 import cats.data.Validated.Valid
 import cats.implicits.catsSyntaxTuple4Semigroupal
 import play.api.libs.json.JsValue
+import shared.controllers.validators.Validator
+import shared.controllers.validators.resolvers.{ResolveNino, ResolveNonEmptyJsonObject, ResolveParsedNumber, ResolveTaxYearMinimum}
+import shared.models.errors.MtdError
 import v1.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 import v1.controllers.validators.minimumPermittedTaxYear
@@ -36,7 +36,7 @@ class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId
 
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_AmendBenefitAmountsRequestBody]()
 
-  private val resolveTaxYear = DetailedResolveTaxYear(maybeMinimumTaxYear = Some(minimumPermittedTaxYear.year))
+  private val resolveTaxYear = ResolveTaxYearMinimum(minimumPermittedTaxYear)
 
   private val resolveAmountNumber = ResolveParsedNumber()
   private val resolveTaxPaid      = ResolveParsedNumber(min = -99999999999.99)
@@ -53,8 +53,8 @@ class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId
     import parsed.body._
 
     combine(
-      resolveAmountNumber(amount, path = Some("/amount")),
-      taxPaid.map(resolveTaxPaid(_, path = Some("/taxPaid"))).getOrElse(Valid(()))
+      resolveAmountNumber(amount, path = "/amount"),
+      taxPaid.map(resolveTaxPaid(_, path = "/taxPaid")).getOrElse(Valid(()))
     ).map(_ => parsed)
   }
 

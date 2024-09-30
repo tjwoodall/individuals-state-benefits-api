@@ -16,21 +16,21 @@
 
 package v1.createBenefit
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.hateoas.Method.{DELETE, GET, PUT}
-import api.hateoas.{HateoasWrapper, Link}
-import api.mocks.hateoas.MockHateoasFactory
-import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import api.models.domain.{BenefitType, Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
+import shared.config.MockSharedAppConfig
+import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import shared.hateoas.Method.{DELETE, GET, PUT}
+import shared.hateoas.{HateoasWrapper, Link, MockHateoasFactory}
+import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import shared.models.domain.TaxYear
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.MockAuditService
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 import v1.createBenefit.model.response.{CreateBenefitHateoasData, CreateBenefitResponse}
+import v1.models.domain.BenefitType
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class CreateBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with MockAppConfig
+    with MockSharedAppConfig
     with MockCreateBenefitService
     with MockAuditService
     with MockCreateBenefitValidatorFactory
@@ -66,7 +66,7 @@ class CreateBenefitControllerSpec
   )
 
   val requestData: Def1_CreateBenefitRequestData = Def1_CreateBenefitRequestData(
-    nino = Nino(nino),
+    nino = parsedNino,
     taxYear = TaxYear.fromMtd(taxYear),
     body = createStateBenefitRequestBody
   )
@@ -74,9 +74,9 @@ class CreateBenefitControllerSpec
   val responseData: CreateBenefitResponse = CreateBenefitResponse(benefitId)
 
   private val testHateoasLinks = List(
-    Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, rel = "self"),
-    api.hateoas.Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", PUT, rel = "amend-state-benefit"),
-    api.hateoas.Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", DELETE, rel = "delete-state-benefit")
+    Link(s"/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId", GET, rel = "self"),
+    Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId", PUT, rel = "amend-state-benefit"),
+    Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId", DELETE, rel = "delete-state-benefit")
   )
 
   val responseJson: JsValue = Json.parse(
@@ -85,17 +85,17 @@ class CreateBenefitControllerSpec
        |   "benefitId": "$benefitId",
        |   "links": [
        |         {
-       |         "href": "/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+       |         "href": "/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId",
        |         "rel": "self",
        |         "method": "GET"
        |      },
        |      {
-       |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+       |         "href": "/individuals/state-benefits/$validNino/$taxYear/$benefitId",
        |         "rel": "amend-state-benefit",
        |         "method": "PUT"
        |      },
        |      {
-       |         "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+       |         "href": "/individuals/state-benefits/$validNino/$taxYear/$benefitId",
        |         "rel": "delete-state-benefit",
        |         "method": "DELETE"
        |      }
@@ -114,7 +114,7 @@ class CreateBenefitControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData))))
 
         MockHateoasFactory
-          .wrap(responseData, CreateBenefitHateoasData(nino, taxYear, benefitId))
+          .wrap(responseData, CreateBenefitHateoasData(validNino, taxYear, benefitId))
           .returns(HateoasWrapper(responseData, testHateoasLinks))
 
         runOkTestWithAudit(
@@ -145,7 +145,7 @@ class CreateBenefitControllerSpec
     }
   }
 
-  private trait Test extends ControllerTest with AuditEventChecking {
+  private trait Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller = new CreateBenefitController(
       authService = mockEnrolmentsAuthService,
@@ -158,13 +158,13 @@ class CreateBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
-    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+    MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
-    protected def callController(): Future[Result] = controller.createStateBenefit(nino, taxYear)(fakePostRequest(requestBodyJson))
+    protected def callController(): Future[Result] = controller.createStateBenefit(validNino, taxYear)(fakePostRequest(requestBodyJson))
 
     def event(auditResponse: AuditResponse, requestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
@@ -173,10 +173,10 @@ class CreateBenefitControllerSpec
         detail = GenericAuditDetail(
           userType = "Individual",
           agentReferenceNumber = None,
-          params = Map("nino" -> nino, "taxYear" -> taxYear),
+          params = Map("nino" -> validNino, "taxYear" -> taxYear),
           requestBody = Some(requestBodyJson),
           `X-CorrelationId` = correlationId,
-          versionNumber = "1.0",
+          versionNumber = apiVersion.name,
           auditResponse = auditResponse
         )
       )

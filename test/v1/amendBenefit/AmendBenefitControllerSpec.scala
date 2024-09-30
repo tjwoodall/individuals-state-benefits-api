@@ -16,19 +16,18 @@
 
 package v1.amendBenefit
 
-import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import api.hateoas.Method.{DELETE, GET, PUT}
-import api.hateoas.{HateoasWrapper, Link}
-import api.mocks.hateoas.MockHateoasFactory
-import api.mocks.services.MockAuditService
-import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import api.models.domain.{Nino, TaxYear}
-import api.models.errors._
-import api.models.outcomes.ResponseWrapper
-import mocks.MockAppConfig
+import shared.config.MockSharedAppConfig
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
+import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import shared.hateoas.Method.{DELETE, GET, PUT}
+import shared.hateoas.{HateoasWrapper, Link, MockHateoasFactory}
+import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import shared.models.domain.TaxYear
+import shared.models.errors._
+import shared.models.outcomes.ResponseWrapper
+import shared.services.MockAuditService
 import v1.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v1.amendBenefit.model.response.AmendBenefitHateoasData
 import v1.models.domain.BenefitId
@@ -39,7 +38,7 @@ import scala.concurrent.Future
 class AmendBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with MockAppConfig
+    with MockSharedAppConfig
     with MockAmendBenefitService
     with MockAmendBenefitValidatorFactory
     with MockAuditService
@@ -59,13 +58,13 @@ class AmendBenefitControllerSpec
 
   private val requestBody = Def1_AmendBenefitRequestBody("2020-04-06", Some("2021-01-01"))
 
-  private val requestData = Def1_AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), requestBody)
+  private val requestData = Def1_AmendBenefitRequestData(parsedNino, TaxYear.fromMtd(taxYear), BenefitId(benefitId), requestBody)
 
   private val testHateoasLinks = List(
-    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", PUT, "amend-state-benefit"),
-    Link(s"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId", GET, "self"),
-    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId", DELETE, "delete-state-benefit"),
-    Link(s"/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts", PUT, "amend-state-benefit-amounts")
+    Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId", PUT, "amend-state-benefit"),
+    Link(s"/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId", GET, "self"),
+    Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId", DELETE, "delete-state-benefit"),
+    Link(s"/individuals/state-benefits/$validNino/$taxYear/$benefitId/amounts", PUT, "amend-state-benefit-amounts")
   )
 
   private val responseJson = Json.parse(
@@ -73,22 +72,22 @@ class AmendBenefitControllerSpec
        |{
        |  "links": [
        |    {
-       |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+       |      "href": "/individuals/state-benefits/$validNino/$taxYear/$benefitId",
        |      "method": "PUT",
        |      "rel": "amend-state-benefit"
        |    },
        |    {
-       |      "href": "/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
+       |      "href": "/individuals/state-benefits/$validNino/$taxYear?benefitId=$benefitId",
        |      "method": "GET",
        |      "rel": "self"
        |    },
        |    {
-       |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId",
+       |      "href": "/individuals/state-benefits/$validNino/$taxYear/$benefitId",
        |      "method": "DELETE",
        |      "rel": "delete-state-benefit"
        |    },
        |    {
-       |      "href": "/individuals/state-benefits/$nino/$taxYear/$benefitId/amounts",
+       |      "href": "/individuals/state-benefits/$validNino/$taxYear/$benefitId/amounts",
        |      "method": "PUT",
        |      "rel": "amend-state-benefit-amounts"
        |    }
@@ -107,7 +106,7 @@ class AmendBenefitControllerSpec
           .returns(Future.successful(Right(ResponseWrapper(correlationId, ()))))
 
         MockHateoasFactory
-          .wrap((), AmendBenefitHateoasData(nino, taxYear, benefitId))
+          .wrap((), AmendBenefitHateoasData(validNino, taxYear, benefitId))
           .returns(HateoasWrapper((), testHateoasLinks))
 
         runOkTestWithAudit(
@@ -138,7 +137,7 @@ class AmendBenefitControllerSpec
     }
   }
 
-  class Test extends ControllerTest with AuditEventChecking with MockAppConfig {
+  class Test extends ControllerTest with AuditEventChecking[GenericAuditDetail] {
 
     val controller = new AmendBenefitController(
       authService = mockEnrolmentsAuthService,
@@ -151,23 +150,23 @@ class AmendBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedAppConfig.featureSwitches.anyNumberOfTimes() returns Configuration(
+    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
-    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+    MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
-    protected def callController(): Future[Result] = controller.amendBenefit(nino, taxYear, benefitId)(fakePutRequest(requestBodyJson))
+    protected def callController(): Future[Result] = controller.amendBenefit(validNino, taxYear, benefitId)(fakeRequest.withBody(requestBodyJson))
 
     def event(auditResponse: AuditResponse, maybeRequestBody: Option[JsValue]): AuditEvent[GenericAuditDetail] =
       AuditEvent(
         auditType = "AmendStateBenefit",
         transactionName = "amend-state-benefit",
         detail = GenericAuditDetail(
-          versionNumber = "1.0",
+          versionNumber = apiVersion.name,
           userType = "Individual",
           agentReferenceNumber = None,
-          params = Map("nino" -> nino, "taxYear" -> taxYear, "benefitId" -> benefitId),
+          params = Map("nino" -> validNino, "taxYear" -> taxYear, "benefitId" -> benefitId),
           requestBody = maybeRequestBody,
           `X-CorrelationId` = correlationId,
           auditResponse = auditResponse

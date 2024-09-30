@@ -16,10 +16,11 @@
 
 package v1.amendBenefitAmounts
 
-import api.controllers.RequestContext
-import api.models.errors._
-import api.services.{BaseService, ServiceOutcome}
 import cats.implicits._
+import common.errors.BenefitIdFormatError
+import shared.controllers.RequestContext
+import shared.models.errors._
+import shared.services.{BaseService, ServiceOutcome}
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 
 import javax.inject.{Inject, Singleton}

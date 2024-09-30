@@ -16,16 +16,17 @@
 
 package v1.amendBenefitAmounts
 
-import api.connectors.{ConnectorSpec, DownstreamOutcome}
-import api.models.domain.{Nino, TaxYear}
-import api.models.outcomes.ResponseWrapper
+import config.MockStateBenefitsAppConfig
+import shared.connectors.{ConnectorSpec, DownstreamOutcome}
+import shared.models.domain.{Nino, TaxYear}
+import shared.models.outcomes.ResponseWrapper
 import v1.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 
 import scala.concurrent.Future
 
-class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
+class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenefitsAppConfig {
 
   private val nino      = "AA123456A"
   private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
@@ -71,8 +72,14 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
     val request: AmendBenefitAmountsRequestData = Def1_AmendBenefitAmountsRequestData(Nino(nino), taxYear, BenefitId(benefitId), body)
 
-    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockAppConfig)
+    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockSharedAppConfig, mockStateBenefitsAppConfig)
 
+  }
+
+  protected trait Api1651Test extends StandardConnectorTest {
+    override val name = "api1651"
+
+    MockedStateBenefitsAppConfig.api1651DownstreamConfig.anyNumberOfTimes() returns config
   }
 
 }

@@ -16,27 +16,26 @@
 
 package v1.amendBenefit.model.response
 
-import api.hateoas.Link
-import api.hateoas.Method._
-import mocks.MockAppConfig
-import support.UnitSpec
-import v1.amendBenefit.model.response.{AmendBenefitHateoasData, AmendBenefitResponse}
 
-class AmendBenefitResponseSpec extends UnitSpec with MockAppConfig {
+import shared.config.MockSharedAppConfig
+import shared.hateoas.Link
+import shared.hateoas.Method._
+import shared.utils.UnitSpec
+
+class AmendBenefitResponseSpec extends UnitSpec with MockSharedAppConfig {
 
   "LinksFactory" should {
     "produce the correct links" when {
       "called" in {
         val data: AmendBenefitHateoasData = AmendBenefitHateoasData("mynino", "mytaxyear", "mybenefitid")
 
-        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+        MockedSharedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
-        AmendBenefitResponse.AmendBenefitLinksFactory.links(mockAppConfig, data) shouldBe Seq(
+        AmendBenefitResponse.AmendBenefitLinksFactory.links(mockSharedAppConfig, data) shouldBe Seq(
           Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}", method = PUT, rel = "amend-state-benefit"),
-          api.hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
-          api.hateoas.Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}", method = DELETE, rel = "delete-state-benefit"),
-          api.hateoas
-            .Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts", method = PUT, rel = "amend-state-benefit-amounts")
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}", method = DELETE, rel = "delete-state-benefit"),
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts", method = PUT, rel = "amend-state-benefit-amounts")
         )
       }
     }

@@ -16,26 +16,24 @@
 
 package v1.amendBenefitAmounts.model.response
 
-import api.hateoas.Link
-import api.hateoas.Method._
-import mocks.MockAppConfig
-import support.UnitSpec
+import shared.config.MockSharedAppConfig
+import shared.hateoas.Link
+import shared.hateoas.Method._
+import shared.utils.UnitSpec
 
-class AmendBenefitAmountsResponseSpec extends UnitSpec with MockAppConfig {
+class AmendBenefitAmountsResponseSpec extends UnitSpec with MockSharedAppConfig {
 
   "LinksFactory" should {
     "produce the correct links" when {
       "called" in {
         val data: AmendBenefitAmountsHateoasData = AmendBenefitAmountsHateoasData("mynino", "mytaxyear", "mybenefitid")
 
-        MockedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
+        MockedSharedAppConfig.apiGatewayContext.returns("my/context").anyNumberOfTimes()
 
-        AmendBenefitAmountsResponse.AmendBenefitAmountsLinksFactory.links(mockAppConfig, data) shouldBe Seq(
+        AmendBenefitAmountsResponse.AmendBenefitAmountsLinksFactory.links(mockSharedAppConfig, data) shouldBe Seq(
           Link(href = s"/my/context/${data.nino}/${data.taxYear}?benefitId=${data.benefitId}", method = GET, rel = "self"),
-          api.hateoas
-            .Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts", method = PUT, rel = "amend-state-benefit-amounts"),
-          api.hateoas
-            .Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts", method = DELETE, rel = "delete-state-benefit-amounts")
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts", method = PUT, rel = "amend-state-benefit-amounts"),
+          Link(href = s"/my/context/${data.nino}/${data.taxYear}/${data.benefitId}/amounts", method = DELETE, rel = "delete-state-benefit-amounts")
         )
       }
     }

@@ -16,14 +16,14 @@
 
 package v1.createBenefit
 
-import api.controllers._
-import api.hateoas.HateoasFactory
-import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
-import config.AppConfig
 import play.api.libs.json.JsValue
 import play.api.mvc.{Action, ControllerComponents}
-import routing.{Version, Version1}
-import utils.IdGenerator
+import shared.config.SharedAppConfig
+import shared.controllers._
+import shared.hateoas.HateoasFactory
+import shared.routing.Version
+import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
+import shared.utils.IdGenerator
 import v1.createBenefit.model.response.CreateBenefitHateoasData
 
 import javax.inject.{Inject, Singleton}
@@ -37,7 +37,7 @@ class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          auditService: AuditService,
                                          hateoasFactory: HateoasFactory,
                                          cc: ControllerComponents,
-                                         idGenerator: IdGenerator)(implicit appConfig: AppConfig, ec: ExecutionContext)
+                                         idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
     extends AuthorisedController(cc) {
 
   val endpointName = "create-benefit"
@@ -61,7 +61,7 @@ class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
           auditService = auditService,
           auditType = "CreateStateBenefit",
           transactionName = "create-state-benefit",
-          apiVersion = Version.from(request, orElse = Version1),
+          apiVersion = Version(request),
           params = Map("nino" -> nino, "taxYear" -> taxYear),
           requestBody = Some(request.body),
           includeResponse = true

@@ -17,7 +17,7 @@
 package v1.createBenefit.model.request
 
 import play.api.libs.json.OWrites
-import utils.JsonWritesUtil
+import shared.utils.JsonWritesUtil
 import v1.createBenefit.def1.model.request.Def1_CreateBenefitRequestBody
 
 trait CreateBenefitRequestBody
