@@ -31,7 +31,7 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
 
   "IgnoreBenefitConnector" should {
     "return the expected response for a non-TYS request" when {
-      "a valid request is made" in new TysIfsTest with Test {
+      "a valid request is made" in new IfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
 
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))

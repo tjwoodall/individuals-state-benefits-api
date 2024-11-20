@@ -60,7 +60,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         result shouldBe outcome
       }
 
-      "the downstream call is successful and is tax year specific" in new TysIfsTest with Test {
+      "the downstream call is successful and is tax year specific" in new IfsTest with Test {
         def taxYear: TaxYear                               = TaxYear.fromMtd("2023-24")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
