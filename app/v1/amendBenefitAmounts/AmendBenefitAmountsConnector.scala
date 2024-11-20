@@ -16,7 +16,6 @@
 
 package v1.amendBenefitAmounts
 
-import config.StateBenefitsAppConfig
 import shared.config.SharedAppConfig
 import shared.connectors.DownstreamUri._
 import shared.connectors.httpparsers.StandardDownstreamHttpParser._
@@ -28,7 +27,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: SharedAppConfig, stateBenefitsAppConfig: StateBenefitsAppConfig) extends BaseDownstreamConnector {
+class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfig: SharedAppConfig) extends BaseDownstreamConnector {
 
   def amendBenefitAmounts(request: AmendBenefitAmountsRequestData)(implicit
       hc: HeaderCarrier,
@@ -39,11 +38,11 @@ class AmendBenefitAmountsConnector @Inject() (val http: HttpClient, val appConfi
 
     val downstreamUri =
       if (taxYear.useTaxYearSpecificApi) {
-        TaxYearSpecificIfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
+        IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
       } else {
         DownstreamUri(
           s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId",
-          DownstreamStrategy.standardStrategy(stateBenefitsAppConfig.api1651DownstreamConfig))
+          DownstreamStrategy.standardStrategy(appConfig.ifsDownstreamConfig))
       }
 
     put(body, downstreamUri)
