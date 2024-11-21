@@ -465,7 +465,7 @@ object ListBenefitsFixture {
        |   }
        |}""".stripMargin)
 
-  val desJsonWithNoAmounts: JsValue = Json.parse(s"""
+  val ifsJsonWithNoAmounts: JsValue = Json.parse(s"""
        |{
        |  "stateBenefits": {
        |    "incapacityBenefit": [
@@ -478,7 +478,7 @@ object ListBenefitsFixture {
        |   }
        |}""".stripMargin)
 
-  val desJsonWithNoDateIgnored: JsValue = Json.parse(s"""
+  val ifsJsonWithNoDateIgnored: JsValue = Json.parse(s"""
        |{
        |  "stateBenefits": {
        |    "incapacityBenefit": [
@@ -490,7 +490,7 @@ object ListBenefitsFixture {
        |   }
        |}""".stripMargin)
 
-  val desJson: JsValue = Json.parse(
+  val ifsJson: JsValue = Json.parse(
     s"""
        |{
        |  "stateBenefits": {

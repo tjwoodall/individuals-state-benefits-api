@@ -16,10 +16,9 @@
 
 package v1.deleteBenefitAmounts
 
-import config.StateBenefitsFeatureSwitches
 import play.api.http.Status.NO_CONTENT
 import shared.config.SharedAppConfig
-import shared.connectors.DownstreamUri.{DesUri, IfsUri}
+import shared.connectors.DownstreamUri.IfsUri
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import v1.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
@@ -44,10 +43,8 @@ class DeleteBenefitAmountsConnector @Inject() (val http: HttpClient, val appConf
     val downstreamUri = {
       if (taxYear.useTaxYearSpecificApi) {
         IfsUri[Unit](s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/$nino/$benefitId")
-      } else if (StateBenefitsFeatureSwitches().isDesIf_MigrationEnabled) {
-        IfsUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
       } else {
-        DesUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
+        IfsUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId")
       }
     }
 

@@ -82,7 +82,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, desJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, ifsJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -96,7 +96,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, desJson)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, OK, ifsJson)
         }
 
         val response: WSResponse = await(request(None).get())
@@ -165,7 +165,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, desJsonWithNoAmounts)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, ifsJsonWithNoAmounts)
         }
 
         val response: WSResponse = await(request(queryBenefitId).get())
@@ -182,7 +182,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           AuditStub.audit()
           AuthStub.authorised()
           MtdIdLookupStub.ninoFound(nino)
-          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, desJsonWithNoDateIgnored)
+          DownstreamStub.onSuccess(DownstreamStub.GET, downstreamUri, Map("benefitId" -> benefitId), OK, ifsJsonWithNoDateIgnored)
         }
 
         val response: WSResponse = await(request(queryBenefitId).get())
