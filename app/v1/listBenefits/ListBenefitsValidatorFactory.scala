@@ -16,14 +16,15 @@
 
 package v1.listBenefits
 
+import config.StateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import v1.listBenefits.def1.Def1_ListBenefitsValidator
 import v1.listBenefits.model.request.ListBenefitsRequestData
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class ListBenefitsValidatorFactory {
+class ListBenefitsValidatorFactory @Inject() (implicit stateBenefitsAppConfig: StateBenefitsAppConfig) {
 
   def validator(nino: String, taxYear: String, benefitId: Option[String]): Validator[ListBenefitsRequestData] =
     new Def1_ListBenefitsValidator(nino: String, taxYear: String, benefitId: Option[String])

@@ -21,8 +21,9 @@ import play.api.libs.json.Json
 import shared.utils.UnitSpec
 import v1.amendBenefit.def1.Def1_AmendBenefitValidator
 import v1.amendBenefit.model.request.AmendBenefitRequestData
+import config.MockStateBenefitsAppConfig
 
-class AmendBenefitValidatorFactorySpec extends UnitSpec {
+class AmendBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsAppConfig {
 
   private val validNino      = "AA123456A"
   private val validTaxYear   = "2022-23"
@@ -44,19 +45,17 @@ class AmendBenefitValidatorFactorySpec extends UnitSpec {
 
   "validator" should {
     "return the Def1 validator" when {
-      "given a valid request" in {
+      "given a valid request" in new AppConfigTest {
         val result: Validator[AmendBenefitRequestData] = validatorFactory.validator(validNino, validTaxYear, validBenefitId, validBody())
         result shouldBe a[Def1_AmendBenefitValidator]
 
       }
 
-      "given an invalid taxYear" in {
+      "given an invalid taxYear" in new AppConfigTest {
         val result: Validator[AmendBenefitRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId, validBody())
         result shouldBe a[Def1_AmendBenefitValidator]
 
       }
     }
-
   }
-
 }

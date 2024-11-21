@@ -16,12 +16,13 @@
 
 package v1.deleteBenefit
 
+import config.MockStateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import shared.utils.UnitSpec
 import v1.deleteBenefit.def1.Def1_DeleteBenefitValidator
 import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 
-class DeleteBenefitValidatorFactorySpec extends UnitSpec {
+class DeleteBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsAppConfig {
 
   private val validNino        = "AA123456A"
   private val validTaxYear     = "2023-24"
@@ -31,17 +32,16 @@ class DeleteBenefitValidatorFactorySpec extends UnitSpec {
 
   "validator" should {
     "return the Def1 validator" when {
-      "given a valid request" in {
+      "given a valid request" in new AppConfigTest {
         val result: Validator[DeleteBenefitRequestData] = validatorFactory.validator(validNino, validTaxYear, validBenefitId)
         result shouldBe a[Def1_DeleteBenefitValidator]
       }
 
-      "given an invalid taxYear" in {
+      "given an invalid taxYear" in new AppConfigTest {
         val result: Validator[DeleteBenefitRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId)
         result shouldBe a[Def1_DeleteBenefitValidator]
       }
     }
 
   }
-
 }

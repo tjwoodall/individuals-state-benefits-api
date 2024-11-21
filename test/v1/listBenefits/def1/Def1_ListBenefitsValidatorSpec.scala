@@ -17,13 +17,14 @@
 package v1.listBenefits.def1
 
 import common.errors.BenefitIdFormatError
+import config.MockStateBenefitsAppConfig
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
 import shared.utils.UnitSpec
 import v1.listBenefits.model.request.ListBenefitsRequestData
 import v1.models.domain.BenefitId
 
-class Def1_ListBenefitsValidatorSpec extends UnitSpec {
+class Def1_ListBenefitsValidatorSpec extends UnitSpec with MockStateBenefitsAppConfig {
 
   private implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
@@ -39,51 +40,51 @@ class Def1_ListBenefitsValidatorSpec extends UnitSpec {
 
   "validator" should {
     "return the parsed domain object" when {
-      "valid request data is supplied" in {
-        val result = validator(validNino, validTaxYear, validBenefitId).validateAndWrapResult()
+      "valid request data is supplied" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator(validNino, validTaxYear, validBenefitId).validateAndWrapResult()
         result shouldBe Right(ListBenefitsRequestData(parsedNino, parsedTaxYear, parsedBenefitId))
       }
-      "passed a valid request with no query parameters" in {
-        val result = validator(validNino, validTaxYear, None).validateAndWrapResult()
+      "passed a valid request with no query parameters" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator(validNino, validTaxYear, None).validateAndWrapResult()
         result shouldBe Right(ListBenefitsRequestData(parsedNino, parsedTaxYear, None))
       }
     }
 
     "return a single error" when {
-      "passed an invalid nino" in {
-        val result = validator("A12344A", validTaxYear, validBenefitId).validateAndWrapResult()
+      "passed an invalid nino" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator("A12344A", validTaxYear, validBenefitId).validateAndWrapResult()
 
         result shouldBe Left(ErrorWrapper(correlationId, NinoFormatError))
       }
 
-      "passed an invalid tax year" in {
-        val result = validator(validNino, "202223", validBenefitId).validateAndWrapResult()
+      "passed an invalid tax year" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator(validNino, "202223", validBenefitId).validateAndWrapResult()
 
         result shouldBe Left(ErrorWrapper(correlationId, TaxYearFormatError))
       }
 
-      "passed a tax year with an invalid range" in {
-        val result = validator(validNino, "2022-24", validBenefitId).validateAndWrapResult()
+      "passed a tax year with an invalid range" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator(validNino, "2022-24", validBenefitId).validateAndWrapResult()
 
         result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearRangeInvalidError))
       }
 
-      "passed a tax year that precedes the minimum" in {
-        val result = validator(validNino, "2018-19", validBenefitId).validateAndWrapResult()
+      "passed a tax year that precedes the minimum" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator(validNino, "2018-19", validBenefitId).validateAndWrapResult()
 
         result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))
       }
 
-      "passed an invalid benefitId" in {
-        val result = validator(validNino, validTaxYear, Some("invalid")).validateAndWrapResult()
+      "passed an invalid benefitId" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator(validNino, validTaxYear, Some("invalid")).validateAndWrapResult()
 
         result shouldBe Left(ErrorWrapper(correlationId, BenefitIdFormatError))
       }
     }
 
     "return multiple errors" when {
-      "passed multiple invalid fields" in {
-        val result = validator("not-a-nino", "not-a-tax-year", Some("not-a-benefit-id")).validateAndWrapResult()
+      "passed multiple invalid fields" in new AppConfigTest {
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator("not-a-nino", "not-a-tax-year", Some("not-a-benefit-id")).validateAndWrapResult()
 
         result shouldBe Left(
           ErrorWrapper(

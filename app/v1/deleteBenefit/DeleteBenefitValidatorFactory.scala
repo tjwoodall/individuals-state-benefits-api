@@ -16,14 +16,15 @@
 
 package v1.deleteBenefit
 
+import config.StateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import v1.deleteBenefit.def1.Def1_DeleteBenefitValidator
 import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class DeleteBenefitValidatorFactory {
+class DeleteBenefitValidatorFactory @Inject() (implicit stateBenefitsAppConfig: StateBenefitsAppConfig) {
 
   def validator(nino: String, taxYear: String, benefitId: String): Validator[DeleteBenefitRequestData] =
     taxYear match {

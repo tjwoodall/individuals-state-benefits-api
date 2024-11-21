@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package v1.controllers
+package config
 
-import shared.models.domain.TaxYear
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-package object validators {
-  val minimumPermittedTaxYear: TaxYear = TaxYear.fromMtd("2019-20")
+import javax.inject.{Inject, Singleton}
+
+@Singleton
+class StateBenefitsAppConfig @Inject() (protected val config: ServicesConfig) {
+  def minimumPermittedTaxYear: Int = config.getInt("minimumPermittedTaxYear")
 }

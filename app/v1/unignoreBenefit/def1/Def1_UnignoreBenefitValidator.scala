@@ -19,20 +19,22 @@ package v1.unignoreBenefit.def1
 import cats.data.Validated
 import cats.data.Validated._
 import cats.implicits._
+import config.StateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum}
+import shared.models.domain.TaxYear
 import shared.models.errors.MtdError
-import v1.controllers.validators.minimumPermittedTaxYear
-import v1.controllers.validators.resolvers.ResolveBenefitId
+import v1.controllers.resolvers.ResolveBenefitId
 import v1.unignoreBenefit.def1.model.request.Def1_UnignoreBenefitRequestData
 import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 import javax.inject.Singleton
 
 @Singleton
-class Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String) extends Validator[UnignoreBenefitRequestData] {
+class Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
+  extends Validator[UnignoreBenefitRequestData] {
 
-  private val resolveTaxYear = ResolveTaxYearMinimum(minimumPermittedTaxYear)
+  private val resolveTaxYear: ResolveTaxYearMinimum = ResolveTaxYearMinimum(TaxYear.ending(stateBenefitsAppConfig.minimumPermittedTaxYear))
 
     def validate: Validated[Seq[MtdError], Def1_UnignoreBenefitRequestData] = {
       (
