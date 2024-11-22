@@ -368,7 +368,7 @@ class ListBenefitsResponseSpec extends UnitSpec {
     "read from valid JSON" should {
 
       "produce the expected ListBenefitsResponse object" in {
-        desJson.as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe model
+        ifsJson.as[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] shouldBe model
       }
 
       def hmrcBenefit(benefitType: String, benefitId: String): HMRCStateBenefit = HMRCStateBenefit(

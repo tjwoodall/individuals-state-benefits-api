@@ -17,13 +17,15 @@
 package v1.deleteBenefitAmounts.def1
 
 import common.errors.BenefitIdFormatError
+import config.MockStateBenefitsAppConfig
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
 import shared.utils.UnitSpec
 import v1.deleteBenefitAmounts.def1.model.request.Def1_DeleteBenefitAmountsRequestData
+import v1.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 
-class Def1_DeleteBenefitAmountsValidatorSpec extends UnitSpec {
+class Def1_DeleteBenefitAmountsValidatorSpec extends UnitSpec with MockStateBenefitsAppConfig {
 
   private implicit val correlationId: String = "1234"
 
@@ -39,44 +41,44 @@ class Def1_DeleteBenefitAmountsValidatorSpec extends UnitSpec {
 
   "validator" should {
     "return the parsed domain object" when {
-      "passed a valid request" in {
-        val result = validator(validNino, validTaxYear, validBenefitId).validateAndWrapResult()
+      "passed a valid request" in new AppConfigTest {
+        val result: Either[ErrorWrapper, DeleteBenefitAmountsRequestData] = validator(validNino, validTaxYear, validBenefitId).validateAndWrapResult()
 
         result shouldBe Right(Def1_DeleteBenefitAmountsRequestData(parsedNino, parsedTaxYear, parsedBenefitId))
       }
     }
 
     "return a single error" when {
-      "passed an invalid nino" in {
-        val result = validator("A12344A", validTaxYear, validBenefitId).validateAndWrapResult()
+      "passed an invalid nino" in new AppConfigTest {
+        val result: Either[ErrorWrapper, DeleteBenefitAmountsRequestData] = validator("A12344A", validTaxYear, validBenefitId).validateAndWrapResult()
         result shouldBe Left(
           ErrorWrapper(correlationId, NinoFormatError)
         )
       }
 
-      "passed an invalid tax year" in {
-        val result = validator(validNino, "202223", validBenefitId).validateAndWrapResult()
+      "passed an invalid tax year" in new AppConfigTest {
+        val result: Either[ErrorWrapper, DeleteBenefitAmountsRequestData] = validator(validNino, "202223", validBenefitId).validateAndWrapResult()
         result shouldBe Left(
           ErrorWrapper(correlationId, TaxYearFormatError)
         )
       }
 
-      "passed a tax year with an invalid range" in {
-        val result = validator(validNino, "2022-24", validBenefitId).validateAndWrapResult()
+      "passed a tax year with an invalid range" in new AppConfigTest {
+        val result: Either[ErrorWrapper, DeleteBenefitAmountsRequestData] = validator(validNino, "2022-24", validBenefitId).validateAndWrapResult()
         result shouldBe Left(
           ErrorWrapper(correlationId, RuleTaxYearRangeInvalidError)
         )
       }
 
-      "passed a tax year that precedes the minimum" in {
-        val result = validator(validNino, "2018-19", validBenefitId).validateAndWrapResult()
+      "passed a tax year that precedes the minimum" in new AppConfigTest {
+        val result: Either[ErrorWrapper, DeleteBenefitAmountsRequestData] = validator(validNino, "2018-19", validBenefitId).validateAndWrapResult()
         result shouldBe Left(
           ErrorWrapper(correlationId, RuleTaxYearNotSupportedError)
         )
       }
 
-      "passed an invalid benefitId" in {
-        val result = validator(validNino, validTaxYear, "invalid").validateAndWrapResult()
+      "passed an invalid benefitId" in new AppConfigTest {
+        val result: Either[ErrorWrapper, DeleteBenefitAmountsRequestData] = validator(validNino, validTaxYear, "invalid").validateAndWrapResult()
         result shouldBe Left(
           ErrorWrapper(correlationId, BenefitIdFormatError)
         )
@@ -84,8 +86,9 @@ class Def1_DeleteBenefitAmountsValidatorSpec extends UnitSpec {
     }
 
     "return multiple errors" when {
-      "passed multiple invalid fields" in {
-        val result = validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id").validateAndWrapResult()
+      "passed multiple invalid fields" in new AppConfigTest {
+        val result: Either[ErrorWrapper, DeleteBenefitAmountsRequestData] =
+          validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id").validateAndWrapResult()
 
         result shouldBe Left(
           ErrorWrapper(
@@ -97,5 +100,4 @@ class Def1_DeleteBenefitAmountsValidatorSpec extends UnitSpec {
       }
     }
   }
-
 }

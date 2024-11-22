@@ -16,7 +16,6 @@
 
 package v1.deleteBenefitAmounts
 
-import play.api.Configuration
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
@@ -32,26 +31,10 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
 
   "DeleteBenefitAmountsConnector" should {
     "return a 200 result on delete" when {
-      "the downstream call is successful, not tax year specific and the desIf_Migration feature-switch is turned off" in new DesTest with Test {
-        def taxYear: TaxYear                               = TaxYear.fromMtd("2017-18")
-        val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
-
-        MockedSharedAppConfig.featureSwitchConfig returns Configuration("desIf_Migration.enabled" -> false)
-
-        willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
-          outcome)
-
-        val result: DownstreamOutcome[Unit] = await(connector.deleteBenefitAmounts(request))
-
-        result shouldBe outcome
-      }
-
-      "the downstream call is successful, not tax year specific and the desIf_Migration feature-switch is turned on" in new IfsTest with Test {
+      "the downstream call is successful and not tax year specific" in new IfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2017-18")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        MockedSharedAppConfig.featureSwitchConfig returns Configuration("desIf_Migration.enabled" -> true)
-
         willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
           outcome)
 
@@ -60,7 +43,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         result shouldBe outcome
       }
 
-      "the downstream call is successful and is tax year specific" in new TysIfsTest with Test {
+      "the downstream call is successful and is tax year specific" in new IfsTest with Test {
         def taxYear: TaxYear                               = TaxYear.fromMtd("2023-24")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 

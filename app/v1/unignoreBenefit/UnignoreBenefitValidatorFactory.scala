@@ -16,15 +16,16 @@
 
 package v1.unignoreBenefit
 
+import config.StateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import v1.unignoreBenefit.UnignoreBenefitSchema.Def1
 import v1.unignoreBenefit.def1.Def1_UnignoreBenefitValidator
 import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class UnignoreBenefitValidatorFactory {
+class UnignoreBenefitValidatorFactory @Inject() (implicit stateBenefitsAppConfig: StateBenefitsAppConfig) {
 
   def validator(nino: String, taxYear: String, benefitId: String): Validator[UnignoreBenefitRequestData] = {
 

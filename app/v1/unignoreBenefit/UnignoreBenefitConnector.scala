@@ -36,7 +36,7 @@ class UnignoreBenefitConnector @Inject() (val http: HttpClient, val appConfig: S
 
     import request._
 
-    val downstreamUri = TaxYearSpecificIfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/state-benefits/$nino/ignore/$benefitId")
+    val downstreamUri = IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/state-benefits/$nino/ignore/$benefitId")
 
     delete(downstreamUri)
   }

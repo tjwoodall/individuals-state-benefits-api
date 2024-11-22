@@ -28,12 +28,6 @@ import shared.support.IntegrationBaseSpec
 
 class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
-  override def servicesConfig: Map[String, Any] =  Map(
-    "microservice.services.api1651.host"       -> mockHost,
-    "microservice.services.api1651.port"       -> mockPort
-  ) ++ super.servicesConfig
-
-
   "Calling the 'amend benefit amounts' endpoint" should {
     "return a 200 status code" when {
       "any valid request is made" in new NonTysTest {

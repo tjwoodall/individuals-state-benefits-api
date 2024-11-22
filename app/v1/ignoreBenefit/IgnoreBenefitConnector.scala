@@ -37,7 +37,7 @@ class IgnoreBenefitConnector @Inject() (val http: HttpClient, val appConfig: Sha
     implicit val successCode: SuccessCode = SuccessCode(CREATED)
 
     import request._
-    val downstreamUri = TaxYearSpecificIfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
+    val downstreamUri = IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
     put(EmptyJsonBody, downstreamUri)
 
   }

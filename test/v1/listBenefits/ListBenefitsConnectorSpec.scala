@@ -94,7 +94,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
         }
       }
       "a benefitId is provided for a TYS tax year" must {
-        "return a 200 status for a success scenario" in new TysIfsTest with Test {
+        "return a 200 status for a success scenario" in new IfsTest with Test {
 
           val request: ListBenefitsRequestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd("2023-24"), Some(BenefitId(benefitId)))
           val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =

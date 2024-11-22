@@ -16,15 +16,16 @@
 
 package v1.amendBenefitAmounts
 
+import config.StateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import play.api.libs.json.JsValue
 import v1.amendBenefitAmounts.def1.Def1_AmendBenefitAmountsValidator
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 
-import javax.inject.Singleton
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AmendBenefitAmountsValidatorFactory {
+class AmendBenefitAmountsValidatorFactory @Inject() (implicit stateBenefitsAppConfig: StateBenefitsAppConfig) {
   def validator(nino: String, taxYear: String, benefitId: String, body: JsValue): Validator[AmendBenefitAmountsRequestData] =
     taxYear match {
       case _ => new Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)

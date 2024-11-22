@@ -16,7 +16,6 @@
 
 package v1.amendBenefitAmounts
 
-import config.MockStateBenefitsAppConfig
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
@@ -26,7 +25,7 @@ import v1.models.domain.BenefitId
 
 import scala.concurrent.Future
 
-class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenefitsAppConfig {
+class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
   private val nino      = "AA123456A"
   private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
@@ -35,7 +34,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenef
 
   "AmendBenefitAmountsConnector" should {
     "return the expected response for a non-TYS request" when {
-      "a valid request is made" in new Api1651Test with Test {
+      "a valid request is made" in new IfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2020-21")
 
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
@@ -51,7 +50,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenef
     }
 
     "return the expected response for a TYS request" when {
-      "a valid request is made" in new TysIfsTest with Test {
+      "a valid request is made" in new IfsTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
 
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
@@ -72,14 +71,8 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec with MockStateBenef
 
     val request: AmendBenefitAmountsRequestData = Def1_AmendBenefitAmountsRequestData(Nino(nino), taxYear, BenefitId(benefitId), body)
 
-    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockSharedAppConfig, mockStateBenefitsAppConfig)
+    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockSharedAppConfig)
 
-  }
-
-  protected trait Api1651Test extends StandardConnectorTest {
-    override val name = "api1651"
-
-    MockedStateBenefitsAppConfig.api1651DownstreamConfig.anyNumberOfTimes() returns config
   }
 
 }

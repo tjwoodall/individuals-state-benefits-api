@@ -19,24 +19,25 @@ package v1.amendBenefitAmounts.def1
 import cats.data.Validated
 import cats.data.Validated.Valid
 import cats.implicits.catsSyntaxTuple4Semigroupal
+import config.StateBenefitsAppConfig
 import play.api.libs.json.JsValue
 import shared.controllers.validators.Validator
 import shared.controllers.validators.resolvers.{ResolveNino, ResolveNonEmptyJsonObject, ResolveParsedNumber, ResolveTaxYearMinimum}
+import shared.models.domain.TaxYear
 import shared.models.errors.MtdError
 import v1.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
-import v1.controllers.validators.minimumPermittedTaxYear
-import v1.controllers.validators.resolvers.ResolveBenefitId
+import v1.controllers.resolvers.ResolveBenefitId
 
 import javax.inject.Singleton
 
 @Singleton
-class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)
+class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
     extends Validator[AmendBenefitAmountsRequestData] {
 
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_AmendBenefitAmountsRequestBody]()
 
-  private val resolveTaxYear = ResolveTaxYearMinimum(minimumPermittedTaxYear)
+  private val resolveTaxYear: ResolveTaxYearMinimum = ResolveTaxYearMinimum(TaxYear.ending(stateBenefitsAppConfig.minimumPermittedTaxYear))
 
   private val resolveAmountNumber = ResolveParsedNumber()
   private val resolveTaxPaid      = ResolveParsedNumber(min = -99999999999.99)

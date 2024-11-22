@@ -41,7 +41,7 @@ class ListBenefitsConnector @Inject() (val http: HttpClient, val appConfig: Shar
     import request._
 
     val downstreamUri = if (taxYear.useTaxYearSpecificApi) {
-      TaxYearSpecificIfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](
+      IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](
         s"income-tax/income/state-benefits/${taxYear.asTysDownstream}/${nino.nino}")
     } else {
       IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](s"income-tax/income/state-benefits/${nino.nino}/${taxYear.asMtd}")

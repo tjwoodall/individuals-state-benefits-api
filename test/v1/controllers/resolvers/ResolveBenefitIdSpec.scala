@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package v1.controllers.validators.resolvers
+package v1.controllers.resolvers
 
 import cats.data.Validated.{Invalid, Valid}
 import common.errors.BenefitIdFormatError

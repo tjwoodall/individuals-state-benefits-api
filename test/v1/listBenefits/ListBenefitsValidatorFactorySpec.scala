@@ -16,12 +16,13 @@
 
 package v1.listBenefits
 
+import config.MockStateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import shared.utils.UnitSpec
 import v1.listBenefits.def1.Def1_ListBenefitsValidator
 import v1.listBenefits.model.request.ListBenefitsRequestData
 
-class ListBenefitsValidatorFactorySpec extends UnitSpec {
+class ListBenefitsValidatorFactorySpec extends UnitSpec with MockStateBenefitsAppConfig {
 
   private val validNino      = "AA123456B"
   private val validTaxYear   = "2020-21"
@@ -32,12 +33,12 @@ class ListBenefitsValidatorFactorySpec extends UnitSpec {
 
   "validator" should {
     "return the Def1 validator" when {
-      "given a valid request" in {
+      "given a valid request" in new AppConfigTest {
         val result: Validator[ListBenefitsRequestData] = validatorFactory.validator(validNino, validTaxYear, validBenefitId)
         result shouldBe a[Def1_ListBenefitsValidator]
       }
 
-      "given an invalid taxYear" in {
+      "given an invalid taxYear" in new AppConfigTest {
         val result: Validator[ListBenefitsRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId)
         result shouldBe a[Def1_ListBenefitsValidator]
       }

@@ -18,16 +18,16 @@ package config
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
-import shared.config.DownstreamConfig
 
 trait MockStateBenefitsAppConfig extends MockFactory {
 
   implicit val mockStateBenefitsAppConfig: StateBenefitsAppConfig = mock[StateBenefitsAppConfig]
 
   object MockedStateBenefitsAppConfig {
-
-    def api1651DownstreamConfig: CallHandler[DownstreamConfig] = (() => mockStateBenefitsAppConfig.api1651DownstreamConfig).expects()
-
+    def minimumTaxYear: CallHandler[Int] = (() => mockStateBenefitsAppConfig.minimumPermittedTaxYear).expects()
   }
 
+  abstract class AppConfigTest(value: Int = 2020)  {
+    MockedStateBenefitsAppConfig.minimumTaxYear.anyNumberOfTimes() returns value
+  }
 }
