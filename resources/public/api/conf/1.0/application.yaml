@@ -6,12 +6,12 @@ info:
   description: |
     The following endpoints are stateful in the Sandbox:
 
-    - [Create State Benefit](#tag/Create-State-Benefit)
-    - [Amend State Benefit](#tag/Amend-State-Benefit)
-    - [Delete State Benefit](#tag/Delete-State-Benefit)
-    - [List State Benefits](#tag/List-State-Benefits)
-    - [Amend State Benefit Amounts](#tag/Amend-State-Benefit-Amounts)
-    - [Delete State Benefit Amounts](#tag/Delete-State-Benefit-Amounts)
+    - [Create State Benefit](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D/post)
+    - [Amend State Benefit](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D/put)
+    - [Delete State Benefit](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D/delete)
+    - [List State Benefits](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D/get)
+    - [Amend State Benefit Amounts](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D~1amounts/put)
+    - [Delete State Benefit Amounts](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D~1amounts/delete)
       
     # Send fraud prevention data
     HMRC monitors transactions to help protect your customers' confidential data from criminals and fraudsters. 
@@ -56,21 +56,6 @@ components:
           scopes:
             write:self-assessment: Grant write access
             read:self-assessment: Grant read access
-
-tags:
-  - name: Create State Benefit
-    description: Create a state benefit
-  - name: List State Benefits
-    description: List existing state benefits
-  - name: Amend State Benefit
-    description: Amend existing state benefit
-  - name: Delete State Benefit
-    description: Delete existing state benefit
-  - name: Amend State Benefit Amounts
-    description: Amend the amounts of state benefits
-  - name: Delete State Benefit Amounts
-    description: Delete state benefit amounts            
-
 paths:
   /individuals/state-benefits/{nino}/{taxYear}:
     $ref: "./benefit_endpoints.yaml"
