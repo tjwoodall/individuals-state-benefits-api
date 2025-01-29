@@ -25,7 +25,7 @@ import shared.services.DownstreamStub
 
 class StateBenefitsAuthSupportingAgentsAllowedISpec extends AuthSupportingAgentsAllowedISpec {
 
-  val callingApiVersion = "1.0"
+  val callingApiVersion = "2.0"
 
   val supportingAgentsAllowedEndpoint = "create-benefit"
 

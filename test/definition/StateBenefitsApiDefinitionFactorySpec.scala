@@ -22,7 +22,7 @@ import shared.config.MockSharedAppConfig
 import shared.definition.APIStatus.BETA
 import shared.definition.{APIDefinition, APIVersion, Definition}
 import shared.mocks.MockHttpClient
-import shared.routing.Version1
+import shared.routing.{Version1, Version2}
 import shared.utils.UnitSpec
 
 class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
@@ -39,6 +39,10 @@ class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
         MockedSharedAppConfig.endpointsEnabled(Version1) returns true
         MockedSharedAppConfig.deprecationFor(Version1).returns(NotDeprecated.valid).anyNumberOfTimes()
 
+        MockedSharedAppConfig.apiStatus(Version2) returns "BETA"
+        MockedSharedAppConfig.endpointsEnabled(Version2) returns true
+        MockedSharedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+
         apiDefinitionFactory.definition shouldBe
           Definition(
             api = APIDefinition(
@@ -49,6 +53,11 @@ class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
               versions = Seq(
                 APIVersion(
                   version = Version1,
+                  status = BETA,
+                  endpointsEnabled = true
+                ),
+                APIVersion(
+                  version = Version2,
                   status = BETA,
                   endpointsEnabled = true
                 )

@@ -1,0 +1,90 @@
+summary: List State Benefits
+description: |
+  This endpoint allows you to retrieve a list of all state benefits.
+  
+  A National Insurance number and a tax year that ended must be provided.
+  
+  Any HMRC held benefit amounts that have been amended, will result in a duplicate benefit with the same benefit ID, within the `customerAddedStateBenefits` array.
+  
+  ### Test data
+  Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+  
+  | Header Value (Gov-Test-Scenario)    | Scenario                                                                        |
+  |-------------------------------------|---------------------------------------------------------------------------------|
+  | N/A - DEFAULT                       | Simulates a list of all state benefit types.                                    |
+  | N/A - DEFAULT<br>using **benefitId** parameter | Simulates a single HMRC held state benefit.                          |
+  | HMRC_AMENDED_AMOUNTS                | Simulates the response where HMRC held state benefit amounts have been amended. |
+  | NOT_FOUND                           | Simulates the scenario where no data is found.                                  |
+  | DYNAMIC                             | The following response parameters will be based on the data submitted in the request:<br> • SubmittedOn<br> • BenefitID<br> • startDate<br> • endDate |
+  | STATEFUL                            | Performs a stateful list.                                                       |
+parameters:
+  - $ref: './common/pathParameters.yaml#/components/parameters/nino'
+  - $ref: './common/pathParameters.yaml#/components/parameters/taxYear'
+  - $ref: './common/queryParameters.yaml#/components/parameters/benefitId'
+  - $ref: './common/headers.yaml#/components/parameters/acceptHeader'
+  - $ref: './common/headers.yaml#/components/parameters/authorizationReadScopeHeader'
+  - $ref: './common/headers.yaml#/components/parameters/testScenarioHeader'
+
+security:
+  - User-Restricted:
+      - read:self-assessment
+
+responses:
+  "200":
+    description: Success
+    headers:
+      X-CorrelationId:
+        $ref: './common/headers.yaml#/components/parameters/correlationId'
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/list_benefit_response.json'
+        examples:
+          full-list:
+            description: Full list
+            value:
+              $ref: './examples/listStateBenefit/list_response.json'
+          individual-benefit:
+            description: Single benefit returned by using query parameter
+            value:
+              $ref: './examples/listStateBenefit/single_response.json'
+
+  "400":
+    description: Bad request
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          FORMAT_NINO:
+            $ref: './common/errors.yaml#/components/examples/formatNino'
+          FORMAT_TAX_YEAR:
+            $ref: './common/errors.yaml#/components/examples/formatTaxYear'
+          FORMAT_BENEFIT_ID:
+            $ref: './common/errors.yaml#/components/examples/formatBenefitId'
+          RULE_TAX_YEAR_RANGE_INVALID:
+            $ref: './common/errors.yaml#/components/examples/ruleTaxYearRangeInvalid'
+          RULE_TAX_YEAR_NOT_SUPPORTED:
+            $ref: './common/errors.yaml#/components/examples/ruleTaxYearNotSupported'
+          RULE_INCORRECT_GOV_TEST_SCENARIO:
+            $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
+
+  "403":
+    description: Forbidden
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          CLIENT_OR_AGENT_NOT_AUTHORISED:
+            $ref: './common/errors.yaml#/components/examples/clientOrAgentNotAuthorised'
+
+  "404":
+    description: Not Found
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          MATCHING_RESOURCE_NOT_FOUND:
+            $ref: './common/errors.yaml#/components/examples/notFound'

@@ -1,0 +1,11 @@
+DELETE     /:nino/:taxYear/:benefitId/amounts       v2.deleteBenefitAmounts.DeleteBenefitAmountsController.deleteBenefitAmounts(nino: String, taxYear: String, benefitId: String)
+PUT        /:nino/:taxYear/:benefitId/amounts       v2.amendBenefitAmounts.AmendBenefitAmountsController.amendBenefitAmounts(nino: String, taxYear: String, benefitId: String)
+
+POST        /:nino/:taxYear/:benefitId/ignore       v2.ignoreBenefit.IgnoreBenefitController.ignoreBenefit(nino: String, taxYear: String, benefitId: String)
+POST        /:nino/:taxYear/:benefitId/unignore     v2.unignoreBenefit.UnignoreBenefitController.unignoreBenefit(nino: String, taxYear: String, benefitId: String)
+DELETE     /:nino/:taxYear/:benefitId               v2.deleteBenefit.DeleteBenefitController.deleteBenefit(nino: String, taxYear: String, benefitId: String)
+
+PUT        /:nino/:taxYear/:benefitId               v2.amendBenefit.AmendBenefitController.amendBenefit(nino: String, taxYear: String, benefitId: String)
+POST       /:nino/:taxYear                          v2.createBenefit.CreateBenefitController.createStateBenefit(nino: String, taxYear: String)
+GET        /:nino/:taxYear                          v2.listBenefits.ListBenefitsController.listBenefits(nino: String, taxYear: String, benefitId: Option[String])
+

@@ -1,0 +1,6 @@
+post:
+  $ref: "./benefit_unignore.yaml"
+  summary: Unignore State Benefit
+  security:
+    - User-Restricted:
+        - write:self-assessment
