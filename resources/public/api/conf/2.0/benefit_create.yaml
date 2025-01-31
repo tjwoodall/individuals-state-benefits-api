@@ -91,7 +91,7 @@ responses:
             $ref: './common/errors.yaml#/components/examples/ruleEndDateBeforeTaxYearStart'
           RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
             $ref: './common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBody'
-          RULE_BENEFIT_TYPE_EXISTS:x
+          RULE_BENEFIT_TYPE_EXISTS:
             $ref: './common/errors.yaml#/components/examples/ruleBenefitTypeExists'
           RULE_INCORRECT_GOV_TEST_SCENARIO:
             $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
