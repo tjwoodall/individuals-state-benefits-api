@@ -17,7 +17,7 @@
 package v2.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import common.errors.{BenefitIdFormatError, RuleUpdateForbiddenError}
+import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow, RuleUpdateForbiddenError}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -234,6 +234,7 @@ class AmendBenefitControllerISpec extends IntegrationBaseSpec {
           (FORBIDDEN, "UPDATE_FORBIDDEN", BAD_REQUEST, RuleUpdateForbiddenError),
           (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, InternalError),
           (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
+          (UNPROCESSABLE_ENTITY, "OUTSIDE_AMENDMENT_WINDOW", BAD_REQUEST, RuleOutsideAmendmentWindow),
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError),
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError)
         )

@@ -16,7 +16,7 @@
 
 package v2.amendBenefitAmounts
 
-import common.errors.BenefitIdFormatError
+import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
 import shared.models.outcomes.ResponseWrapper
@@ -63,15 +63,16 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         }
 
       val errors = List(
-        ("INCOME_SOURCE_NOT_FOUND", NotFoundError),
-        ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
-        ("INVALID_TAX_YEAR", TaxYearFormatError),
-        ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-        ("INVALID_CORRELATIONID", InternalError),
-        ("INVALID_PAYLOAD", InternalError),
-        ("INVALID_REQUEST_BEFORE_TAX_YEAR", RuleTaxYearNotEndedError),
-        ("SERVER_ERROR", InternalError),
-        ("SERVICE_UNAVAILABLE", InternalError)
+        "INCOME_SOURCE_NOT_FOUND"          -> NotFoundError,
+        "INVALID_TAXABLE_ENTITY_ID"        -> NinoFormatError,
+        "INVALID_TAX_YEAR"                 -> TaxYearFormatError,
+        "INVALID_BENEFIT_ID"               -> BenefitIdFormatError,
+        "INVALID_CORRELATIONID"            -> InternalError,
+        "INVALID_PAYLOAD"                  -> InternalError,
+        "INVALID_REQUEST_BEFORE_TAX_YEAR"  -> RuleTaxYearNotEndedError,
+        "OUTSIDE_AMENDMENT_WINDOW"         -> RuleOutsideAmendmentWindow,
+        "SERVER_ERROR"                     -> InternalError,
+        "SERVICE_UNAVAILABLE"              -> InternalError
       )
 
       val extraTysErrors = List(

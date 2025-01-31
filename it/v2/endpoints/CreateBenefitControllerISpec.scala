@@ -17,7 +17,7 @@
 package v2.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import common.errors.{BenefitTypeFormatError, RuleBenefitTypeExists, RuleEndDateBeforeTaxYearStartError, RuleStartDateAfterTaxYearEndError}
+import common.errors.{BenefitTypeFormatError, RuleBenefitTypeExists, RuleEndDateBeforeTaxYearStartError, RuleOutsideAmendmentWindow, RuleStartDateAfterTaxYearEndError}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
@@ -203,6 +203,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "INVALID_CESSATION_DATE", BAD_REQUEST, RuleEndDateBeforeTaxYearStartError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, InternalError),
           (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, InternalError),
+          (UNPROCESSABLE_ENTITY, "OUTSIDE_AMENDMENT_WINDOW", BAD_REQUEST, RuleOutsideAmendmentWindow),
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError),
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError)
         )

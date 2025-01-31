@@ -10,6 +10,7 @@ description: |
   | N/A - DEFAULT                    | Simulate success response.                                                                                                    |
   | NOT_FOUND                        | Simulates the scenario where no data is found.                                                                                |
   | TAX_YEAR_NOT_ENDED               | Simulates the error returned when a benefit that is not employmentSupportAllowance or jobSeekersAllowance is amended in year. |
+  | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.                               |
   | STATEFUL                         | Performs a stateful update.                                                                                                   |
 
 parameters:
@@ -68,6 +69,8 @@ responses:
             $ref: './common/errors.yaml#/components/examples/ruleIncorrectOrEmptyBody'
           RULE_INCORRECT_GOV_TEST_SCENARIO:
             $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
+          RULE_OUSIDE_AMENDMENT_WINDOW:
+            $ref: './common/errors.yaml#/components/examples/ruleOutsideAmendmentWindow'
 
   "403":
     description: Forbidden

@@ -17,7 +17,7 @@
 package v2.amendBenefitAmounts
 
 import cats.implicits._
-import common.errors.BenefitIdFormatError
+import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow}
 import shared.controllers.RequestContext
 import shared.models.errors._
 import shared.services.{BaseService, ServiceOutcome}
@@ -44,6 +44,7 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
       "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
       "INVALID_PAYLOAD"                 -> InternalError,
       "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
+      "OUTSIDE_AMENDMENT_WINDOW"        -> RuleOutsideAmendmentWindow,
       "SERVER_ERROR"                    -> InternalError,
       "SERVICE_UNAVAILABLE"             -> InternalError
     )
