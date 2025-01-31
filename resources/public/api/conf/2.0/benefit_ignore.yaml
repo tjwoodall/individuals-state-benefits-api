@@ -6,12 +6,13 @@ description: |
   ### Test data
   Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
   
-  | Header Value (Gov-Test-Scenario) | Scenario                                                                                     |
-  |----------------------------------|----------------------------------------------------------------------------------------------|
-  | N/A - DEFAULT                    | Simulates success response.                                                                  |
-  | IGNORE_FORBIDDEN                 | Simulates the scenario in which a benefit is customer added and therefore cannot be ignored. |
-  | NOT_FOUND                        | Simulates the scenario where no data is found.                                               |
-  | TAX_YEAR_NOT_ENDED               | Simulates the scenario where the tax year provided has not ended.                            |
+  | Header Value (Gov-Test-Scenario) | Scenario                                                                                       |
+  |----------------------------------|------------------------------------------------------------------------------------------------|
+  | N/A - DEFAULT                    | Simulates success response.                                                                    |
+  | IGNORE_FORBIDDEN                 | Simulates the scenario in which a benefit is customer added and therefore cannot be ignored.   |
+  | NOT_FOUND                        | Simulates the scenario where no data is found.                                                 |
+  | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
+  | TAX_YEAR_NOT_ENDED               | Simulates the scenario where the tax year provided has not ended.                              |
 
 parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'
@@ -56,6 +57,8 @@ responses:
             $ref: './common/errors.yaml#/components/examples/ruleIgnoreForbidden'
           RULE_INCORRECT_GOV_TEST_SCENARIO:
             $ref: './common/errors.yaml#/components/examples/ruleIncorrectGovTestScenario'
+          RULE_OUSIDE_AMENDMENT_WINDOW:
+            $ref: './common/errors.yaml#/components/examples/ruleOutsideAmendmentWindow'
 
   "403":
     description: Forbidden
