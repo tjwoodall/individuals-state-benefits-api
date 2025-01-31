@@ -63,17 +63,18 @@ class AmendBenefitServiceSpec extends ServiceSpec {
         }
 
       val errors = List(
-        ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
-        ("INVALID_TAX_YEAR", TaxYearFormatError),
-        ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-        ("INVALID_CORRELATIONID", InternalError),
-        ("INVALID_PAYLOAD", InternalError),
-        ("UPDATE_FORBIDDEN", RuleUpdateForbiddenError),
-        ("NO_DATA_FOUND", NotFoundError),
-        ("INVALID_START_DATE", RuleStartDateAfterTaxYearEndError),
-        ("INVALID_CESSATION_DATE", RuleEndDateBeforeTaxYearStartError),
-        ("SERVER_ERROR", InternalError),
-        ("SERVICE_UNAVAILABLE", InternalError)
+        "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+        "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+        "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+        "INVALID_CORRELATIONID"     -> InternalError,
+        "INVALID_PAYLOAD"           -> InternalError,
+        "UPDATE_FORBIDDEN"          -> RuleUpdateForbiddenError,
+        "NO_DATA_FOUND"             -> NotFoundError,
+        "INVALID_START_DATE"        -> RuleStartDateAfterTaxYearEndError,
+        "INVALID_CESSATION_DATE"    -> RuleEndDateBeforeTaxYearStartError,
+        "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
+        "SERVER_ERROR"              -> InternalError,
+        "SERVICE_UNAVAILABLE"       -> InternalError
       )
 
       errors.foreach((serviceError _).tupled)

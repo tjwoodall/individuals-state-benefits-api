@@ -20,7 +20,7 @@ import shared.controllers.RequestContext
 import shared.models.errors._
 import shared.services.{BaseService, ServiceOutcome}
 import cats.implicits._
-import common.errors.{BenefitIdFormatError, RuleUnignoreForbiddenError}
+import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow, RuleUnignoreForbiddenError}
 import v2.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 import javax.inject.{Inject, Singleton}
@@ -36,15 +36,16 @@ class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) ext
   }
 
   private val downstreamErrorMap: Map[String, MtdError] = Map(
-    ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
-    ("INVALID_TAX_YEAR", TaxYearFormatError),
-    ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-    ("CUSTOMER_ADDED", RuleUnignoreForbiddenError),
-    ("NO_DATA_FOUND", NotFoundError),
-    ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
-    ("BEFORE_TAX_YEAR_ENDED", RuleTaxYearNotEndedError),
-    ("SERVICE_ERROR", InternalError),
-    ("SERVICE_UNAVAILABLE", InternalError)
+    "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+    "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+    "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+    "CUSTOMER_ADDED"            -> RuleUnignoreForbiddenError,
+    "NO_DATA_FOUND"             -> NotFoundError,
+    "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
+    "BEFORE_TAX_YEAR_ENDED"     -> RuleTaxYearNotEndedError,
+    "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
+    "SERVICE_ERROR"             -> InternalError,
+    "SERVICE_UNAVAILABLE"       -> InternalError
   )
 
 }

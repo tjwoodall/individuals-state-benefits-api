@@ -16,7 +16,7 @@
 
 package v2.deleteBenefit
 
-import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError}
+import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError, RuleOutsideAmendmentWindow}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
 import shared.models.outcomes.ResponseWrapper
@@ -60,14 +60,15 @@ class DeleteBenefitServiceSpec extends ServiceSpec {
           }
 
         val errors = List(
-          ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
-          ("INVALID_TAX_YEAR", TaxYearFormatError),
-          ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-          ("DELETE_FORBIDDEN", RuleDeleteForbiddenError),
-          ("INVALID_CORRELATIONID", InternalError),
-          ("NO_DATA_FOUND", NotFoundError),
-          ("SERVER_ERROR", InternalError),
-          ("SERVICE_UNAVAILABLE", InternalError)
+          "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+          "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+          "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+          "DELETE_FORBIDDEN"          -> RuleDeleteForbiddenError,
+          "INVALID_CORRELATIONID"     -> InternalError,
+          "NO_DATA_FOUND"             -> NotFoundError,
+          "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
+          "SERVER_ERROR"              -> InternalError,
+          "SERVICE_UNAVAILABLE"       -> InternalError
         )
 
         errors.foreach((serviceError _).tupled)

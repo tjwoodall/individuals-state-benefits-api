@@ -20,7 +20,7 @@ import shared.controllers.RequestContext
 import shared.models.errors._
 import shared.services.{BaseService, ServiceOutcome}
 import cats.implicits._
-import common.errors.BenefitIdFormatError
+import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow}
 import v2.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
 
 import javax.inject.{Inject, Singleton}
@@ -40,6 +40,7 @@ class DeleteBenefitAmountsService @Inject() (connector: DeleteBenefitAmountsConn
       "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
       "INVALID_TAX_YEAR"          -> TaxYearFormatError,
       "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+      "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
       "NO_DATA_FOUND"             -> NotFoundError,
       "SERVER_ERROR"              -> InternalError,
       "SERVICE_UNAVAILABLE"       -> InternalError

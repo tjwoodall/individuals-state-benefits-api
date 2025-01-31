@@ -43,6 +43,7 @@ class AmendBenefitService @Inject() (connector: AmendBenefitConnector) extends B
     "NO_DATA_FOUND"             -> NotFoundError,
     "INVALID_START_DATE"        -> RuleStartDateAfterTaxYearEndError,
     "INVALID_CESSATION_DATE"    -> RuleEndDateBeforeTaxYearStartError,
+    "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
     "SERVER_ERROR"              -> InternalError,
     "SERVICE_UNAVAILABLE"       -> InternalError
   )

@@ -43,3 +43,5 @@ object RuleIgnoreForbiddenError extends MtdError("RULE_IGNORE_FORBIDDEN", "A cus
 object RuleUnignoreForbiddenError extends MtdError("RULE_UNIGNORE_FORBIDDEN", "A customer added state benefit cannot be unignored", BAD_REQUEST)
 
 object RuleBenefitTypeExists extends MtdError("RULE_BENEFIT_TYPE_EXISTS", "A benefit of this type has already been created", BAD_REQUEST)
+
+object RuleOutsideAmendmentWindow extends  MtdError("RULE_OUTSIDE_AMENDMENT_WINDOW", "You are outside the amendment window", BAD_REQUEST)

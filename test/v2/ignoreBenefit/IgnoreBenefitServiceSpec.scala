@@ -16,7 +16,7 @@
 
 package v2.ignoreBenefit
 
-import common.errors.{BenefitIdFormatError, RuleIgnoreForbiddenError}
+import common.errors.{BenefitIdFormatError, RuleIgnoreForbiddenError, RuleOutsideAmendmentWindow}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
 import shared.models.outcomes.ResponseWrapper
@@ -60,16 +60,17 @@ class IgnoreBenefitServiceSpec extends ServiceSpec {
           }
 
         val errors = List(
-          ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
-          ("INVALID_TAX_YEAR", TaxYearFormatError),
-          ("INVALID_BENEFIT_ID", BenefitIdFormatError),
-          ("INVALID_CORRELATION_ID", InternalError),
-          ("IGNORE_FORBIDDEN", RuleIgnoreForbiddenError),
-          ("NO_DATA_FOUND", NotFoundError),
-          ("NOT_SUPPORTED_TAX_YEAR", RuleTaxYearNotEndedError),
-          ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
-          ("SERVICE_ERROR", InternalError),
-          ("SERVICE_UNAVAILABLE", InternalError)
+          "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+          "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+          "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+          "INVALID_CORRELATION_ID"    -> InternalError,
+          "IGNORE_FORBIDDEN"          -> RuleIgnoreForbiddenError,
+          "NO_DATA_FOUND"             -> NotFoundError,
+          "NOT_SUPPORTED_TAX_YEAR"    -> RuleTaxYearNotEndedError,
+          "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
+          "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
+          "SERVICE_ERROR"             -> InternalError,
+          "SERVICE_UNAVAILABLE"       -> InternalError
         )
 
         errors.foreach((serviceError _).tupled)

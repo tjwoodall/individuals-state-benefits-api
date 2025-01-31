@@ -17,7 +17,7 @@
 package v2.deleteBenefit
 
 import cats.implicits._
-import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError}
+import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError, RuleOutsideAmendmentWindow}
 import shared.controllers.RequestContext
 import shared.models.errors._
 import shared.services.{BaseService, ServiceOutcome}
@@ -39,6 +39,7 @@ class DeleteBenefitService @Inject() (connector: DeleteBenefitConnector) extends
     "INVALID_TAX_YEAR"          -> TaxYearFormatError,
     "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
     "DELETE_FORBIDDEN"          -> RuleDeleteForbiddenError,
+    "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
     "NO_DATA_FOUND"             -> NotFoundError,
     "SERVER_ERROR"              -> InternalError,
     "SERVICE_UNAVAILABLE"       -> InternalError

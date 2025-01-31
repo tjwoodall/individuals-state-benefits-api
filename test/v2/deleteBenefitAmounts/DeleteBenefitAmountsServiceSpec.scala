@@ -16,7 +16,7 @@
 
 package v2.deleteBenefitAmounts
 
-import common.errors.BenefitIdFormatError
+import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.errors._
 import shared.models.outcomes.ResponseWrapper
@@ -65,6 +65,7 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
           "INVALID_CORRELATIONID"     -> InternalError,
           "INVALID_CORRELATION_ID"    -> InternalError,
           "NO_DATA_FOUND"             -> NotFoundError,
+          "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
           "SERVER_ERROR"              -> InternalError,
           "SERVICE_UNAVAILABLE"       -> InternalError
         )
