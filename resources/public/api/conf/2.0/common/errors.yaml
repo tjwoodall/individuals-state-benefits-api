@@ -128,7 +128,7 @@ components:
 
     ruleOutsideAmendmentWindow:
       description: |
-        You are outside the amendment window
+        The request cannot be completed as you are outside the amendment window.
       value:
         code: RULE_OUTSIDE_AMENDMENT_WINDOW
         message: You are outside the amendment window
