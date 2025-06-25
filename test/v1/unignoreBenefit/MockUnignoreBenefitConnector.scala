@@ -18,13 +18,14 @@ package v1.unignoreBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.connectors.DownstreamOutcome
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockUnignoreBenefitConnector extends MockFactory {
+trait MockUnignoreBenefitConnector extends TestSuite with MockFactory {
 
   val mockUnignoreBenefitConnector: UnignoreBenefitConnector = mock[UnignoreBenefitConnector]
 

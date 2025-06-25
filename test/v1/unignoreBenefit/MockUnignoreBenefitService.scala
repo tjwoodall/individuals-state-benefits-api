@@ -18,6 +18,7 @@ package v1.unignoreBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.controllers.RequestContext
 import shared.models.errors.ErrorWrapper
 import shared.models.outcomes.ResponseWrapper
@@ -25,7 +26,7 @@ import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockUnignoreBenefitService extends MockFactory {
+trait MockUnignoreBenefitService extends TestSuite with MockFactory {
 
   val mockUnignoreBenefitService: UnignoreBenefitService = mock[UnignoreBenefitService]
 

@@ -21,6 +21,7 @@ import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.mocks.MockHttpClient
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v2.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 import v2.createBenefit.model.response.CreateBenefitResponse
 import v2.models.domain.BenefitType
@@ -53,7 +54,7 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
         willPost(
-            url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
+            url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
             body = createBenefitRequestBody
           )
           .returns(Future.successful(outcome))

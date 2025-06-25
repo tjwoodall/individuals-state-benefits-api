@@ -17,7 +17,7 @@
 package v2.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import common.errors.{BenefitTypeFormatError, RuleBenefitTypeExists, RuleEndDateBeforeTaxYearStartError, RuleOutsideAmendmentWindow, RuleStartDateAfterTaxYearEndError}
+import common.errors.{RuleIncorrectOrEmptyBodyError, _}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}

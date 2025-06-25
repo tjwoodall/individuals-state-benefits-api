@@ -18,6 +18,7 @@ package v1.listBenefits
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.controllers.RequestContext
 import shared.models.errors.ErrorWrapper
 import shared.models.outcomes.ResponseWrapper
@@ -26,7 +27,7 @@ import v1.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, L
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockListBenefitsService extends MockFactory {
+trait MockListBenefitsService extends TestSuite with MockFactory {
 
   val mockListBenefitsService: ListBenefitsService = mock[ListBenefitsService]
 

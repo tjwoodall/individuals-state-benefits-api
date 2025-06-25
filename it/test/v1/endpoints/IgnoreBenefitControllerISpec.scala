@@ -16,24 +16,24 @@
 
 package v1.endpoints
 
-import common.errors.{BenefitIdFormatError, RuleUnignoreForbiddenError}
-import shared.models.errors._
+import common.errors.{BenefitIdFormatError, RuleIgnoreForbiddenError}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
+import shared.models.errors._
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
-class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
+class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
 
-  "Calling the 'unignore benefit' endpoint" should {
+  "Calling the 'ignore benefit' endpoint" should {
     "return a 200 status code" when {
       "any valid request is made" in new Test {
 
         override def setupStubs(): Unit = {
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, CREATED)
         }
 
         val response: WSResponse = await(request().post(JsObject.empty))
@@ -79,7 +79,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
           s"downstream returns an $downstreamCode error and status $downstreamStatus" in new Test {
 
             override def setupStubs(): Unit = {
-              DownstreamStub.onError(DownstreamStub.DELETE, downstreamUri, downstreamStatus, errorBody(downstreamCode))
+              DownstreamStub.onError(DownstreamStub.PUT, downstreamUri, downstreamStatus, errorBody(downstreamCode))
             }
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -93,8 +93,9 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
           (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, InternalError),
-          (FORBIDDEN, "CUSTOMER_ADDED", BAD_REQUEST, RuleUnignoreForbiddenError),
-          (UNPROCESSABLE_ENTITY, "BEFORE_TAX_YEAR_ENDED", BAD_REQUEST, RuleTaxYearNotEndedError),
+          (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, InternalError),
+          (FORBIDDEN, "IGNORE_FORBIDDEN", BAD_REQUEST, RuleIgnoreForbiddenError),
+          (UNPROCESSABLE_ENTITY, "NOT_SUPPORTED_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotEndedError),
           (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
@@ -115,7 +116,9 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
     val nino: String      = "AA123456A"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-    val taxYear: String = "2019-20"
+    def taxYear: String = "2019-20"
+
+    def downstreamUri: String = s"/income-tax/19-20/income/state-benefits/$nino/ignore/$benefitId"
 
     val hateoasResponse: JsValue = Json.parse(
       s"""
@@ -127,8 +130,8 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
          |         "method":"GET"
          |      },
          |      {
-         |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/ignore",
-         |         "rel":"ignore-state-benefit",
+         |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/unignore",
+         |         "rel":"unignore-state-benefit",
          |         "method":"POST"
          |      }
          |   ]
@@ -136,8 +139,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
        """.stripMargin
     )
 
-    lazy val mtdUri: String   = s"/$nino/$taxYear/$benefitId/unignore"
-    val downstreamUri: String = s"/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
+    def mtdUri: String = s"/$nino/$taxYear/$benefitId/ignore"
 
     def setupStubs(): Unit = {}
 
@@ -158,7 +160,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
       s"""
          |{
          |   "code": "$code",
-         |   "reason": "downstream error message"
+         |   "reason": "downstream message"
          |}
             """.stripMargin
 

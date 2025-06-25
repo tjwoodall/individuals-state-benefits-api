@@ -35,7 +35,7 @@ Start the service manager profile: `sm2 --start MTDFB_INDIVIDUALS_STATE_BENEFITS
 
 Run unit tests: `sbt test`
 
-Run integration tests: `sbt it:test`
+Run integration tests: `sbt it/test`
 
 ## To view the OAS
 

@@ -19,6 +19,7 @@ package v1.unignoreBenefit
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v1.models.domain.BenefitId
 import v1.unignoreBenefit.def1.model.request.Def1_UnignoreBenefitRequestData
 import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
@@ -38,7 +39,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
-          url = s"$baseUrl/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
+          url = url"$baseUrl/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
         ).returns(Future.successful(expectedOutcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.unignoreBenefit(request))

@@ -22,9 +22,10 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import v2.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
-trait MockUnignoreBenefitValidatorFactory extends MockFactory {
+trait MockUnignoreBenefitValidatorFactory extends TestSuite with MockFactory {
 
   val mockUnignoreBenefitValidatorFactory: UnignoreBenefitValidatorFactory =
     mock[UnignoreBenefitValidatorFactory]

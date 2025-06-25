@@ -18,6 +18,7 @@ package v2.ignoreBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.controllers.RequestContext
 import shared.models.errors.ErrorWrapper
 import shared.models.outcomes.ResponseWrapper
@@ -25,7 +26,7 @@ import v2.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockIgnoreBenefitService extends MockFactory {
+trait MockIgnoreBenefitService extends TestSuite with MockFactory {
 
   val mockIgnoreBenefitService: IgnoreBenefitService = mock[IgnoreBenefitService]
 

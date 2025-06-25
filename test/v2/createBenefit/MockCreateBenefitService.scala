@@ -18,6 +18,7 @@ package v2.createBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.controllers.RequestContext
 import shared.models.errors.ErrorWrapper
 import shared.models.outcomes.ResponseWrapper
@@ -26,7 +27,7 @@ import v2.createBenefit.model.response.CreateBenefitResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateBenefitService extends MockFactory {
+trait MockCreateBenefitService extends TestSuite with MockFactory {
 
   val mockCreateStateBenefitService: CreateBenefitService = mock[CreateBenefitService]
 

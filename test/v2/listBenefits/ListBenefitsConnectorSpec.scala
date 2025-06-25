@@ -21,6 +21,7 @@ import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.mocks.MockHttpClient
 import shared.models.domain.{Nino, TaxYear, Timestamp}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 import v2.models.domain.BenefitId
@@ -71,7 +72,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =
             Right(ResponseWrapper(correlationId, validResponse))
 
-          willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear", parameters = Seq("benefitId" -> benefitId)) returns Future
+          willGet(url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear", parameters = Seq("benefitId" -> benefitId)) returns Future
             .successful(outcome)
 
           val result: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(connector.listBenefits(request))
@@ -86,7 +87,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =
             Right(ResponseWrapper(correlationId, validResponse))
 
-          willGet(s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear") returns Future.successful(outcome)
+          willGet(url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear") returns Future.successful(outcome)
 
           val result: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(connector.listBenefits(request))
 
@@ -100,7 +101,7 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
           val outcome: Right[Nothing, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] =
             Right(ResponseWrapper(correlationId, validResponse))
 
-          willGet(s"$baseUrl/income-tax/income/state-benefits/23-24/$nino", parameters = Seq("benefitId" -> benefitId)) returns Future.successful(
+          willGet(url"$baseUrl/income-tax/income/state-benefits/23-24/$nino", parameters = Seq("benefitId" -> benefitId)) returns Future.successful(
             outcome)
 
           val result: DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]] = await(connector.listBenefits(request))

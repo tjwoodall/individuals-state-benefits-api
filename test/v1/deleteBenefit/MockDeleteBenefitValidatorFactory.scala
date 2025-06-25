@@ -22,9 +22,10 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 
-trait MockDeleteBenefitValidatorFactory extends MockFactory {
+trait MockDeleteBenefitValidatorFactory extends TestSuite with MockFactory {
 
   val mockDeleteBenefitValidatorFactory: DeleteBenefitValidatorFactory =
     mock[DeleteBenefitValidatorFactory]

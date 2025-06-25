@@ -18,6 +18,7 @@ package v1.createBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.connectors.DownstreamOutcome
 import uk.gov.hmrc.http.HeaderCarrier
 import v1.createBenefit.model.request.CreateBenefitRequestData
@@ -25,7 +26,7 @@ import v1.createBenefit.model.response.CreateBenefitResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockCreateBenefitConnector extends MockFactory {
+trait MockCreateBenefitConnector extends TestSuite with MockFactory {
 
   val mockCreateBenefitConnector: CreateBenefitConnector = mock[CreateBenefitConnector]
 

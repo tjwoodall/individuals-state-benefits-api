@@ -18,6 +18,7 @@ package v2.deleteBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.controllers.RequestContext
 import shared.models.errors.ErrorWrapper
 import shared.models.outcomes.ResponseWrapper
@@ -25,7 +26,7 @@ import v2.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockDeleteBenefitService extends MockFactory {
+trait MockDeleteBenefitService extends TestSuite with MockFactory {
 
   val mockDeleteBenefitService: DeleteBenefitService = mock[DeleteBenefitService]
 

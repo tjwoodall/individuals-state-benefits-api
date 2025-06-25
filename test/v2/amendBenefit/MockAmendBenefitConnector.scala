@@ -18,13 +18,14 @@ package v2.amendBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.connectors.DownstreamOutcome
 import uk.gov.hmrc.http.HeaderCarrier
 import v2.amendBenefit.model.request.AmendBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockAmendBenefitConnector extends MockFactory {
+trait MockAmendBenefitConnector extends TestSuite with MockFactory {
 
   val mockAmendBenefitConnector: AmendBenefitConnector = mock[AmendBenefitConnector]
 

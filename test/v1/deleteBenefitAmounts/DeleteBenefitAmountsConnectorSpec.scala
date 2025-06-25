@@ -19,6 +19,7 @@ package v1.deleteBenefitAmounts
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v1.deleteBenefitAmounts.def1.model.request.Def1_DeleteBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 
@@ -35,7 +36,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         def taxYear: TaxYear = TaxYear.fromMtd("2017-18")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        willDelete(s"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
+        willDelete(url"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
           outcome)
 
         val result: DownstreamOutcome[Unit] = await(connector.deleteBenefitAmounts(request))
@@ -47,7 +48,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
         def taxYear: TaxYear                               = TaxYear.fromMtd("2023-24")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        willDelete(s"$baseUrl/income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/$nino/${request.benefitId}") returns Future
+        willDelete(url"$baseUrl/income-tax/income/state-benefits/${request.taxYear.asTysDownstream}/$nino/${request.benefitId}") returns Future
           .successful(outcome)
 
         val result: DownstreamOutcome[Unit] = await(connector.deleteBenefitAmounts(request))

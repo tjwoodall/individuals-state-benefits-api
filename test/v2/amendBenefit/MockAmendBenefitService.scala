@@ -18,6 +18,7 @@ package v2.amendBenefit
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.controllers.RequestContext
 import shared.models.errors.ErrorWrapper
 import shared.models.outcomes.ResponseWrapper
@@ -25,7 +26,7 @@ import v2.amendBenefit.model.request.AmendBenefitRequestData
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait MockAmendBenefitService extends MockFactory {
+trait MockAmendBenefitService extends TestSuite with MockFactory {
 
   val mockAmendBenefitService: AmendBenefitService = mock[AmendBenefitService]
 

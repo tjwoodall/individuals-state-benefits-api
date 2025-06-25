@@ -18,8 +18,9 @@ package config
 
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 
-trait MockStateBenefitsAppConfig extends MockFactory {
+trait MockStateBenefitsAppConfig extends TestSuite with MockFactory {
 
   implicit val mockStateBenefitsAppConfig: StateBenefitsAppConfig = mock[StateBenefitsAppConfig]
 

@@ -19,9 +19,10 @@ package v1.hateoas
 import cats.Bifunctor
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import shared.hateoas.{HateoasData, HateoasWrapper}
 
-trait MockHateoasFactory2 extends MockFactory {
+trait MockHateoasFactory2 extends TestSuite with MockFactory {
 
   val mockHateoasFactory: HateoasFactory2 = mock[HateoasFactory2]
 

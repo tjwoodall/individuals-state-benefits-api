@@ -19,6 +19,7 @@ package v1.deleteBenefit
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v1.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 import v1.models.domain.BenefitId
 
@@ -37,7 +38,7 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
-            url = s"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
+            url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
           )
           .returns(Future.successful(outcome))
 

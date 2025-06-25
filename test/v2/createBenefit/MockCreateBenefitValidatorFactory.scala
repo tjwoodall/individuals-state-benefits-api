@@ -22,10 +22,11 @@ import cats.data.Validated
 import cats.data.Validated.{Invalid, Valid}
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
+import org.scalatest.TestSuite
 import play.api.libs.json.JsValue
 import v2.createBenefit.model.request.CreateBenefitRequestData
 
-trait MockCreateBenefitValidatorFactory extends MockFactory {
+trait MockCreateBenefitValidatorFactory extends TestSuite with MockFactory {
 
   val mockCreateBenefitValidatorFactory: CreateBenefitValidatorFactory =
     mock[CreateBenefitValidatorFactory]

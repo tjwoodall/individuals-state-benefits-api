@@ -19,6 +19,7 @@ package v2.amendBenefitAmounts
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v2.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v2.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 import v2.models.domain.BenefitId
@@ -40,7 +41,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPut(
-          url = s"$baseUrl/income-tax/income/state-benefits/$nino/2020-21/$benefitId",
+          url = url"$baseUrl/income-tax/income/state-benefits/$nino/2020-21/$benefitId",
           body = body
         ).returns(Future.successful(expectedOutcome))
 
@@ -56,7 +57,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPut(
-          url = s"$baseUrl/income-tax/23-24/income/state-benefits/$nino/$benefitId",
+          url = url"$baseUrl/income-tax/23-24/income/state-benefits/$nino/$benefitId",
           body = body
         ).returns(Future.successful(expectedOutcome))
 

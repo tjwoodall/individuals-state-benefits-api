@@ -19,6 +19,7 @@ package v2.ignoreBenefit
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{EmptyJsonBody, Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
+import uk.gov.hmrc.http.StringContextOps
 import v2.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v2.models.domain.BenefitId
 
@@ -37,7 +38,7 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPut(
-          url = s"$baseUrl/income-tax/19-20/income/state-benefits/$nino/ignore/$benefitId",
+          url = url"$baseUrl/income-tax/19-20/income/state-benefits/$nino/ignore/$benefitId",
           EmptyJsonBody
         ).returns(Future.successful(outcome))
 
