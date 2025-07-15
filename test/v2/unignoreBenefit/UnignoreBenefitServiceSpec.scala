@@ -28,8 +28,8 @@ import scala.concurrent.Future
 
 class UnignoreBenefitServiceSpec extends ServiceSpec {
 
-  private val nino      = "AA111111A"
-  private val taxYear   = "2019-20"
+  private val nino = "AA111111A"
+  private val taxYear = "2019-20"
   private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
   private val request = Def1_UnignoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
@@ -61,16 +61,24 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
 
         val errors = List(
           "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-          "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-          "INVALID_CORRELATION_ID"    -> InternalError,
-          "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-          "CUSTOMER_ADDED"            -> RuleUnignoreForbiddenError,
-          "NO_DATA_FOUND"             -> NotFoundError,
-          "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
-          "BEFORE_TAX_YEAR_ENDED"     -> RuleTaxYearNotEndedError,
-          "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
-          "SERVICE_ERROR"             -> InternalError,
-          "SERVICE_UNAVAILABLE"       -> InternalError
+          "INVALID_TAX_YEAR" -> TaxYearFormatError,
+          "INVALID_CORRELATION_ID" -> InternalError,
+          "INVALID_BENEFIT_ID" -> BenefitIdFormatError,
+          "CUSTOMER_ADDED" -> RuleUnignoreForbiddenError,
+          "NO_DATA_FOUND" -> NotFoundError,
+          "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError,
+          "BEFORE_TAX_YEAR_ENDED" -> RuleTaxYearNotEndedError,
+          "OUTSIDE_AMENDMENT_WINDOW" -> RuleOutsideAmendmentWindow,
+          "SERVICE_ERROR" -> InternalError,
+          "SERVICE_UNAVAILABLE" -> InternalError,
+          ("1215", NinoFormatError),
+          ("1117", TaxYearFormatError),
+          ("1231", BenefitIdFormatError),
+          ("1233", RuleUnignoreForbiddenError),
+          ("5010", NotFoundError),
+          ("1115", RuleTaxYearNotEndedError),
+          ("1216", InternalError),
+          ("5009", InternalError)
         )
 
         errors.foreach((serviceError _).tupled)

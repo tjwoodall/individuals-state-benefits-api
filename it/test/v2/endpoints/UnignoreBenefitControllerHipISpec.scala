@@ -14,32 +14,39 @@
  * limitations under the License.
  */
 
-package v1.endpoints
+package v2.endpoints
 
-import common.errors.{BenefitIdFormatError, RuleUnignoreForbiddenError}
+import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow, RuleUnignoreForbiddenError}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
 import shared.models.errors._
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
-class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
+class UnignoreBenefitControllerHipISpec extends IntegrationBaseSpec {
+  override def servicesConfig: Map[String, Any] =
+    Map("feature-switch.ifs_hip_migration_1945.enabled" -> true) ++ super.servicesConfig
+
+  val downstreamQueryParams: Map[String, String] = Map("taxYear" -> "25-26")
 
   "Calling the 'unignore benefit' endpoint" should {
     "return a 200 status code" when {
       "any valid request is made" in new Test {
 
         override def setupStubs(): Unit = {
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
+          AuditStub.audit()
+          AuthStub.authorised()
+          MtdIdLookupStub.ninoFound(nino)
+          DownstreamStub
+            .when(DownstreamStub.DELETE, downstreamUri, downstreamQueryParams)
+            .thenReturn(NO_CONTENT)
         }
 
         val response: WSResponse = await(request().post(JsObject.empty))
-        response.status shouldBe OK
-        response.body[JsValue] shouldBe hateoasResponse
-        response.header("Content-Type") shouldBe Some("application/json")
+        response.status shouldBe NO_CONTENT
       }
     }
 
@@ -53,8 +60,8 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String      = requestNino
-            override val taxYear: String   = requestTaxYear
+            override val nino: String = requestNino
+            override val taxYear: String = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -89,55 +96,32 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
         }
 
         val errors = List(
-          (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
-          (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
-          (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),
-          (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, InternalError),
-          (FORBIDDEN, "CUSTOMER_ADDED", BAD_REQUEST, RuleUnignoreForbiddenError),
-          (UNPROCESSABLE_ENTITY, "BEFORE_TAX_YEAR_ENDED", BAD_REQUEST, RuleTaxYearNotEndedError),
-          (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
-          (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
-          (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
+          (BAD_REQUEST, "1117", BAD_REQUEST, TaxYearFormatError),
+          (BAD_REQUEST, "1215", BAD_REQUEST, NinoFormatError),
+          (BAD_REQUEST, "1216", INTERNAL_SERVER_ERROR, InternalError),
+          (BAD_REQUEST, "1231", BAD_REQUEST, BenefitIdFormatError),
+          (UNAUTHORIZED, "5009", INTERNAL_SERVER_ERROR, InternalError),
+          (NOT_FOUND, "5010", NOT_FOUND, NotFoundError),
+          (UNPROCESSABLE_ENTITY, "1115", BAD_REQUEST, RuleTaxYearNotEndedError),
+          (UNPROCESSABLE_ENTITY, "1233", BAD_REQUEST, RuleUnignoreForbiddenError),
+          (UNPROCESSABLE_ENTITY, "4200", BAD_REQUEST, RuleOutsideAmendmentWindow),
+          (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError)
         )
 
-        val extraTysErrors = List(
-          (BAD_REQUEST, "INVALID_CORRELATION_ID", INTERNAL_SERVER_ERROR, InternalError),
-          (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError)
-        )
-
-        (errors ++ extraTysErrors).foreach(args => (serviceErrorTest _).tupled(args))
+        errors.foreach(args => (serviceErrorTest _).tupled(args))
       }
     }
   }
 
   private trait Test {
 
-    val nino: String      = "AA123456A"
+    val nino: String = "AA123456A"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-    val taxYear: String = "2019-20"
+    val taxYear: String = "2025-26"
 
-    val hateoasResponse: JsValue = Json.parse(
-      s"""
-         |{
-         |   "links":[
-         |      {
-         |         "href":"/individuals/state-benefits/$nino/$taxYear?benefitId=$benefitId",
-         |         "rel":"self",
-         |         "method":"GET"
-         |      },
-         |      {
-         |         "href":"/individuals/state-benefits/$nino/$taxYear/$benefitId/ignore",
-         |         "rel":"ignore-state-benefit",
-         |         "method":"POST"
-         |      }
-         |   ]
-         |}
-       """.stripMargin
-    )
-
-    lazy val mtdUri: String   = s"/$nino/$taxYear/$benefitId/unignore"
-    val downstreamUri: String = s"/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
+    lazy val mtdUri: String = s"/$nino/$taxYear/$benefitId/unignore"
+    val downstreamUri: String = s"/itsd/income/ignore/state-benefits/$nino/$benefitId"
 
     def setupStubs(): Unit = {}
 
@@ -149,17 +133,19 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
       setupStubs()
       buildRequest(mtdUri)
         .withHttpHeaders(
-          (ACCEPT, "application/vnd.hmrc.1.0+json"),
+          (ACCEPT, "application/vnd.hmrc.2.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
         )
     }
 
     def errorBody(code: String): String =
       s"""
-         |{
-         |   "code": "$code",
-         |   "reason": "downstream error message"
-         |}
+         |[
+         |  {
+         |    "errorCode": "$code",
+         |    "errorDescription": "downstream error message"
+         |  }
+         |]
             """.stripMargin
 
   }
