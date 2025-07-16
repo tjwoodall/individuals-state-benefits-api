@@ -75,6 +75,7 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
           ("1117", TaxYearFormatError),
           ("1231", BenefitIdFormatError),
           ("1233", RuleUnignoreForbiddenError),
+          ("5000", RuleTaxYearNotSupportedError),
           ("5010", NotFoundError),
           ("1115", RuleTaxYearNotEndedError),
           ("1216", InternalError),

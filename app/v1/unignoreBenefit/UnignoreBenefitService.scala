@@ -30,13 +30,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class UnignoreBenefitService @Inject()(connector: UnignoreBenefitConnector) extends BaseService {
 
   def unignoreBenefit(request: UnignoreBenefitRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
-
     connector.unignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
-
   }
 
   private val downstreamErrorMap: Map[String, MtdError] = {
-    val IFSErrors = Map(
+    val IFSErrors: Map[String, MtdError] = Map(
       ("INVALID_TAXABLE_ENTITY_ID", NinoFormatError),
       ("INVALID_TAX_YEAR", TaxYearFormatError),
       ("INVALID_BENEFIT_ID", BenefitIdFormatError),
@@ -48,12 +46,13 @@ class UnignoreBenefitService @Inject()(connector: UnignoreBenefitConnector) exte
       ("SERVICE_UNAVAILABLE", InternalError)
     )
 
-    val HipErrors = Map(
+    val HipErrors: Map[String, MtdError] = Map(
       "1215" -> NinoFormatError,
       "1117" -> TaxYearFormatError,
       "1231" -> BenefitIdFormatError,
       "1233" -> RuleUnignoreForbiddenError,
       "5010" -> NotFoundError,
+      "5000" -> RuleTaxYearNotSupportedError,
       "1115" -> RuleTaxYearNotEndedError,
       "1216" -> InternalError,
       "5009" -> InternalError

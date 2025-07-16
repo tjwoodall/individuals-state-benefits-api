@@ -104,6 +104,7 @@ class UnignoreBenefitControllerHipISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "1231", BAD_REQUEST, BenefitIdFormatError),
           (UNAUTHORIZED, "5009", INTERNAL_SERVER_ERROR, InternalError),
           (NOT_FOUND, "5010", NOT_FOUND, NotFoundError),
+          (NOT_IMPLEMENTED, "5000", BAD_REQUEST, RuleTaxYearNotSupportedError),
           (UNPROCESSABLE_ENTITY, "1115", BAD_REQUEST, RuleTaxYearNotEndedError),
           (UNPROCESSABLE_ENTITY, "1233", BAD_REQUEST, RuleUnignoreForbiddenError),
           (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError)
