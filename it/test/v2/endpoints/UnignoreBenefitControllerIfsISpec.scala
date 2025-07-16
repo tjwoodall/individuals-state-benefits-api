@@ -26,7 +26,9 @@ import shared.models.errors._
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
-class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
+class UnignoreBenefitControllerIfsISpec extends IntegrationBaseSpec {
+  override def servicesConfig: Map[String, Any] =
+    Map("feature-switch.ifs_hip_migration_1945.enabled" -> false) ++ super.servicesConfig
 
   "Calling the 'unignore benefit' endpoint" should {
     "return a 2004 status code" when {
@@ -51,8 +53,8 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String      = requestNino
-            override val taxYear: String   = requestTaxYear
+            override val nino: String = requestNino
+            override val taxYear: String = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -90,6 +92,7 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
           (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),
+          (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, InternalError),
           (FORBIDDEN, "CUSTOMER_ADDED", BAD_REQUEST, RuleUnignoreForbiddenError),
           (UNPROCESSABLE_ENTITY, "BEFORE_TAX_YEAR_ENDED", BAD_REQUEST, RuleTaxYearNotEndedError),
@@ -111,12 +114,12 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
 
   private trait Test {
 
-    val nino: String      = "AA123456A"
+    val nino: String = "AA123456A"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
     val taxYear: String = "2019-20"
 
-    lazy val mtdUri: String   = s"/$nino/$taxYear/$benefitId/unignore"
+    lazy val mtdUri: String = s"/$nino/$taxYear/$benefitId/unignore"
     val downstreamUri: String = s"/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
 
     def setupStubs(): Unit = {}
