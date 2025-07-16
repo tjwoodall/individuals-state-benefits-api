@@ -17,10 +17,10 @@
 package v1.ignoreBenefit
 
 import play.api.http.Status.CREATED
-import shared.config.SharedAppConfig
+import shared.config.{ConfigFeatureSwitches, SharedAppConfig}
 import shared.connectors.DownstreamUri._
 import shared.connectors.httpparsers.StandardDownstreamHttpParser._
-import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
+import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
 import shared.models.domain.EmptyJsonBody
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -38,7 +38,12 @@ class IgnoreBenefitConnector @Inject() (val http: HttpClientV2, val appConfig: S
     implicit val successCode: SuccessCode = SuccessCode(CREATED)
 
     import request._
-    val downstreamUri = IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
+    val downstreamUri: DownstreamUri[Unit] =
+      if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1944")) {
+        HipUri[Unit](s"itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}")
+      } else {
+        IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
+      }
     put(EmptyJsonBody, downstreamUri)
 
   }

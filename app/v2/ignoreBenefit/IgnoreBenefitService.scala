@@ -34,17 +34,35 @@ class IgnoreBenefitService @Inject() (connector: IgnoreBenefitConnector) extends
     connector.ignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
 
-  private val downstreamErrorMap: Map[String, MtdError] = Map(
-    "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
-    "INVALID_TAX_YEAR"          -> TaxYearFormatError,
-    "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
-    "IGNORE_FORBIDDEN"          -> RuleIgnoreForbiddenError,
-    "NO_DATA_FOUND"             -> NotFoundError,
-    "NOT_SUPPORTED_TAX_YEAR"    -> RuleTaxYearNotEndedError,
-    "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
-    "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
-    "SERVICE_ERROR"             -> InternalError,
-    "SERVICE_UNAVAILABLE"       -> InternalError
-  )
+  private val downstreamErrorMap: Map[String, MtdError] = {
+
+    val IFErrors = Map(
+      "INVALID_TAXABLE_ENTITY_ID" -> NinoFormatError,
+      "INVALID_TAX_YEAR"          -> TaxYearFormatError,
+      "INVALID_BENEFIT_ID"        -> BenefitIdFormatError,
+      "IGNORE_FORBIDDEN"          -> RuleIgnoreForbiddenError,
+      "NO_DATA_FOUND"             -> NotFoundError,
+      "NOT_SUPPORTED_TAX_YEAR"    -> RuleTaxYearNotEndedError,
+      "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
+      "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
+      "SERVICE_ERROR"             -> InternalError,
+      "SERVICE_UNAVAILABLE"       -> InternalError
+    )
+
+    val HIPErrors = Map(
+      "1215" -> NinoFormatError,
+      "1117" -> TaxYearFormatError,
+      "1231" -> BenefitIdFormatError,
+      "1232" -> RuleIgnoreForbiddenError,
+      "5010" -> NotFoundError,
+      "1115" -> RuleTaxYearNotEndedError,
+      "5000" -> RuleTaxYearNotSupportedError,
+      "4200" -> RuleOutsideAmendmentWindow,
+      "1216" -> InternalError
+    )
+
+    IFErrors ++ HIPErrors
+
+  }
 
 }

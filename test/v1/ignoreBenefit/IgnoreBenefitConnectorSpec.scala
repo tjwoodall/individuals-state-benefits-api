@@ -16,6 +16,7 @@
 
 package v1.ignoreBenefit
 
+import play.api.Configuration
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{EmptyJsonBody, Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
@@ -32,7 +33,9 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
 
   "IgnoreBenefitConnector" should {
     "return the expected response for a non-TYS request" when {
-      "a valid request is made" in new IfsTest with Test {
+      "a valid request is made to IF" in new IfsTest with Test {
+        MockedSharedAppConfig.featureSwitchConfig returns Configuration("ifs_hip_migration_1944.enabled" -> false)
+
         def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
 
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
@@ -46,8 +49,25 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
 
         result shouldBe outcome
       }
+      "a valid request is made to HIP" in new HipTest with Test {
+        MockedSharedAppConfig.featureSwitchConfig returns Configuration("ifs_hip_migration_1944.enabled" -> true)
+
+        def taxYear: TaxYear = TaxYear.fromMtd("2025-26")
+
+        private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
+
+        willPut(
+          url = url"$baseUrl/itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=25-26",
+          EmptyJsonBody
+        ).returns(Future.successful(outcome))
+
+        val result: DownstreamOutcome[Unit] = await(connector.ignoreBenefit(request))
+
+        result shouldBe outcome
+      }
     }
   }
+
 
   trait Test {
     _: ConnectorTest =>

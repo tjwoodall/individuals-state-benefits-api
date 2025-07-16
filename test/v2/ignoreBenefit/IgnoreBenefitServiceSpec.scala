@@ -70,7 +70,16 @@ class IgnoreBenefitServiceSpec extends ServiceSpec {
           "TAX_YEAR_NOT_SUPPORTED"    -> RuleTaxYearNotSupportedError,
           "OUTSIDE_AMENDMENT_WINDOW"  -> RuleOutsideAmendmentWindow,
           "SERVICE_ERROR"             -> InternalError,
-          "SERVICE_UNAVAILABLE"       -> InternalError
+          "SERVICE_UNAVAILABLE"       -> InternalError,
+          "1215"                      -> NinoFormatError,
+          "1117"                      -> TaxYearFormatError,
+          "1231"                      -> BenefitIdFormatError,
+          "1216"                      -> InternalError,
+          "5010"                      -> NotFoundError,
+          "1232"                      -> RuleIgnoreForbiddenError,
+          "1115"                      -> RuleTaxYearNotEndedError,
+          "4200"                      -> RuleOutsideAmendmentWindow,
+          "5000"                      -> RuleTaxYearNotSupportedError
         )
 
         errors.foreach((serviceError _).tupled)

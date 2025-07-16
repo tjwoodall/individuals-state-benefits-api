@@ -26,7 +26,10 @@ import shared.models.errors._
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
-class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
+class IgnoreBenefitControllerIfISpec extends IntegrationBaseSpec {
+
+  override def servicesConfig: Map[String, Any] =
+    Map("feature-switch.ifs_hip_migration_1944.enabled" -> false) ++ super.servicesConfig
 
   "Calling the 'ignore benefit' endpoint" should {
     "return a 204 status code" when {
@@ -92,6 +95,7 @@ class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, InternalError),
           (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, InternalError),
+          (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError),
           (FORBIDDEN, "IGNORE_FORBIDDEN", BAD_REQUEST, RuleIgnoreForbiddenError),
           (UNPROCESSABLE_ENTITY, "NOT_SUPPORTED_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotEndedError),
           (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
