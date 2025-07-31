@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,20 +28,19 @@ import scala.concurrent.Future
 
 class IgnoreBenefitConnectorSpec extends ConnectorSpec {
 
-  private val nino      = "AA111111A"
-  private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
+  private val nino: String      = "AA111111A"
+  private val taxYear: TaxYear  = TaxYear.fromMtd("2025-26")
+  private val benefitId: String = "123e4567-e89b-12d3-a456-426614174000"
 
   "IgnoreBenefitConnector" should {
-    "return the expected response for a non-TYS request" when {
-      "a valid request is made" in new IfsTest with Test {
+    "return the expected response" when {
+      "a valid request is made to IF" in new IfsTest with Test {
         MockedSharedAppConfig.featureSwitchConfig returns Configuration("ifs_hip_migration_1944.enabled" -> false)
-
-        def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
 
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPut(
-          url = url"$baseUrl/income-tax/19-20/income/state-benefits/$nino/ignore/$benefitId",
+          url = url"$baseUrl/income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId",
           EmptyJsonBody
         ).returns(Future.successful(outcome))
 
@@ -53,13 +52,10 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
       "a valid request is made to HIP" in new HipTest with Test {
         MockedSharedAppConfig.featureSwitchConfig returns Configuration("ifs_hip_migration_1944.enabled" -> true)
 
-        def taxYear: TaxYear = TaxYear.fromMtd("2025-26")
-
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        willPut(
-          url = url"$baseUrl/itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=25-26",
-          EmptyJsonBody
+        willPutEmpty(
+          url = url"$baseUrl/itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}",
         ).returns(Future.successful(outcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.ignoreBenefit(request))
@@ -71,8 +67,6 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
 
   trait Test {
     _: ConnectorTest =>
-    def taxYear: TaxYear
-
     val request: Def1_IgnoreBenefitRequestData = Def1_IgnoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))
 
     val connector: IgnoreBenefitConnector = new IgnoreBenefitConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)

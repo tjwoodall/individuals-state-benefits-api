@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,6 +110,24 @@ trait BaseDownstreamConnector extends Logging {
 
     for {
       headers <- getBackendHeaders(strategy, jsonContentTypeHeader ++ intentHeader(maybeIntent))
+      result  <- doPut(headers)
+    } yield result
+  }
+
+  def putEmpty[Resp](uri: DownstreamUri[Resp], maybeIntent: Option[String] = None)(implicit
+      ec: ExecutionContext,
+      hc: HeaderCarrier,
+      httpReads: HttpReads[DownstreamOutcome[Resp]],
+      correlationId: String): Future[DownstreamOutcome[Resp]] = {
+
+    val strategy = uri.strategy
+
+    def doPut(implicit hc: HeaderCarrier): Future[DownstreamOutcome[Resp]] = {
+      http.put(url"${getBackendUri(uri.path, strategy)}").execute
+    }
+
+    for {
+      headers <- getBackendHeaders(strategy, intentHeader(maybeIntent))
       result  <- doPut(headers)
     } yield result
   }

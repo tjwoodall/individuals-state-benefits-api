@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,9 +92,9 @@ class BaseDownstreamConnectorSpec extends UnitSpec with MockHttpClient with Mock
 
         MockedHttpClient
           .post(
-            absoluteUrl,
+            url = absoluteUrl,
             config = headerCarrierConfig,
-            body,
+            body = body,
             requiredHeaders = standardContractHeadersWith(contentTypeHeader)
           ) returns Future.successful(outcome)
 
@@ -102,14 +102,14 @@ class BaseDownstreamConnectorSpec extends UnitSpec with MockHttpClient with Mock
       }
     }
 
-    "put is called" when {
+    "put is called with body" when {
       def makeCall(maybeIntent: Option[String], requiredHeaders: Seq[(String, String)]): Assertion = {
         implicit val hc: HeaderCarrier = headerCarrierForInput()
 
         MockedHttpClient.put(
-          absoluteUrl,
-          headerCarrierConfig,
-          body,
+          url = absoluteUrl,
+          config = headerCarrierConfig,
+          body = body,
           requiredHeaders = requiredHeaders
         ) returns Future.successful(outcome)
 
@@ -129,13 +129,39 @@ class BaseDownstreamConnectorSpec extends UnitSpec with MockHttpClient with Mock
       }
     }
 
+    "put is called without body" when {
+      def makeCall(maybeIntent: Option[String], requiredHeaders: Seq[(String, String)]): Assertion = {
+        implicit val hc: HeaderCarrier = headerCarrierForInput()
+
+        MockedHttpClient.putEmpty(
+          url = absoluteUrl,
+          config = headerCarrierConfig,
+          requiredHeaders = requiredHeaders
+        ) returns Future.successful(outcome)
+
+        await(connector.putEmpty(uri(), maybeIntent)) shouldBe outcome
+      }
+
+      "no intent is required" must {
+        "put with the required headers and return result" in {
+          behave like makeCall(None, standardContractHeadersWith())
+        }
+      }
+
+      "intent is required" must {
+        "put with the required headers as well as the intent header and return result" in {
+          behave like makeCall(Some("SOME_INTENT"), standardContractHeadersWith("intent" -> "SOME_INTENT"))
+        }
+      }
+    }
+
     "get is called" must {
       "get with the required headers and return the result" in {
         implicit val hc: HeaderCarrier = headerCarrierForInput()
 
         MockedHttpClient.get(
-          absoluteUrl,
-          headerCarrierConfig,
+          url = absoluteUrl,
+          config = headerCarrierConfig,
           requiredHeaders = standardContractHeadersWith(),
           excludedHeaders = Seq(contentTypeHeader)
         ) returns Future.successful(outcome)
@@ -151,8 +177,8 @@ class BaseDownstreamConnectorSpec extends UnitSpec with MockHttpClient with Mock
 
         MockedHttpClient
           .get(
-            absoluteUrl,
-            headerCarrierConfig,
+            url = absoluteUrl,
+            config = headerCarrierConfig,
             parameters = qps,
             requiredHeaders = standardContractHeadersWith(),
             excludedHeaders = Seq(contentTypeHeader)
@@ -167,8 +193,8 @@ class BaseDownstreamConnectorSpec extends UnitSpec with MockHttpClient with Mock
         implicit val hc: HeaderCarrier = headerCarrierForInput()
 
         MockedHttpClient.delete(
-          absoluteUrl,
-          headerCarrierConfig,
+          url = absoluteUrl,
+          config = headerCarrierConfig,
           requiredHeaders = standardContractHeadersWith(),
           excludedHeaders = Seq(contentTypeHeader)
         ) returns Future.successful(outcome)
@@ -181,9 +207,9 @@ class BaseDownstreamConnectorSpec extends UnitSpec with MockHttpClient with Mock
       def makeCall(downstreamUri: DownstreamUri[Result], requiredHeaders: Seq[(String, String)] = Nil, excludedHeaders: Seq[(String, String)] = Nil)(
           implicit hc: HeaderCarrier): Assertion = {
         MockedHttpClient.put(
-          absoluteUrl,
-          headerCarrierConfig,
-          body,
+          url = absoluteUrl,
+          config = headerCarrierConfig,
+          body = body,
           requiredHeaders = requiredHeaders,
           excludedHeaders = excludedHeaders
         ) returns Future.successful(outcome)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,18 @@ class IgnoreBenefitConnector @Inject() (val http: HttpClientV2, val appConfig: S
     implicit val successCode: SuccessCode = SuccessCode(CREATED)
 
     import request._
-    val downstreamUri: DownstreamUri[Unit] =
-      if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1944")) {
-        HipUri[Unit](s"itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}")
-      } else {
-        IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
-      }
-    put(EmptyJsonBody, downstreamUri)
 
+    if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1944")) {
+      val downstreamUri: DownstreamUri[Unit] =
+        HipUri[Unit](s"itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}")
+
+      putEmpty(uri = downstreamUri)
+    } else {
+      val downstreamUri: DownstreamUri[Unit] =
+        IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/ignore/$benefitId")
+
+      put(body = EmptyJsonBody, uri = downstreamUri)
+    }
   }
 
 }
