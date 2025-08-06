@@ -1,0 +1,14 @@
+post:
+  $ref: "./benefit_create.yaml"
+  summary: Create State Benefit
+  security:
+    - User-Restricted:
+        - write:self-assessment
+get:
+  $ref: "./benefits_list.yaml"
+  summary: List State Benefits
+  security:
+    - User-Restricted:
+        - read:self-assessment
+  parameters:
+    - $ref: './common/queryParameters.yaml#/components/parameters/benefitId'

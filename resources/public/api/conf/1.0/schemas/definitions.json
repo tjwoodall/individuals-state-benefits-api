@@ -1,0 +1,19 @@
+{
+  "definitions": {
+    "startDate": {
+      "description": "The date the benefit started in the format YYYY-MM-DD",
+      "type": "string",
+      "example": "2029-04-06"
+    },
+    "endDate": {
+      "description": "The date the benefit ended in the format YYYY-MM-DD",
+      "type": "string",
+      "example": "2020-01-01"
+    },
+    "ignoreBenefit": {
+      "type": "boolean",
+      "description": "A boolean indicating whether state benefits should be ignored. The value must be true or false.",
+      "example": "true"
+    }
+  }
+}

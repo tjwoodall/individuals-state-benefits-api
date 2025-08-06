@@ -1,0 +1,12 @@
+put:
+  $ref: "./benefit_amend.yaml"
+  summary: Amend State Benefit
+  security:
+    - User-Restricted:
+        - write:self-assessment
+delete:
+  $ref: "./benefit_delete.yaml"
+  summary: Delete State Benefit
+  security:
+    - User-Restricted:
+        - write:self-assessment
