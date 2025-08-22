@@ -19,14 +19,14 @@ package v1.endpoints
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.errors.BenefitIdFormatError
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
-import v1.fixtures.ListBenefitsFixture._
+import v1.fixtures.ListBenefitsFixture.*
 
 class ListBenefitsControllerISpec extends IntegrationBaseSpec {
 
@@ -52,7 +52,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
       AuthStub.resetAll()
       setupStubs()
       buildRequest(mtdUri)
-        .addQueryStringParameters(queryParams: _*)
+        .addQueryStringParameters(queryParams*)
         .withHttpHeaders(
           (ACCEPT, "application/vnd.hmrc.1.0+json"),
           (AUTHORIZATION, "Bearer 123") // some bearer token
@@ -226,7 +226,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "2019-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", BAD_REQUEST, RuleTaxYearRangeInvalidError)
         )
 
-        input.foreach(args => (validationErrorTest _).tupled(args))
+        input.foreach(validationErrorTest.tupled)
       }
 
       "downstream service error" when {
@@ -270,7 +270,7 @@ class ListBenefitsControllerISpec extends IntegrationBaseSpec {
           (NOT_FOUND, "NOT_FOUND", NOT_FOUND, NotFoundError)
         )
 
-        (errors ++ extraTysErrors).foreach(args => (serviceErrorTest _).tupled(args))
+        (errors ++ extraTysErrors).foreach(serviceErrorTest.tupled)
       }
     }
   }

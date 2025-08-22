@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,12 @@ import play.api.libs.json.JsObject
 import play.api.mvc.Result
 import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.models.outcomes.ResponseWrapper
 import shared.services.MockAuditService
-import v1.HateoasLinks
-import v1.fixtures.ListBenefitsFixture._
-import v1.hateoas.MockHateoasFactory2
+import v1.fixtures.ListBenefitsFixture.*
+import v1.hateoas.HateoasFactory2
 import v1.listBenefits.model.request.ListBenefitsRequestData
-import v1.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsHateoasData}
 import v1.models.domain.BenefitId
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,9 +37,7 @@ class ListBenefitsControllerSpec
     with ControllerTestRunner
     with MockListBenefitsService
     with MockListBenefitsValidatorFactory
-    with MockHateoasFactory2
-    with MockAuditService
-    with HateoasLinks {
+    with MockAuditService {
 
   private val requestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), Some(BenefitId(benefitId)))
 
@@ -53,10 +49,6 @@ class ListBenefitsControllerSpec
         MockListBenefitsService
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData))))
-
-        MockHateoasFactory2
-          .wrapList(responseData, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId)))
-          .returns(hateoasResponse)
 
         runOkTest(
           expectedStatus = OK,
@@ -73,10 +65,6 @@ class ListBenefitsControllerSpec
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseDataWithNoAmounts))))
 
-        MockHateoasFactory2
-          .wrapList(responseDataWithNoAmounts, ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId)))
-          .returns(hateoasResponseWithOutAmounts)
-
         runOkTest(
           expectedStatus = OK,
           maybeExpectedResponseBody = Some(responseBodyWithNoAmounts)
@@ -91,13 +79,6 @@ class ListBenefitsControllerSpec
         MockListBenefitsService
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(customerAddedStateBenefits = None)))))
-
-        MockHateoasFactory2
-          .wrapList(
-            responseData.copy(customerAddedStateBenefits = Option.empty[Seq[CustomerStateBenefit]]),
-            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = List(benefitId))
-          )
-          .returns(hmrcOnlyHateoasResponse)
 
         runOkTest(
           expectedStatus = OK,
@@ -114,12 +95,6 @@ class ListBenefitsControllerSpec
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
 
-        MockHateoasFactory2
-          .wrapList(
-            responseData.copy(stateBenefits = Option.empty[Seq[HMRCStateBenefit]]),
-            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Nil))
-          .returns(customOnlyHateoasResponse)
-
         runOkTest(
           expectedStatus = OK,
           maybeExpectedResponseBody = Some(responseBody.as[JsObject] - "stateBenefits")
@@ -134,12 +109,6 @@ class ListBenefitsControllerSpec
         MockListBenefitsService
           .listBenefits(requestData)
           .returns(Future.successful(Right(ResponseWrapper(correlationId, responseData.copy(stateBenefits = None)))))
-
-        MockHateoasFactory2
-          .wrapList(
-            responseData.copy(stateBenefits = Option.empty[Seq[HMRCStateBenefit]]),
-            ListBenefitsHateoasData(nino, taxYear, queryIsFiltered = true, hmrcBenefitIds = Nil))
-          .returns(singleCustomOnlyHateoasResponse)
 
         runOkTest(
           expectedStatus = OK,
@@ -169,12 +138,12 @@ class ListBenefitsControllerSpec
 
   private trait Test extends ControllerTest {
 
-    val controller = new ListBenefitsController(
+    val controller: ListBenefitsController = new ListBenefitsController(
       authService = mockEnrolmentsAuthService,
       lookupService = mockMtdIdLookupService,
       validatorFactory = mockListBenefitsValidatorFactory,
       service = mockListBenefitsService,
-      hateoasFactory = mockHateoasFactory,
+      hateoasFactory = new HateoasFactory2(mockSharedAppConfig),
       cc = cc,
       idGenerator = mockIdGenerator
     )

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package v1.endpoints
 
 import common.errors.{BenefitIdFormatError, RuleIgnoreForbiddenError}
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.ws.WSBodyReadables.readableAsJson
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
@@ -81,7 +83,7 @@ class IgnoreBenefitControllerHipISpec extends IntegrationBaseSpec {
           ("AA123456A", "2019-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", BAD_REQUEST, RuleTaxYearRangeInvalidError, None)
         )
 
-        input.foreach(args => (validationErrorTest _).tupled(args))
+        input.foreach(validationErrorTest.tupled)
       }
 
       "downstream service error" when {
@@ -110,7 +112,7 @@ class IgnoreBenefitControllerHipISpec extends IntegrationBaseSpec {
           (UNPROCESSABLE_ENTITY, "1115", BAD_REQUEST, RuleTaxYearNotEndedError)
         )
 
-        errors.foreach(args => (serviceErrorTest _).tupled(args))
+        errors.foreach(serviceErrorTest.tupled)
       }
     }
   }
@@ -143,7 +145,7 @@ class IgnoreBenefitControllerHipISpec extends IntegrationBaseSpec {
        """.stripMargin
     )
 
-    def mtdUri: String = s"/$nino/$taxYear/$benefitId/ignore"
+    private def mtdUri: String = s"/$nino/$taxYear/$benefitId/ignore"
 
     def setupStubs(): Unit = {}
 

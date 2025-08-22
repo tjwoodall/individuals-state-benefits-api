@@ -35,11 +35,11 @@ class DeleteBenefitAmountsConnector @Inject() (val http: HttpClientV2, val appCo
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+    import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 
     implicit val successCode: SuccessCode = SuccessCode(NO_CONTENT)
 
-    import request._
+    import request.*
 
     val downstreamUri = {
       if (taxYear.useTaxYearSpecificApi) {

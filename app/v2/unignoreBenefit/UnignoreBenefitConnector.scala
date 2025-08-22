@@ -17,8 +17,8 @@
 package v2.unignoreBenefit
 
 import shared.config.{ConfigFeatureSwitches, SharedAppConfig}
-import shared.connectors.DownstreamUri._
-import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+import shared.connectors.DownstreamUri.*
+import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -35,7 +35,7 @@ class UnignoreBenefitConnector @Inject()(val http: HttpClientV2, val appConfig: 
                                                            ec: ExecutionContext,
                                                            correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import request._
+    import request.*
 
     val downstreamUri: DownstreamUri[Unit] =
       if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1945")) {

@@ -16,10 +16,10 @@
 
 package v1.unignoreBenefit
 
-import cats.implicits._
+import cats.implicits.*
 import common.errors.{BenefitIdFormatError, RuleUnignoreForbiddenError}
 import shared.controllers.RequestContext
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{BaseService, ServiceOutcome}
 import v1.unignoreBenefit.model.request.UnignoreBenefitRequestData
 

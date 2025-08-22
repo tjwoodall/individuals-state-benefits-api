@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package v2.listBenefits.def1
 import common.errors.BenefitIdFormatError
 import config.MockStateBenefitsAppConfig
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.utils.UnitSpec
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.models.domain.BenefitId
@@ -34,7 +34,7 @@ class Def1_ListBenefitsValidatorSpec extends UnitSpec with MockStateBenefitsAppC
 
   private val parsedNino      = Nino(validNino)
   private val parsedTaxYear   = TaxYear.fromMtd(validTaxYear)
-  private val parsedBenefitId = validBenefitId.map(BenefitId)
+  private val parsedBenefitId = validBenefitId.map(BenefitId.apply)
 
   private def validator(nino: String, taxYear: String, benefitId: Option[String]) = new Def1_ListBenefitsValidator(nino, taxYear, benefitId)
 
@@ -84,7 +84,8 @@ class Def1_ListBenefitsValidatorSpec extends UnitSpec with MockStateBenefitsAppC
 
     "return multiple errors" when {
       "passed multiple invalid fields" in new AppConfigTest {
-        val result: Either[ErrorWrapper, ListBenefitsRequestData] = validator("not-a-nino", "not-a-tax-year", Some("not-a-benefit-id")).validateAndWrapResult()
+        val result: Either[ErrorWrapper, ListBenefitsRequestData] =
+          validator("not-a-nino", "not-a-tax-year", Some("not-a-benefit-id")).validateAndWrapResult()
 
         result shouldBe Left(
           ErrorWrapper(

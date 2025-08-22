@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
   "DeleteBenefitAmountsConnector" should {
     "return a 200 result on delete" when {
       "the downstream call is successful and not tax year specific" in new IfsTest with Test {
-        def taxYear: TaxYear = TaxYear.fromMtd("2017-18")
+        def taxYear: TaxYear                               = TaxYear.fromMtd("2017-18")
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(url"$baseUrl/income-tax/income/state-benefits/$nino/${request.taxYear.asMtd}/${request.benefitId}") returns Future.successful(
@@ -59,7 +59,7 @@ class DeleteBenefitAmountsConnectorSpec extends ConnectorSpec {
   }
 
   trait Test {
-    _: ConnectorTest =>
+    self: ConnectorTest =>
     def taxYear: TaxYear
 
     protected val connector: DeleteBenefitAmountsConnector = new DeleteBenefitAmountsConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)

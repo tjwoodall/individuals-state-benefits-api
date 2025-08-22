@@ -16,7 +16,7 @@
 
 package v1.amendBenefit.def1.request
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import shared.models.utils.JsonErrorValidators
 import shared.utils.UnitSpec
 import v1.amendBenefit.def1.model.request.Def1_AmendBenefitRequestBody

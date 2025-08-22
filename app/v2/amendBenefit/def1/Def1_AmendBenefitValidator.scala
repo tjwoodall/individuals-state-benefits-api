@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import cats.implicits.catsSyntaxTuple4Semigroupal
 import config.StateBenefitsAppConfig
 import play.api.libs.json.JsValue
 import shared.controllers.validators.Validator
-import shared.controllers.validators.resolvers._
+import shared.controllers.validators.resolvers.*
 import shared.models.domain.TaxYear
 import shared.models.errors.{MtdError, StartDateFormatError}
 import v2.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
@@ -31,8 +31,9 @@ import v2.controllers.resolvers.ResolveBenefitId
 import javax.inject.Singleton
 
 @Singleton
-class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
-  extends Validator[AmendBenefitRequestData] {
+class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)(implicit
+    stateBenefitsAppConfig: StateBenefitsAppConfig)
+    extends Validator[AmendBenefitRequestData] {
 
   private val minYear = 1900
   private val maxYear = 2100
@@ -47,10 +48,10 @@ class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: Strin
       resolveTaxYear(taxYear),
       ResolveBenefitId(benefitId),
       resolveJson(body)
-    ).mapN(Def1_AmendBenefitRequestData) andThen validateBusinessRules
+    ).mapN(Def1_AmendBenefitRequestData.apply).andThen(validateBusinessRules)
 
   private def validateBusinessRules(parsed: Def1_AmendBenefitRequestData): Validated[Seq[MtdError], Def1_AmendBenefitRequestData] = {
-    import parsed.body._
+    import parsed.body.*
 
     val validatedDates = endDate match {
       case Some(endDate) => ResolveDateRange().withYearsLimitedTo(minYear, maxYear)(startDate -> endDate)

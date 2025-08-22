@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,25 +19,19 @@ package v1.models.domain
 import play.api.libs.json.Format
 import shared.utils.enums.Enums
 
+enum BenefitType {
 
-sealed trait BenefitType
+  case incapacityBenefit,
+    statePension,
+    statePensionLumpSum,
+    employmentSupportAllowance,
+    jobSeekersAllowance,
+    bereavementAllowance,
+    otherStateBenefits
+
+}
 
 object BenefitType {
-
-  case object incapacityBenefit extends BenefitType
-
-  case object statePension extends BenefitType
-
-  case object statePensionLumpSum extends BenefitType
-
-  case object employmentSupportAllowance extends BenefitType
-
-  case object jobSeekersAllowance extends BenefitType
-
-  case object bereavementAllowance extends BenefitType
-
-  case object otherStateBenefits extends BenefitType
-
-  implicit val format: Format[BenefitType] = Enums.format[BenefitType]
+  given Format[BenefitType] = Enums.format(values)
 
 }

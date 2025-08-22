@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,12 @@ package v2.endpoints
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError, RuleOutsideAmendmentWindow}
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.Json
+import play.api.libs.ws.DefaultBodyReadables.readableAsString
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
@@ -36,7 +37,7 @@ class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
     val benefitId: String     = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
     val correlationId: String = "X-123"
 
-    def uri: String = s"/$nino/$taxYear/$benefitId"
+    private def uri: String = s"/$nino/$taxYear/$benefitId"
 
     def ifsUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
 
@@ -106,7 +107,7 @@ class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "2019-21", "78d9f015-a8b4-57b9-8bbc-c253a1e8057e", BAD_REQUEST, RuleTaxYearRangeInvalidError)
         )
 
-        input.foreach(args => (validationErrorTest _).tupled(args))
+        input.foreach(validationErrorTest.tupled)
       }
 
       "ifs service error" when {
@@ -147,7 +148,7 @@ class DeleteBenefitControllerISpec extends IntegrationBaseSpec {
           (SERVICE_UNAVAILABLE, "SERVICE_UNAVAILABLE", INTERNAL_SERVER_ERROR, InternalError)
         )
 
-        input.foreach(args => (serviceErrorTest _).tupled(args))
+        input.foreach(serviceErrorTest.tupled)
       }
     }
   }

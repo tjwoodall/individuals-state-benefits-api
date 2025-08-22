@@ -19,7 +19,7 @@ package v2.deleteBenefitAmounts.def1
 import common.errors.BenefitIdFormatError
 import config.MockStateBenefitsAppConfig
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.utils.UnitSpec
 import v2.deleteBenefitAmounts.def1.model.request.Def1_DeleteBenefitAmountsRequestData
 import v2.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData

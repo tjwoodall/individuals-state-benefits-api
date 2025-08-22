@@ -20,7 +20,7 @@ import common.errors.BenefitIdFormatError
 import config.MockStateBenefitsAppConfig
 import play.api.libs.json.{JsNumber, JsObject, JsValue, Json}
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.models.utils.JsonErrorValidators
 import shared.utils.UnitSpec
 import v2.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}

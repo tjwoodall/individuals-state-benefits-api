@@ -19,7 +19,7 @@ package v2.amendBenefit
 import play.api.http.Status
 import shared.config.SharedAppConfig
 import shared.connectors.DownstreamUri.IfsUri
-import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -36,7 +36,7 @@ class AmendBenefitConnector @Inject() (val http: HttpClientV2, val appConfig: Sh
 
     implicit val successCode: SuccessCode = SuccessCode(Status.CREATED)
 
-    import request._
+    import request.*
     put(body, IfsUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/custom/$benefitId"))
   }
 

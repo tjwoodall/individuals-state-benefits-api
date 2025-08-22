@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,18 @@ package v1.endpoints
 
 import common.errors.{BenefitIdFormatError, RuleUnignoreForbiddenError}
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.ws.WSBodyReadables.readableAsJson
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
 class UnignoreBenefitControllerHipISpec extends IntegrationBaseSpec {
+
   override def servicesConfig: Map[String, Any] =
     Map("feature-switch.ifs_hip_migration_1945.enabled" -> true) ++ super.servicesConfig
 
@@ -62,8 +65,8 @@ class UnignoreBenefitControllerHipISpec extends IntegrationBaseSpec {
                                 scenario: Option[String]): Unit = {
           s"validation fails with ${expectedBody.code} error ${scenario.getOrElse("")}" in new Test {
 
-            override val nino: String = requestNino
-            override val taxYear: String = requestTaxYear
+            override val nino: String      = requestNino
+            override val taxYear: String   = requestTaxYear
             override val benefitId: String = requestBenefitId
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -80,7 +83,7 @@ class UnignoreBenefitControllerHipISpec extends IntegrationBaseSpec {
           ("AA123456A", "2019-21", "4557ecb5-fd32-48cc-81f5-e6acd1099f3c", BAD_REQUEST, RuleTaxYearRangeInvalidError, None)
         )
 
-        input.foreach(args => (validationErrorTest _).tupled(args))
+        input.foreach(validationErrorTest.tupled)
       }
 
       "downstream service error" when {
@@ -110,14 +113,14 @@ class UnignoreBenefitControllerHipISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError)
         )
 
-        errors.foreach(args => (serviceErrorTest _).tupled(args))
+        errors.foreach(serviceErrorTest.tupled)
       }
     }
   }
 
   private trait Test {
 
-    val nino: String = "AA123456A"
+    val nino: String      = "AA123456A"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
     val taxYear: String = "2025-26"
@@ -141,7 +144,7 @@ class UnignoreBenefitControllerHipISpec extends IntegrationBaseSpec {
        """.stripMargin
     )
 
-    lazy val mtdUri: String = s"/$nino/$taxYear/$benefitId/unignore"
+    private lazy val mtdUri: String   = s"/$nino/$taxYear/$benefitId/unignore"
     val downstreamUri: String = s"/itsd/income/ignore/state-benefits/$nino/$benefitId"
 
     def setupStubs(): Unit = {}

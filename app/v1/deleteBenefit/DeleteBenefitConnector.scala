@@ -18,7 +18,7 @@ package v1.deleteBenefit
 
 import shared.config.SharedAppConfig
 import shared.connectors.DownstreamUri.IfsUri
-import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -33,7 +33,7 @@ class DeleteBenefitConnector @Inject() (val http: HttpClientV2, val appConfig: S
   def deleteBenefit(
       request: DeleteBenefitRequestData)(implicit hc: HeaderCarrier, ec: ExecutionContext, correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import request._
+    import request.*
     val downstreamUri = IfsUri[Unit](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/custom/$benefitId")
 
     delete(downstreamUri)

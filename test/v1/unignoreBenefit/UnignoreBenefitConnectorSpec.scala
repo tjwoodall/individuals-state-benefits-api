@@ -67,7 +67,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
   }
 
   trait Test {
-    _: ConnectorTest =>
+    self: ConnectorTest =>
     def taxYear: TaxYear
 
     val request: UnignoreBenefitRequestData = Def1_UnignoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))

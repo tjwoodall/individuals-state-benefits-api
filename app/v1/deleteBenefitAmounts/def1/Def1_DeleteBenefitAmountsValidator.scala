@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,16 @@ import javax.inject.Singleton
 
 @Singleton
 class Def1_DeleteBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
-  extends Validator[DeleteBenefitAmountsRequestData]{
+    extends Validator[DeleteBenefitAmountsRequestData] {
 
   private val resolveTaxYear: ResolveTaxYearMinimum = ResolveTaxYearMinimum(TaxYear.ending(stateBenefitsAppConfig.minimumPermittedTaxYear))
 
-      def validate: Validated[Seq[MtdError], Def1_DeleteBenefitAmountsRequestData] = {
-        (
-          ResolveNino(nino),
-          resolveTaxYear(taxYear),
-          ResolveBenefitId(benefitId)
-        ) mapN Def1_DeleteBenefitAmountsRequestData
-      }
+  def validate: Validated[Seq[MtdError], Def1_DeleteBenefitAmountsRequestData] = {
+    (
+      ResolveNino(nino),
+      resolveTaxYear(taxYear),
+      ResolveBenefitId(benefitId)
+    ).mapN(Def1_DeleteBenefitAmountsRequestData.apply)
+  }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package v2.amendBenefitAmounts
 
 import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow}
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.models.outcomes.ResponseWrapper
 import shared.services.{ServiceOutcome, ServiceSpec}
 import v2.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
@@ -63,16 +63,16 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         }
 
       val errors = List(
-        "INCOME_SOURCE_NOT_FOUND"          -> NotFoundError,
-        "INVALID_TAXABLE_ENTITY_ID"        -> NinoFormatError,
-        "INVALID_TAX_YEAR"                 -> TaxYearFormatError,
-        "INVALID_BENEFIT_ID"               -> BenefitIdFormatError,
-        "INVALID_CORRELATIONID"            -> InternalError,
-        "INVALID_PAYLOAD"                  -> InternalError,
-        "INVALID_REQUEST_BEFORE_TAX_YEAR"  -> RuleTaxYearNotEndedError,
-        "OUTSIDE_AMENDMENT_WINDOW"         -> RuleOutsideAmendmentWindow,
-        "SERVER_ERROR"                     -> InternalError,
-        "SERVICE_UNAVAILABLE"              -> InternalError
+        "INCOME_SOURCE_NOT_FOUND"         -> NotFoundError,
+        "INVALID_TAXABLE_ENTITY_ID"       -> NinoFormatError,
+        "INVALID_TAX_YEAR"                -> TaxYearFormatError,
+        "INVALID_BENEFIT_ID"              -> BenefitIdFormatError,
+        "INVALID_CORRELATIONID"           -> InternalError,
+        "INVALID_PAYLOAD"                 -> InternalError,
+        "INVALID_REQUEST_BEFORE_TAX_YEAR" -> RuleTaxYearNotEndedError,
+        "OUTSIDE_AMENDMENT_WINDOW"        -> RuleOutsideAmendmentWindow,
+        "SERVER_ERROR"                    -> InternalError,
+        "SERVICE_UNAVAILABLE"             -> InternalError
       )
 
       val extraTysErrors = List(
@@ -80,7 +80,7 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
         ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
       )
 
-      (errors ++ extraTysErrors).foreach((serviceError _).tupled)
+      (errors ++ extraTysErrors).foreach(serviceError.tupled)
 
     }
   }

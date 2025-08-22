@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,15 @@
 package v2.endpoints
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import common.errors.{RuleIncorrectOrEmptyBodyError, _}
+import common.errors.{RuleIncorrectOrEmptyBodyError, *}
 import play.api.http.HeaderNames.ACCEPT
-import play.api.http.Status._
+import play.api.http.Status.*
 import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.ws.WSBodyReadables.readableAsJson
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.{WSRequest, WSResponse}
 import play.api.test.Helpers.AUTHORIZATION
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
@@ -166,7 +168,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           ("AA123456A", "2019-20", missingFieldRequestBodyJson, BAD_REQUEST, missingMandatoryFieldErrors, Some("(missing mandatory fields)"))
         )
 
-        input.foreach(args => (validationErrorTest _).tupled(args))
+        input.foreach(validationErrorTest.tupled)
       }
 
       "ifs service error" when {
@@ -208,16 +210,16 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError)
         )
 
-        input.foreach(args => (serviceErrorTest _).tupled(args))
+        input.foreach(serviceErrorTest.tupled)
       }
     }
   }
 
   private trait Test {
 
-    val nino: String      = "AA123456A"
-    val taxYear: String   = "2019-20"
-    val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+    val nino: String              = "AA123456A"
+    val taxYear: String           = "2019-20"
+    private val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
     val requestBodyJson: JsValue = Json.parse(
       s"""
@@ -237,7 +239,7 @@ class CreateBenefitControllerISpec extends IntegrationBaseSpec {
         """.stripMargin
     )
 
-    def uri: String = s"/$nino/$taxYear"
+    private def uri: String = s"/$nino/$taxYear"
 
     def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/$taxYear/custom"
 

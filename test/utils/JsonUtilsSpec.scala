@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package utils
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
 import shared.utils.UnitSpec
 
 class JsonUtilsSpec extends UnitSpec with JsonUtils {
@@ -28,7 +28,7 @@ class JsonUtilsSpec extends UnitSpec with JsonUtils {
 
     implicit val reads: Reads[Foo] =
       ((__ \ "baz" \ "foo" \ "foo1").read[String] and
-        (__ \ "foo2").read[String])(Foo.apply _)
+        (__ \ "foo2").read[String])(Foo.apply)
 
   }
 
@@ -38,7 +38,7 @@ class JsonUtilsSpec extends UnitSpec with JsonUtils {
 
     implicit val reads: Reads[Bar] =
       ((__ \ "b1").read[String] and
-        emptyIfNotPresent[Foo](__ \ "baz" \ "foo"))(Bar.apply _)
+        emptyIfNotPresent[Foo](__ \ "baz" \ "foo"))(Bar.apply)
 
   }
 
@@ -231,7 +231,7 @@ class JsonUtilsSpec extends UnitSpec with JsonUtils {
     implicit val reads: Reads[NestedDataClass] = (
       (JsPath \ "data").read[String] and
         (JsPath \ "topLevel" \ "midLevel" \ "bottomLevel").readNestedNullable[MatchClass]
-    )(NestedDataClass.apply _)
+    )(NestedDataClass.apply)
 
     "return Some data" when {
 

@@ -18,7 +18,7 @@ package v1.unignoreBenefit.model.response
 
 import shared.config.MockSharedAppConfig
 import shared.hateoas.Link
-import shared.hateoas.Method._
+import shared.hateoas.Method.*
 import shared.utils.UnitSpec
 
 class UnignoreBenefitResponseSpec extends UnitSpec with MockSharedAppConfig {

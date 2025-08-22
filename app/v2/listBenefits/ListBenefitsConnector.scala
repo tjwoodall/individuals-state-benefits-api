@@ -16,7 +16,7 @@
 
 package v2.listBenefits
 
-import shared.connectors.DownstreamUri._
+import shared.connectors.DownstreamUri.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import shared.config.SharedAppConfig
 import play.api.http.Status
@@ -36,10 +36,10 @@ class ListBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: Sh
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
-    import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+    import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    import request._
+    import request.*
 
     val downstreamUri = if (taxYear.useTaxYearSpecificApi) {
       IfsUri[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]](

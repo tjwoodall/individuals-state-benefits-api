@@ -16,10 +16,10 @@
 
 package v1.deleteBenefit
 
-import cats.implicits._
+import cats.implicits.*
 import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError}
 import shared.controllers.RequestContext
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{BaseService, ServiceOutcome}
 import v1.deleteBenefit.model.request.DeleteBenefitRequestData
 

@@ -19,7 +19,7 @@ package v1.ignoreBenefit.def1
 import common.errors.BenefitIdFormatError
 import config.MockStateBenefitsAppConfig
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.utils.UnitSpec
 import v1.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v1.ignoreBenefit.model.request.IgnoreBenefitRequestData

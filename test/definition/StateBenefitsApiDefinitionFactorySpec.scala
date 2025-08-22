@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,12 @@ import shared.mocks.MockHttpClient
 import shared.routing.{Version1, Version2}
 import shared.utils.UnitSpec
 
-class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
-
-  class Test extends MockHttpClient with MockSharedAppConfig {
-    val apiDefinitionFactory = new StateBenefitsApiDefinitionFactory(mockSharedAppConfig)
-    MockedSharedAppConfig.apiGatewayContext returns "individuals/state-benefits"
-  }
+class StateBenefitsApiDefinitionFactorySpec extends UnitSpec with MockHttpClient with MockSharedAppConfig {
 
   "definition" when {
     "called" should {
-      "return a valid Definition case class" in new Test {
+      "return a valid Definition case class" in {
+        MockedSharedAppConfig.apiGatewayContext.anyNumberOfTimes() returns "individuals/state-benefits"
         MockedSharedAppConfig.apiStatus(Version1) returns "BETA"
         MockedSharedAppConfig.endpointsEnabled(Version1) returns true
         MockedSharedAppConfig.deprecationFor(Version1).returns(NotDeprecated.valid).anyNumberOfTimes()
@@ -42,6 +38,8 @@ class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
         MockedSharedAppConfig.apiStatus(Version2) returns "BETA"
         MockedSharedAppConfig.endpointsEnabled(Version2) returns true
         MockedSharedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+
+        val apiDefinitionFactory = new StateBenefitsApiDefinitionFactory(mockSharedAppConfig)
 
         apiDefinitionFactory.definition shouldBe
           Definition(

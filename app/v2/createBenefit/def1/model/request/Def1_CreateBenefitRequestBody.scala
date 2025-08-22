@@ -16,7 +16,7 @@
 
 package v2.createBenefit.def1.model.request
 
-import play.api.libs.functional.syntax._
+import play.api.libs.functional.syntax.*
 import play.api.libs.json.{JsPath, Json, OWrites, Reads}
 import v2.createBenefit.model.request.CreateBenefitRequestBody
 
@@ -28,7 +28,7 @@ object Def1_CreateBenefitRequestBody {
     (JsPath \ "benefitType").read[String] and
       (JsPath \ "startDate").read[String] and
       (JsPath \ "endDate").readNullable[String]
-  )(Def1_CreateBenefitRequestBody.apply _)
+  )(Def1_CreateBenefitRequestBody.apply)
 
   implicit val writes: OWrites[Def1_CreateBenefitRequestBody] = Json.writes[Def1_CreateBenefitRequestBody]
 }

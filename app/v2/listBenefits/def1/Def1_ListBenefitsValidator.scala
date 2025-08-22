@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package v2.listBenefits.def1
 
 import cats.data.Validated
-import cats.data.Validated._
-import cats.implicits._
+import cats.data.Validated.*
+import cats.implicits.*
 import config.StateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum, ResolverSupport}
@@ -43,7 +43,7 @@ class Def1_ListBenefitsValidator(nino: String, taxYear: String, benefitId: Optio
       ResolveNino(nino),
       resolveTaxYear(taxYear),
       resolveBenefitId(benefitId)
-    ) mapN ListBenefitsRequestData
+    ).mapN(ListBenefitsRequestData.apply)
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package v1.listBenefits
 
 import common.errors.BenefitIdFormatError
 import shared.models.domain.{Nino, TaxYear, Timestamp}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.models.outcomes.ResponseWrapper
 import shared.services.{ServiceOutcome, ServiceSpec}
 import v1.listBenefits.model.request.ListBenefitsRequestData
@@ -33,7 +33,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
   private val taxYear   = "2019-20"
   private val benefitId = Some("4557ecb5-fd32-48cc-81f5-e6acd1099f3c")
 
-  private val requestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), benefitId.map(BenefitId))
+  private val requestData = ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), benefitId.map(BenefitId.apply))
 
   private val validResponse = ListBenefitsResponse(
     stateBenefits = Some(
@@ -107,7 +107,7 @@ class ListBenefitsServiceSpec extends ServiceSpec {
           ("NOT_FOUND", NotFoundError)
         )
 
-        (errors ++ extraTysErrors).foreach((serviceError _).tupled)
+        (errors ++ extraTysErrors).foreach(serviceError.tupled)
       }
     }
   }

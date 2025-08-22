@@ -16,8 +16,8 @@
 
 package v2.listBenefits.model.response
 
-import cats._
-import play.api.libs.json._
+import cats.*
+import play.api.libs.json.*
 import utils.JsonUtils
 
 case class ListBenefitsResponse[H, C](stateBenefits: Option[Seq[H]], customerAddedStateBenefits: Option[Seq[C]])

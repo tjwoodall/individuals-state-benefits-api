@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package v1.ignoreBenefit.def1
 
 import cats.data.Validated
-import cats.data.Validated._
-import cats.implicits._
+import cats.data.Validated.*
+import cats.implicits.*
 import config.StateBenefitsAppConfig
 import shared.controllers.validators.Validator
 import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum}
@@ -32,15 +32,16 @@ import javax.inject.Singleton
 
 @Singleton
 class Def1_IgnoreBenefitValidator(nino: String, taxYear: String, benefitId: String)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
-  extends Validator[IgnoreBenefitRequestData] {
+    extends Validator[IgnoreBenefitRequestData] {
 
   private val resolveTaxYear: ResolveTaxYearMinimum = ResolveTaxYearMinimum(TaxYear.ending(stateBenefitsAppConfig.minimumPermittedTaxYear))
 
-    def validate: Validated[Seq[MtdError], Def1_IgnoreBenefitRequestData] = {
-      (
-        ResolveNino(nino),
-        resolveTaxYear(taxYear),
-        ResolveBenefitId(benefitId)
-      ) mapN Def1_IgnoreBenefitRequestData
-    }
+  def validate: Validated[Seq[MtdError], Def1_IgnoreBenefitRequestData] = {
+    (
+      ResolveNino(nino),
+      resolveTaxYear(taxYear),
+      ResolveBenefitId(benefitId)
+    ).mapN(Def1_IgnoreBenefitRequestData.apply)
+  }
+
 }

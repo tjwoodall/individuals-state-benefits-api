@@ -17,9 +17,9 @@
 package v2.listBenefits
 
 import shared.controllers.RequestContext
-import shared.models.errors._
+import shared.models.errors.*
 import shared.services.{BaseService, ServiceOutcome}
-import cats.implicits._
+import cats.implicits.*
 import common.errors.BenefitIdFormatError
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}

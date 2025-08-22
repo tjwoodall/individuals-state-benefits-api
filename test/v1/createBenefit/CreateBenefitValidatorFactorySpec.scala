@@ -18,9 +18,9 @@ package v1.createBenefit
 
 import common.errors.BenefitTypeFormatError
 import config.MockStateBenefitsAppConfig
-import play.api.libs.json._
+import play.api.libs.json.*
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.models.utils.JsonErrorValidators
 import shared.utils.UnitSpec
 import v1.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}

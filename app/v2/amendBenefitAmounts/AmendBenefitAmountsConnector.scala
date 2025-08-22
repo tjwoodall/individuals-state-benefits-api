@@ -17,8 +17,8 @@
 package v2.amendBenefitAmounts
 
 import shared.config.SharedAppConfig
-import shared.connectors.DownstreamUri._
-import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+import shared.connectors.DownstreamUri.*
+import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamStrategy, DownstreamUri}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -35,7 +35,7 @@ class AmendBenefitAmountsConnector @Inject() (val http: HttpClientV2, val appCon
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
-    import request._
+    import request.*
 
     val downstreamUri =
       if (taxYear.useTaxYearSpecificApi) {

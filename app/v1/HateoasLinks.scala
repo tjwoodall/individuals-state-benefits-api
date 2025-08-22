@@ -18,7 +18,7 @@ package v1
 
 import shared.config.SharedAppConfig
 import shared.hateoas.Link
-import shared.hateoas.Method._
+import shared.hateoas.Method.*
 
 trait HateoasLinks {
 

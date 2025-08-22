@@ -17,7 +17,7 @@
 package v2.createBenefit
 
 import shared.connectors.DownstreamUri.IfsUri
-import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import shared.config.SharedAppConfig
 import play.api.http.Status
@@ -38,7 +38,7 @@ class CreateBenefitConnector @Inject() (val http: HttpClientV2, val appConfig: S
       correlationId: String): Future[DownstreamOutcome[CreateBenefitResponse]] = {
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
-    import request._
+    import request.*
     post(body, IfsUri[CreateBenefitResponse](s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/custom"))
 
   }

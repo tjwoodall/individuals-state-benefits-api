@@ -19,7 +19,7 @@ package v1.hateoas
 import cats.Bifunctor
 import cats.implicits.toBifunctorOps
 import shared.config.SharedAppConfig
-import shared.hateoas.{HateoasLinksFactory, HateoasWrapper, Link}
+import shared.hateoas.{HateoasWrapper, Link}
 
 import javax.inject.{Inject, Singleton}
 
@@ -38,8 +38,10 @@ class HateoasFactory2 @Inject() (appConfig: SharedAppConfig) {
 
 }
 
-trait HateoasListLinksFactory2[A[_, _], I1, I2, D] extends HateoasLinksFactory[A[_, _], D] {
+trait HateoasListLinksFactory2[A[_, _], I1, I2, D] {
   def itemLinks1(appConfig: SharedAppConfig, data: D, item: I1): Seq[Link]
 
   def itemLinks2(appConfig: SharedAppConfig, data: D, item: I2): Seq[Link]
+
+  def links(appConfig: SharedAppConfig, data: D): Seq[Link]
 }

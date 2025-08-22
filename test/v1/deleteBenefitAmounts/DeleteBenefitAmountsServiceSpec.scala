@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package v1.deleteBenefitAmounts
 
 import common.errors.BenefitIdFormatError
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.models.outcomes.ResponseWrapper
 import shared.services.{ServiceOutcome, ServiceSpec}
 import v1.deleteBenefitAmounts.def1.model.request.Def1_DeleteBenefitAmountsRequestData
@@ -73,7 +73,7 @@ class DeleteBenefitAmountsServiceSpec extends ServiceSpec {
           ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
         )
 
-        (errors ++ extraTysErrors).foreach((serviceError _).tupled)
+        (errors ++ extraTysErrors).foreach(serviceError.tupled)
       }
     }
   }

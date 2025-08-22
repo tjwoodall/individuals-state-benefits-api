@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package v2.createBenefit.def1
 
 import cats.data.Validated
-import cats.implicits._
+import cats.implicits.*
 import config.StateBenefitsAppConfig
 import play.api.libs.json.JsValue
 import shared.controllers.validators.Validator
@@ -32,17 +32,17 @@ import javax.inject.Singleton
 
 @Singleton
 class Def1_CreateBenefitValidator(nino: String, taxYear: String, body: JsValue)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
-  extends Validator[CreateBenefitRequestData] {
+    extends Validator[CreateBenefitRequestData] {
 
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_CreateBenefitRequestBody]()
 
   private val resolveTaxYear: ResolveTaxYearMinimum = ResolveTaxYearMinimum(TaxYear.ending(stateBenefitsAppConfig.minimumPermittedTaxYear))
 
-      def validate: Validated[Seq[MtdError], Def1_CreateBenefitRequestData] =
-        (
-          ResolveNino(nino),
-          resolveTaxYear(taxYear),
-          resolveJson(body)
-        ) mapN Def1_CreateBenefitRequestData andThen validateBusinessRules
+  def validate: Validated[Seq[MtdError], Def1_CreateBenefitRequestData] =
+    (
+      ResolveNino(nino),
+      resolveTaxYear(taxYear),
+      resolveJson(body)
+    ).mapN(Def1_CreateBenefitRequestData.apply).andThen(validateBusinessRules)
 
 }

@@ -33,7 +33,7 @@ object ListBenefitsFixture {
   val correlationId: String = "X-123"
 
   val requestData: Option[String] => ListBenefitsRequestData = maybeBenefitId =>
-    ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), maybeBenefitId.map(BenefitId))
+    ListBenefitsRequestData(Nino(nino), TaxYear.fromMtd(taxYear), maybeBenefitId.map(BenefitId.apply))
 
   val responseBody: JsValue = Json.parse(s"""
        |{

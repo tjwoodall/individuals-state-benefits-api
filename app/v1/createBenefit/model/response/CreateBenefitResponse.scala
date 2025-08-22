@@ -30,7 +30,7 @@ object CreateBenefitResponse extends HateoasLinks {
   implicit object CreateBenefitLinksFactory extends HateoasLinksFactory[CreateBenefitResponse, CreateBenefitHateoasData] {
 
     override def links(appConfig: SharedAppConfig, data: CreateBenefitHateoasData): Seq[Link] = {
-      import data._
+      import data.*
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),
         amendBenefit(appConfig, nino, taxYear, benefitId),

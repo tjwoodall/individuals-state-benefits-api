@@ -18,13 +18,13 @@ package v1.ignoreBenefit
 
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import shared.config.SharedAppConfig
-import shared.controllers._
+import shared.controllers.*
 import shared.hateoas.HateoasFactory
 import shared.routing.Version
 import shared.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
 import shared.utils.IdGenerator
 import v1.ignoreBenefit.model.response.IgnoreBenefitHateoasData
-import v1.ignoreBenefit.model.response.IgnoreBenefitResponse._
+import v1.ignoreBenefit.model.response.IgnoreBenefitResponse.*
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext

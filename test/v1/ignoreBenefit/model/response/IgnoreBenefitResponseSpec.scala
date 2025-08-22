@@ -17,7 +17,7 @@
 package v1.ignoreBenefit.model.response
 
 import shared.hateoas.Link
-import shared.hateoas.Method._
+import shared.hateoas.Method.*
 import shared.config.MockSharedAppConfig
 import shared.utils.UnitSpec
 

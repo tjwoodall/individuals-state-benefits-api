@@ -18,7 +18,7 @@ package v1.amendBenefitAmounts.model.response
 
 import shared.config.MockSharedAppConfig
 import shared.hateoas.Link
-import shared.hateoas.Method._
+import shared.hateoas.Method.*
 import shared.utils.UnitSpec
 
 class AmendBenefitAmountsResponseSpec extends UnitSpec with MockSharedAppConfig {

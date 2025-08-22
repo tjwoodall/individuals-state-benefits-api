@@ -16,8 +16,8 @@
 
 package v1.listBenefits.model.response
 
-import cats._
-import play.api.libs.json._
+import cats.*
+import play.api.libs.json.*
 import shared.config.SharedAppConfig
 import shared.hateoas.{HateoasData, Link}
 import utils.JsonUtils
@@ -33,7 +33,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
 
     private class Links(appConfig: SharedAppConfig, data: ListBenefitsHateoasData, stateBenefit: StateBenefit) {
 
-      import data._
+      import data.*
 
       lazy val retrieveLink: Link      = listSingleBenefit(appConfig, nino, taxYear, stateBenefit.benefitId)
       lazy val amendAmountsLink: Link  = amendBenefitAmounts(appConfig, nino, taxYear, stateBenefit.benefitId)
@@ -70,7 +70,7 @@ object ListBenefitsResponse extends HateoasLinks with JsonUtils {
     }
 
     override def links(appConfig: SharedAppConfig, data: ListBenefitsHateoasData): Seq[Link] = {
-      import data._
+      import data.*
 
       Seq(
         createBenefit(appConfig, nino, taxYear),

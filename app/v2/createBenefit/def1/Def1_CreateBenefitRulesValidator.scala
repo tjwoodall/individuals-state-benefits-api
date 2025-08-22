@@ -23,7 +23,7 @@ import shared.controllers.validators.RulesValidator
 import shared.controllers.validators.resolvers.{ResolveDateRange, ResolveIsoDate}
 import shared.models.errors.{MtdError, StartDateFormatError}
 import v2.createBenefit.def1.model.request.Def1_CreateBenefitRequestData
-import v2.models.domain.BenefitType._
+import v2.models.domain.BenefitType.*
 
 object Def1_CreateBenefitRulesValidator extends RulesValidator[Def1_CreateBenefitRequestData] {
 

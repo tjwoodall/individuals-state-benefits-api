@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package v1.unignoreBenefit
 
 import common.errors.{BenefitIdFormatError, RuleUnignoreForbiddenError}
 import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors._
+import shared.models.errors.*
 import shared.models.outcomes.ResponseWrapper
 import shared.services.{ServiceOutcome, ServiceSpec}
 import v1.models.domain.BenefitId
@@ -28,8 +28,8 @@ import scala.concurrent.Future
 
 class UnignoreBenefitServiceSpec extends ServiceSpec {
 
-  private val nino = "AA111111A"
-  private val taxYear = "2019-20"
+  private val nino      = "AA111111A"
+  private val taxYear   = "2019-20"
   private val benefitId = "123e4567-e89b-12d3-a456-426614174000"
 
   private val request = Def1_UnignoreBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
@@ -81,7 +81,7 @@ class UnignoreBenefitServiceSpec extends ServiceSpec {
           ("5009", InternalError)
         )
 
-        errors.foreach((serviceError _).tupled)
+        errors.foreach(serviceError.tupled)
       }
     }
   }

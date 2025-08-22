@@ -18,8 +18,8 @@ package v1.ignoreBenefit
 
 import play.api.http.Status.CREATED
 import shared.config.{ConfigFeatureSwitches, SharedAppConfig}
-import shared.connectors.DownstreamUri._
-import shared.connectors.httpparsers.StandardDownstreamHttpParser._
+import shared.connectors.DownstreamUri.*
+import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
 import shared.models.domain.EmptyJsonBody
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,7 +37,7 @@ class IgnoreBenefitConnector @Inject() (val http: HttpClientV2, val appConfig: S
 
     implicit val successCode: SuccessCode = SuccessCode(CREATED)
 
-    import request._
+    import request.*
 
     if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1944")) {
       val downstreamUri: DownstreamUri[Unit] =

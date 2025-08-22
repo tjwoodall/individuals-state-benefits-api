@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,8 @@ import v2.controllers.resolvers.ResolveBenefitId
 import javax.inject.Singleton
 
 @Singleton
-class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
+class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String, body: JsValue)(implicit
+    stateBenefitsAppConfig: StateBenefitsAppConfig)
     extends Validator[AmendBenefitAmountsRequestData] {
 
   private val resolveJson = new ResolveNonEmptyJsonObject[Def1_AmendBenefitAmountsRequestBody]()
@@ -48,10 +49,10 @@ class Def1_AmendBenefitAmountsValidator(nino: String, taxYear: String, benefitId
       resolveTaxYear(taxYear),
       ResolveBenefitId(benefitId),
       resolveJson(body)
-    ).mapN(Def1_AmendBenefitAmountsRequestData) andThen validateBusinessRules
+    ).mapN(Def1_AmendBenefitAmountsRequestData.apply).andThen(validateBusinessRules)
 
   private def validateBusinessRules(parsed: Def1_AmendBenefitAmountsRequestData): Validated[Seq[MtdError], Def1_AmendBenefitAmountsRequestData] = {
-    import parsed.body._
+    import parsed.body.*
 
     combine(
       resolveAmountNumber(amount, path = "/amount"),

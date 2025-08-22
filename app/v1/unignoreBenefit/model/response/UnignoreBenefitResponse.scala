@@ -25,7 +25,7 @@ object UnignoreBenefitResponse extends HateoasLinks {
   implicit object UnignoreBenefitLinksFactory extends HateoasLinksFactory[Unit, UnignoreBenefitHateoasData] {
 
     override def links(appConfig: SharedAppConfig, data: UnignoreBenefitHateoasData): Seq[Link] = {
-      import data._
+      import data.*
       Seq(
         listSingleBenefit(appConfig, nino, taxYear, benefitId),
         ignoreBenefit(appConfig, nino, taxYear, benefitId)
