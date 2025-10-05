@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Unignore State Benefit Response",
   "description": "Unignore State Benefit Response",
   "type": "object",

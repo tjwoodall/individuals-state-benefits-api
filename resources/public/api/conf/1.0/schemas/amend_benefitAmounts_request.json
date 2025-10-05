@@ -1,5 +1,4 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Amend State Benefit Amounts Request",
   "description": "Amend State Benefit Amounts Request",
   "type": "object",
