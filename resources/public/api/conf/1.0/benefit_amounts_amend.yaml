@@ -33,8 +33,7 @@ requestBody:
       examples:
         example-1:
           description: Default Example
-          value:
-            $ref: './examples/amendBenefitAmounts/request.json'
+          externalValue: './examples/amendBenefitAmounts/request.json'
 
 responses:
   "200":
@@ -49,8 +48,7 @@ responses:
         examples:
           example-response:
             description: Example Response
-            value:
-              $ref: './examples/amendBenefitAmounts/response.json'
+            externalValue: './examples/amendBenefitAmounts/response.json'
   "400":
     description: Bad request
     headers:
