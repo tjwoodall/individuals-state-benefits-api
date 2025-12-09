@@ -97,6 +97,9 @@ object RuleRequestCannotBeFulfilledError
 object RuleTaxYearNotSupportedError
     extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "The tax year specified does not lie within the supported range", BAD_REQUEST)
 
+object RuleTaxDeductionNotAllowedError
+    extends MtdError("RULE_TAX_DEDUCTION_NOT_ALLOWED", "A tax deduction is not allowed against this benefit", UNPROCESSABLE_ENTITY)
+
 object RuleIncorrectOrEmptyBodyError
     extends MtdError("RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED", "An empty or non-matching body was submitted", BAD_REQUEST)
 

@@ -27,7 +27,10 @@ import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
-class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
+class AmendBenefitAmountsControllerIfsISpec extends IntegrationBaseSpec {
+
+  override def servicesConfig: Map[String, Any] =
+    Map("feature-switch.ifs_hip_migration_1937.enabled" -> false) ++ super.servicesConfig
 
   "Calling the 'amend benefit amounts' endpoint" should {
     "return a 204 status code" when {
@@ -196,7 +199,8 @@ class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
         val extraTysErrors = List(
           (BAD_REQUEST, "INVALID_CORRELATION_ID", INTERNAL_SERVER_ERROR, InternalError),
-          (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError)
+          (UNPROCESSABLE_ENTITY, "TAX_YEAR_NOT_SUPPORTED", BAD_REQUEST, RuleTaxYearNotSupportedError),
+          (UNPROCESSABLE_ENTITY, "TAX_DEDUCTION_NOT_ALLOWED", UNPROCESSABLE_ENTITY, RuleTaxDeductionNotAllowedError)
         )
 
         (errors ++ extraTysErrors).foreach(serviceErrorTest.tupled)

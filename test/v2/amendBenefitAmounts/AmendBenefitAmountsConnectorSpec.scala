@@ -16,6 +16,8 @@
 
 package v2.amendBenefitAmounts
 
+import org.scalamock.handlers.CallHandler
+import play.api.Configuration
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
@@ -24,6 +26,7 @@ import v2.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsReques
 import v2.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 import v2.models.domain.BenefitId
 
+import java.net.URL
 import scala.concurrent.Future
 
 class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
@@ -33,10 +36,13 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
   private val body = Def1_AmendBenefitAmountsRequestBody(999.99, Some(123.13))
 
+  private val preTysTaxYear = TaxYear.fromMtd("2020-21")
+  private val tysTaxYear = TaxYear.fromMtd("2023-24")
+
   "AmendBenefitAmountsConnector" should {
     "return the expected response for a non-TYS request" when {
       "a valid request is made" in new IfsTest with Test {
-        def taxYear: TaxYear = TaxYear.fromMtd("2020-21")
+        def taxYear: TaxYear = preTysTaxYear
 
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
@@ -50,16 +56,26 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
       }
     }
 
-    "return the expected response for a TYS request" when {
+    "return the expected response for a TYS request and feature switch is disabled (IFS enabled)" when {
       "a valid request is made" in new IfsTest with Test {
-        def taxYear: TaxYear = TaxYear.fromMtd("2023-24")
+        def taxYear: TaxYear = tysTaxYear
 
         val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
-        willPut(
-          url = url"$baseUrl/income-tax/23-24/income/state-benefits/$nino/$benefitId",
-          body = body
-        ).returns(Future.successful(expectedOutcome))
+        stubTysHttpResponse(isHipEnabled = false, outcome = expectedOutcome)
+
+        val result: DownstreamOutcome[Unit] = await(connector.amendBenefitAmounts(request))
+        result shouldBe expectedOutcome
+      }
+    }
+
+    "return the expected response for a TYS request and feature switch is enabled (HIP enabled)" when {
+      "a valid request is made" in new HipTest with Test {
+        def taxYear: TaxYear = tysTaxYear
+
+        val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
+
+        stubTysHttpResponse(isHipEnabled = true, outcome = expectedOutcome)
 
         val result: DownstreamOutcome[Unit] = await(connector.amendBenefitAmounts(request))
         result shouldBe expectedOutcome
@@ -73,6 +89,21 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
     val request: AmendBenefitAmountsRequestData = Def1_AmendBenefitAmountsRequestData(Nino(nino), taxYear, BenefitId(benefitId), body)
 
     val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockSharedAppConfig)
+
+    protected def stubTysHttpResponse(
+                                       isHipEnabled: Boolean,
+                                       outcome: DownstreamOutcome[Any]): CallHandler[Future[DownstreamOutcome[Any]]]#Derived = {
+
+      val url: URL = if (isHipEnabled) {
+        url"$baseUrl/itsa/income-tax/v1/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId"
+      } else {
+        url"$baseUrl/income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId"
+      }
+
+      MockedSharedAppConfig.featureSwitchConfig returns Configuration("ifs_hip_migration_1937.enabled" -> isHipEnabled)
+
+      willPut(url = url, body = body).returns(Future.successful(outcome))
+    }
 
   }
 

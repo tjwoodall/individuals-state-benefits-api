@@ -70,6 +70,7 @@ class StandardDownstreamHttpParserSpec extends UnitSpec {
       handleInternalErrorsCorrectly(httpReads)
       handleUnexpectedResponse(httpReads)
       handleBvrsCorrectly(httpReads)
+      handleHipErrorsCorrectly(httpReads)
     }
 
     "a success code is specified" should {
@@ -147,6 +148,42 @@ class StandardDownstreamHttpParserSpec extends UnitSpec {
       |   "resaon": "MESSAGE"
       |}
     """.stripMargin
+  )
+
+  val singleHipErrorsJson: JsValue = Json.parse(
+    """
+      |{
+      |   "origin": "HoD",
+      |   "response": {
+      |      "failures": [
+      |         {
+      |            "type": "CODE",
+      |            "reason": "MESSAGE"
+      |         }
+      |      ]
+      |   }
+      |}
+      |""".stripMargin
+  )
+
+  val multipleHipErrorsJson: JsValue = Json.parse(
+    """
+      |{
+      |   "origin": "HoD",
+      |   "response": {
+      |      "failures": [
+      |         {
+      |            "type": "CODE 1",
+      |            "reason": "MESSAGE"
+      |         },
+      |         {
+      |            "type": "CODE 2",
+      |            "reason": "MESSAGE"
+      |         }
+      |      ]
+      |   }
+      |}
+      |""".stripMargin
   )
 
   private def handleErrorsCorrectly[A](httpReads: HttpReads[DownstreamOutcome[A]]): Unit =
@@ -249,4 +286,27 @@ class StandardDownstreamHttpParserSpec extends UnitSpec {
     }
   }
 
+  private def handleHipErrorsCorrectly[A](httpReads: HttpReads[DownstreamOutcome[A]]): Unit = {
+    List(BAD_REQUEST, NOT_FOUND, UNPROCESSABLE_ENTITY, NOT_IMPLEMENTED).foreach { responseStatus =>
+      s"receiving a $responseStatus response from HIP" should {
+
+        "be able to parse single HIP errors" in {
+          val httpResponse = HttpResponse(responseStatus, singleHipErrorsJson.toString(), Map("CorrelationId" -> List(correlationId)))
+
+          httpReads.read(method, url, httpResponse) shouldBe {
+            Left(ResponseWrapper(correlationId, DownstreamErrors.single(DownstreamErrorCode("CODE"))))
+          }
+        }
+
+        "be able to parse multiple HIP errors" in {
+          val httpResponse = HttpResponse(responseStatus, multipleHipErrorsJson.toString(), Map("CorrelationId" -> List(correlationId)))
+
+          httpReads.read(method, url, httpResponse) shouldBe {
+            Left(ResponseWrapper(correlationId, DownstreamErrors(List(DownstreamErrorCode("CODE 1"), DownstreamErrorCode("CODE 2")))))
+          }
+        }
+      }
+
+    }
+  }
 }

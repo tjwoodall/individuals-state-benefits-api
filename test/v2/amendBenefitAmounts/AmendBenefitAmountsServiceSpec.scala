@@ -77,7 +77,8 @@ class AmendBenefitAmountsServiceSpec extends ServiceSpec {
 
       val extraTysErrors = List(
         ("INVALID_CORRELATION_ID", InternalError),
-        ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError)
+        ("TAX_YEAR_NOT_SUPPORTED", RuleTaxYearNotSupportedError),
+        ("TAX_DEDUCTION_NOT_ALLOWED", RuleTaxDeductionNotAllowedError),
       )
 
       (errors ++ extraTysErrors).foreach(serviceError.tupled)

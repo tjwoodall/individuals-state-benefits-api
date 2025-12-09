@@ -16,7 +16,7 @@
 
 package v2.amendBenefitAmounts
 
-import shared.config.SharedAppConfig
+import shared.config.{ConfigFeatureSwitches, SharedAppConfig}
 import shared.connectors.DownstreamUri.*
 import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamStrategy, DownstreamUri}
@@ -30,21 +30,28 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AmendBenefitAmountsConnector @Inject() (val http: HttpClientV2, val appConfig: SharedAppConfig) extends BaseDownstreamConnector {
 
+
   def amendBenefitAmounts(request: AmendBenefitAmountsRequestData)(implicit
-      hc: HeaderCarrier,
-      ec: ExecutionContext,
-      correlationId: String): Future[DownstreamOutcome[Unit]] = {
+                                                                   hc: HeaderCarrier,
+                                                                   ec: ExecutionContext,
+                                                                   correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import request.*
 
-    val downstreamUri =
-      if (taxYear.useTaxYearSpecificApi) {
-        IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
-      } else {
-        DownstreamUri(
-          s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId",
-          DownstreamStrategy.standardStrategy(appConfig.ifsDownstreamConfig))
+    lazy val downstreamUri1937 = {
+      if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1937")) {
+        HipUri[Unit](s"itsa/income-tax/v1/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
       }
+      else {
+        IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
+      }
+    }
+
+    lazy val downstreamUrl1651 = DownstreamUri(
+      s"income-tax/income/state-benefits/$nino/${taxYear.asMtd}/$benefitId",
+      DownstreamStrategy.standardStrategy(appConfig.ifsDownstreamConfig))
+
+    val downstreamUri = if (taxYear.useTaxYearSpecificApi) downstreamUri1937 else downstreamUrl1651
 
     put(body, downstreamUri)
 

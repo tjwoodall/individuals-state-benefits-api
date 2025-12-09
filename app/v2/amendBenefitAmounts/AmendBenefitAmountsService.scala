@@ -50,7 +50,8 @@ class AmendBenefitAmountsService @Inject() (connector: AmendBenefitAmountsConnec
     )
 
     val extraTysErrors = Map(
-      "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError
+      "TAX_YEAR_NOT_SUPPORTED" -> RuleTaxYearNotSupportedError,
+      "TAX_DEDUCTION_NOT_ALLOWED" -> RuleTaxDeductionNotAllowedError
     )
 
     errors ++ extraTysErrors
