@@ -151,3 +151,11 @@ components:
       value:
         code: MATCHING_RESOURCE_NOT_FOUND
         message: Matching resource not found
+
+    # 422
+
+    ruleTaxDeductionNotAllowed:
+      description: A tax deduction is not allowed against this benefit.
+      value:
+        code: RULE_TAX_DEDUCTION_NOT_ALLOWED
+        message: A tax deduction is not allowed against this benefit

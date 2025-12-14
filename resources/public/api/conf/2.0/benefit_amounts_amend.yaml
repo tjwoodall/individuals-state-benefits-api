@@ -5,6 +5,7 @@ description: |
   ### Test data
   Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
   
+  
   | Header Value (Gov-Test-Scenario) | Scenario                                                                                                                      |
   |----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
   | N/A - DEFAULT                    | Simulate success response.                                                                                                    |
@@ -12,6 +13,7 @@ description: |
   | TAX_YEAR_NOT_ENDED               | Simulates the error returned when a benefit that is not employmentSupportAllowance or jobSeekersAllowance is amended in year. |
   | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.                               |
   | STATEFUL                         | Performs a stateful update.                                                                                                   |
+  
 
 parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'
@@ -100,3 +102,5 @@ responses:
         examples:
           MATCHING_RESOURCE_NOT_FOUND:
             $ref: './common/errors.yaml#/components/examples/notFound'
+
+# 
