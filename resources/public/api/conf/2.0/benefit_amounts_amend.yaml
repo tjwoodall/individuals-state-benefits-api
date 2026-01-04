@@ -11,6 +11,7 @@ description: |
   | N/A - DEFAULT                    | Simulate success response.                                                                                                    |
   | NOT_FOUND                        | Simulates the scenario where no data is found.                                                                                |
   | TAX_YEAR_NOT_ENDED               | Simulates the error returned when a benefit that is not employmentSupportAllowance or jobSeekersAllowance is amended in year. |
+  | TAX_DEDUCTION_NOT_ALLOWED        | Simulates the scenario where tax deduction is not allowed against the type of benefit associated with the benefitId           |
   | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.                               |
   | STATEFUL                         | Performs a stateful update.                                                                                                   |
   
@@ -103,4 +104,17 @@ responses:
           MATCHING_RESOURCE_NOT_FOUND:
             $ref: './common/errors.yaml#/components/examples/notFound'
 
+# 
+  "422":
+    description: Unprocessible Entity
+    headers:
+      X-CorrelationId:
+        $ref: './common/headers.yaml#/components/parameters/correlationId'
+    content:
+      application/json:
+        schema:
+          $ref: './schemas/error_response.yaml'
+        examples:
+          RULE_TAX_DEDUCTION_NOT_ALLOWED:
+            $ref: './common/errors.yaml#/components/examples/ruleTaxDeductionNotAllowed'
 # 
