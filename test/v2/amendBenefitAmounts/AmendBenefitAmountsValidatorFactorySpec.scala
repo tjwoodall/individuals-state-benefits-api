@@ -54,4 +54,5 @@ class AmendBenefitAmountsValidatorFactorySpec extends UnitSpec with JsonErrorVal
       }
     }
   }
+
 }

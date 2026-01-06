@@ -44,4 +44,4 @@ object RuleUnignoreForbiddenError extends MtdError("RULE_UNIGNORE_FORBIDDEN", "A
 
 object RuleBenefitTypeExists extends MtdError("RULE_BENEFIT_TYPE_EXISTS", "A benefit of this type has already been created", BAD_REQUEST)
 
-object RuleOutsideAmendmentWindow extends  MtdError("RULE_OUTSIDE_AMENDMENT_WINDOW", "You are outside the amendment window", BAD_REQUEST)
+object RuleOutsideAmendmentWindow extends MtdError("RULE_OUTSIDE_AMENDMENT_WINDOW", "You are outside the amendment window", BAD_REQUEST)

@@ -34,7 +34,7 @@ trait MockListBenefitsService extends TestSuite with MockFactory {
   object MockListBenefitsService {
 
     def listBenefits(requestData: ListBenefitsRequestData)
-    : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]]] = {
+        : CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]]] = {
       (mockListBenefitsService
         .listBenefits(_: ListBenefitsRequestData)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)

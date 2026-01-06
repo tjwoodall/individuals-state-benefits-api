@@ -19,7 +19,7 @@ package v2.deleteBenefit.model.request
 import shared.models.domain.{Nino, TaxYear}
 import v2.models.domain.BenefitId
 
-trait DeleteBenefitRequestData{
+trait DeleteBenefitRequestData {
   def nino: Nino
   def taxYear: TaxYear
   def benefitId: BenefitId

@@ -45,4 +45,5 @@ class DeleteBenefitAmountsValidatorFactorySpec extends UnitSpec with MockStateBe
     }
 
   }
+
 }

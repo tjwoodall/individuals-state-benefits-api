@@ -28,7 +28,8 @@ trait MockStateBenefitsAppConfig extends TestSuite with MockFactory {
     def minimumTaxYear: CallHandler[Int] = (() => mockStateBenefitsAppConfig.minimumPermittedTaxYear).expects()
   }
 
-  abstract class AppConfigTest(value: Int = 2020)  {
+  abstract class AppConfigTest(value: Int = 2020) {
     MockedStateBenefitsAppConfig.minimumTaxYear.anyNumberOfTimes() returns value
   }
+
 }

@@ -26,7 +26,7 @@ class IgnoreBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsA
 
   private val validNino      = "AA123456B"
   private val validTaxYear   = "2021-22"
-  private val invalidTaxYear   = "2021"
+  private val invalidTaxYear = "2021"
   private val validBenefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validatorFactory = new IgnoreBenefitValidatorFactory
@@ -38,7 +38,7 @@ class IgnoreBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsA
         result shouldBe a[Def1_IgnoreBenefitValidator]
       }
 
-      "given an invalid taxYear" in new AppConfigTest  {
+      "given an invalid taxYear" in new AppConfigTest {
         val result: Validator[IgnoreBenefitRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId)
         result shouldBe a[Def1_IgnoreBenefitValidator]
       }

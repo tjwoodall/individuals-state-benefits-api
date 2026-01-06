@@ -54,9 +54,9 @@ class CreateBenefitConnectorSpec extends ConnectorSpec {
         private val outcome = Right(ResponseWrapper(correlationId, response))
 
         willPost(
-            url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
-            body = createBenefitRequestBody
-          )
+          url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom",
+          body = createBenefitRequestBody
+        )
           .returns(Future.successful(outcome))
 
         val result: DownstreamOutcome[CreateBenefitResponse] = await(connector.createBenefit(request))

@@ -31,8 +31,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends BaseService {
 
   def listBenefits(request: ListBenefitsRequestData)(implicit
-                                                     ctx: RequestContext,
-                                                     ec: ExecutionContext): Future[ServiceOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
+      ctx: RequestContext,
+      ec: ExecutionContext): Future[ServiceOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
     connector.listBenefits(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))
   }
@@ -51,7 +51,7 @@ class ListBenefitsService @Inject() (connector: ListBenefitsConnector) extends B
     )
 
     val extraTysErrors: Map[String, MtdError] = Map(
-      "NOT_FOUND"              -> NotFoundError
+      "NOT_FOUND" -> NotFoundError
     )
 
     errors ++ extraTysErrors

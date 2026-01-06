@@ -32,8 +32,8 @@ trait MockListBenefitsConnector extends TestSuite with MockFactory {
 
   object MockListBenefitsConnector {
 
-    def listBenefits(
-                      requestData: ListBenefitsRequestData): CallHandler[Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
+    def listBenefits(requestData: ListBenefitsRequestData)
+        : CallHandler[Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]]] = {
       (mockListBenefitsConnector
         .listBenefits(_: ListBenefitsRequestData)(_: HeaderCarrier, _: ExecutionContext, _: String))
         .expects(requestData, *, *, *)

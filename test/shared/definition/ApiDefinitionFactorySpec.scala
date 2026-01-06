@@ -84,11 +84,11 @@ class ApiDefinitionFactorySpec extends UnitSpec {
           List(APIVersion(Version1, APIStatus.BETA, endpointsEnabled = true)),
           None)
       )
-      
+
     }
 
     def checkBuildApiStatus(version: Version): APIStatus = apiDefinitionFactory.buildAPIStatus(version)
-    
+
     protected def setupMockConfig(version: Version): Unit = {
       MockedSharedAppConfig
         .deprecationFor(version)

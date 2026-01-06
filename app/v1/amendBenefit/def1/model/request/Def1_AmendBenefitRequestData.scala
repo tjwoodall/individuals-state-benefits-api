@@ -21,4 +21,4 @@ import v1.amendBenefit.model.request.AmendBenefitRequestData
 import v1.models.domain.BenefitId
 
 case class Def1_AmendBenefitRequestData(nino: Nino, taxYear: TaxYear, benefitId: BenefitId, body: Def1_AmendBenefitRequestBody)
-  extends AmendBenefitRequestData
+    extends AmendBenefitRequestData

@@ -25,7 +25,7 @@ enum APIStatus {
 }
 
 object APIStatus {
-  given Format[APIStatus] = Enums.format(values)
+  given Format[APIStatus]                        = Enums.format(values)
   val parser: PartialFunction[String, APIStatus] = Enums.parser(values)
 }
 

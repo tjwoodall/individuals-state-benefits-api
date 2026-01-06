@@ -28,6 +28,7 @@ class DeleteBenefitValidatorFactory @Inject() (implicit stateBenefitsAppConfig: 
 
   def validator(nino: String, taxYear: String, benefitId: String): Validator[DeleteBenefitRequestData] =
     taxYear match {
-      case _ => new Def1_DeleteBenefitValidator (nino: String, taxYear: String, benefitId: String)
+      case _ => new Def1_DeleteBenefitValidator(nino: String, taxYear: String, benefitId: String)
     }
+
 }

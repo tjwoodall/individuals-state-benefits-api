@@ -43,6 +43,7 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
       http = mockHttpClient,
       appConfig = mockSharedAppConfig
     )
+
   }
 
   "AmendBenefitConnector" when {
@@ -51,9 +52,9 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPut(
-            url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
-            body = request.body
-          )
+          url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId",
+          body = request.body
+        )
           .returns(Future.successful(outcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.amendBenefit(request))

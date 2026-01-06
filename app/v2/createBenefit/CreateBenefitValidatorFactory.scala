@@ -31,4 +31,5 @@ class CreateBenefitValidatorFactory @Inject() (implicit stateBenefitsAppConfig: 
     taxYear match {
       case _ => new Def1_CreateBenefitValidator(nino: String, taxYear: String, body: JsValue)
     }
+
 }

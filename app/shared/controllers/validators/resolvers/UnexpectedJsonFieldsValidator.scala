@@ -102,13 +102,13 @@ object UnexpectedJsonFieldsValidator extends ResolverSupport {
 
     def leaf[A]: SchemaStructureSource[A] = SchemaStructureSource.instance(_ => SchemaStructure.Leaf)
 
-    given SchemaStructureSource[String] = instance(_ => SchemaStructure.Leaf)
-    given SchemaStructureSource[Int] = instance(_ => SchemaStructure.Leaf)
-    given SchemaStructureSource[Double] = instance(_ => SchemaStructure.Leaf)
-    given SchemaStructureSource[Boolean] = instance(_ => SchemaStructure.Leaf)
-    given SchemaStructureSource[BigInt] = instance(_ => SchemaStructure.Leaf)
+    given SchemaStructureSource[String]     = instance(_ => SchemaStructure.Leaf)
+    given SchemaStructureSource[Int]        = instance(_ => SchemaStructure.Leaf)
+    given SchemaStructureSource[Double]     = instance(_ => SchemaStructure.Leaf)
+    given SchemaStructureSource[Boolean]    = instance(_ => SchemaStructure.Leaf)
+    given SchemaStructureSource[BigInt]     = instance(_ => SchemaStructure.Leaf)
     given SchemaStructureSource[BigDecimal] = instance(_ => SchemaStructure.Leaf)
-    given SchemaStructureSource[TaxYear] = instance(_ => SchemaStructure.Leaf)
+    given SchemaStructureSource[TaxYear]    = instance(_ => SchemaStructure.Leaf)
 
     given [A](using aInstance: SchemaStructureSource[A]): SchemaStructureSource[Option[A]] =
       instance(opt => opt.map(aInstance.schemaStructureOf).getOrElse(SchemaStructure.Leaf))
@@ -128,9 +128,9 @@ object UnexpectedJsonFieldsValidator extends ResolverSupport {
 
     inline given derived[A](using m: Mirror.ProductOf[A]): SchemaStructureSource[A] =
       instance { a =>
-        val elemLabels = summonLabels[m.MirroredElemLabels]
+        val elemLabels    = summonLabels[m.MirroredElemLabels]
         val elemInstances = summonAllInstances[m.MirroredElemTypes]
-        val elems = a.asInstanceOf[Product].productIterator.toList
+        val elems         = a.asInstanceOf[Product].productIterator.toList
         val fields = elemLabels.lazyZip(elems).lazyZip(elemInstances).map { (label, value, checker) =>
           label -> checker.value().schemaStructureOf(value)
         }
@@ -139,13 +139,13 @@ object UnexpectedJsonFieldsValidator extends ResolverSupport {
 
     private inline def summonLabels[T <: Tuple]: List[String] =
       inline erasedValue[T] match {
-        case _: (h *: t) => constValue[h].asInstanceOf[String] :: summonLabels[t]
+        case _: (h *: t)   => constValue[h].asInstanceOf[String] :: summonLabels[t]
         case _: EmptyTuple => Nil
       }
 
     private inline def summonAllInstances[T <: Tuple]: List[Lazy[SchemaStructureSource[Any]]] =
       inline erasedValue[T] match {
-        case _: (h *: t) => summonInline[Lazy[SchemaStructureSource[h]]].asInstanceOf[Lazy[SchemaStructureSource[Any]]] :: summonAllInstances[t]
+        case _: (h *: t)   => summonInline[Lazy[SchemaStructureSource[h]]].asInstanceOf[Lazy[SchemaStructureSource[Any]]] :: summonAllInstances[t]
         case _: EmptyTuple => Nil
       }
 

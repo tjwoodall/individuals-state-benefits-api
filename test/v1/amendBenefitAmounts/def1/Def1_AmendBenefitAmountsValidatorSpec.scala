@@ -27,7 +27,7 @@ import v1.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsReques
 import v1.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 import v1.models.domain.BenefitId
 
-class Def1_AmendBenefitAmountsValidatorSpec extends UnitSpec with JsonErrorValidators with MockStateBenefitsAppConfig{
+class Def1_AmendBenefitAmountsValidatorSpec extends UnitSpec with JsonErrorValidators with MockStateBenefitsAppConfig {
 
   private implicit val correlationId: String = "1234"
 
@@ -52,34 +52,40 @@ class Def1_AmendBenefitAmountsValidatorSpec extends UnitSpec with JsonErrorValid
   "validator" should {
     "return the parsed domain object" when {
       "passed a valid request" in new AppConfigTest {
-        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] = validator(validNino, validTaxYear, validBenefitId, validBody).validateAndWrapResult()
+        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] =
+          validator(validNino, validTaxYear, validBenefitId, validBody).validateAndWrapResult()
         result shouldBe Right(Def1_AmendBenefitAmountsRequestData(parsedNino, parsedTaxYear, parsedBenefitId, parsedBody))
       }
     }
 
     "return a single error" when {
       "passed an invalid nino" in new AppConfigTest {
-        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] = validator("A12344A", validTaxYear, validBenefitId, validBody).validateAndWrapResult()
+        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] =
+          validator("A12344A", validTaxYear, validBenefitId, validBody).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, NinoFormatError))
       }
 
       "passed an invalid tax year" in new AppConfigTest {
-        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] = validator(validNino, "202223", validBenefitId, validBody).validateAndWrapResult()
+        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] =
+          validator(validNino, "202223", validBenefitId, validBody).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, TaxYearFormatError))
       }
 
       "passed a tax year with an invalid range" in new AppConfigTest {
-        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] = validator(validNino, "2022-24", validBenefitId, validBody).validateAndWrapResult()
+        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] =
+          validator(validNino, "2022-24", validBenefitId, validBody).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearRangeInvalidError))
       }
 
       "passed a tax year that precedes the minimum" in new AppConfigTest {
-        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] = validator(validNino, "2018-19", validBenefitId, validBody).validateAndWrapResult()
+        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] =
+          validator(validNino, "2018-19", validBenefitId, validBody).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearNotSupportedError))
       }
 
       "passed an invalid benefitId" in new AppConfigTest {
-        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] = validator(validNino, validTaxYear, "invalid", validBody).validateAndWrapResult()
+        val result: Either[ErrorWrapper, AmendBenefitAmountsRequestData] =
+          validator(validNino, validTaxYear, "invalid", validBody).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, BenefitIdFormatError))
       }
 
@@ -123,4 +129,5 @@ class Def1_AmendBenefitAmountsValidatorSpec extends UnitSpec with JsonErrorValid
       }
     }
   }
+
 }

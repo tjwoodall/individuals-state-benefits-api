@@ -33,7 +33,8 @@ trait MockCreateBenefitService extends TestSuite with MockFactory {
 
   object MockCreateStateBenefitService {
 
-    def createStateBenefit(requestData: CreateBenefitRequestData): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateBenefitResponse]]]] = {
+    def createStateBenefit(
+        requestData: CreateBenefitRequestData): CallHandler[Future[Either[ErrorWrapper, ResponseWrapper[CreateBenefitResponse]]]] = {
       (mockCreateStateBenefitService
         .createBenefit(_: CreateBenefitRequestData)(_: RequestContext, _: ExecutionContext))
         .expects(requestData, *, *)

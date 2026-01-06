@@ -100,4 +100,5 @@ class Def1_DeleteBenefitAmountsValidatorSpec extends UnitSpec with MockStateBene
       }
     }
   }
+
 }

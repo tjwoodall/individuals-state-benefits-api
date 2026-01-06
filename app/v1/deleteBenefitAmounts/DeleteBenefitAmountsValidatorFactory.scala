@@ -30,4 +30,5 @@ class DeleteBenefitAmountsValidatorFactory @Inject() (implicit stateBenefitsAppC
     taxYear match {
       case _ => new Def1_DeleteBenefitAmountsValidator(nino: String, taxYear: String, benefitId: String)
     }
+
 }

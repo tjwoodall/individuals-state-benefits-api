@@ -83,7 +83,8 @@ class Def1_UnignoreBenefitValidatorSpec extends UnitSpec with MockStateBenefitsA
 
     "return multiple errors" when {
       "passed multiple invalid fields" in new AppConfigTest {
-        val result: Either[ErrorWrapper, UnignoreBenefitRequestData] = validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id").validateAndWrapResult()
+        val result: Either[ErrorWrapper, UnignoreBenefitRequestData] =
+          validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id").validateAndWrapResult()
 
         result shouldBe Left(
           ErrorWrapper(
