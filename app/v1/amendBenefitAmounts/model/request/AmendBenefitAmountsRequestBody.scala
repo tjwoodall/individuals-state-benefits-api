@@ -23,8 +23,10 @@ import v1.amendBenefitAmounts.def1.model.request.Def1_AmendBenefitAmountsRequest
 trait AmendBenefitAmountsRequestBody
 
 object AmendBenefitAmountsRequestBody extends JsonWritesUtil {
+
   implicit val writes: OWrites[AmendBenefitAmountsRequestBody] = writesFrom { case def1: Def1_AmendBenefitAmountsRequestBody =>
     implicitly[OWrites[Def1_AmendBenefitAmountsRequestBody]].writes(def1)
 
   }
+
 }

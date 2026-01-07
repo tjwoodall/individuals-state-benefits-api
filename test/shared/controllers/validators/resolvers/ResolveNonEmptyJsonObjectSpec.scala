@@ -37,7 +37,7 @@ class ResolveNonEmptyJsonObjectSpec extends UnitSpec with ResolverSupport with J
       field("oneOf2", o.oneOf2)
     )
   }
-  
+
   case class Foo(bar: Bar, bars: Option[Seq[Bar]] = None, baz: Option[Baz] = None, qux: Option[Qux] = None)
 
   implicit val barFormat: Reads[Bar] = Json.reads

@@ -34,7 +34,7 @@ class CreateBenefitController @Inject() (val authService: EnrolmentsAuthService,
                                          auditService: AuditService,
                                          cc: ControllerComponents,
                                          idGenerator: IdGenerator)(implicit appConfig: SharedAppConfig, ec: ExecutionContext)
-  extends AuthorisedController(cc) {
+    extends AuthorisedController(cc) {
 
   val endpointName = "create-benefit"
 

@@ -38,8 +38,8 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
         val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
-            url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
-          )
+          url = url"$baseUrl/income-tax/income/state-benefits/$nino/$taxYear/custom/$benefitId"
+        )
           .returns(Future.successful(outcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.deleteBenefit(request))

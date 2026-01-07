@@ -30,19 +30,17 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class AmendBenefitAmountsConnector @Inject() (val http: HttpClientV2, val appConfig: SharedAppConfig) extends BaseDownstreamConnector {
 
-
   def amendBenefitAmounts(request: AmendBenefitAmountsRequestData)(implicit
-                                                                   hc: HeaderCarrier,
-                                                                   ec: ExecutionContext,
-                                                                   correlationId: String): Future[DownstreamOutcome[Unit]] = {
+      hc: HeaderCarrier,
+      ec: ExecutionContext,
+      correlationId: String): Future[DownstreamOutcome[Unit]] = {
 
     import request.*
 
     lazy val downstreamUri1937 = {
       if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1937")) {
         HipUri[Unit](s"itsa/income-tax/v1/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
-      }
-      else {
+      } else {
         IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId")
       }
     }

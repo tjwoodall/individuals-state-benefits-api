@@ -58,4 +58,5 @@ class AmendBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsAp
       }
     }
   }
+
 }

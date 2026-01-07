@@ -16,7 +16,6 @@
 
 package v1.amendBenefit.model.response
 
-
 import shared.config.MockSharedAppConfig
 import shared.hateoas.Link
 import shared.hateoas.Method.*

@@ -25,8 +25,10 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class IgnoreBenefitValidatorFactory @Inject() (implicit stateBenefitsAppConfig: StateBenefitsAppConfig) {
+
   def validator(nino: String, taxYear: String, benefitId: String): Validator[IgnoreBenefitRequestData] =
     taxYear match {
       case _ => new Def1_IgnoreBenefitValidator(nino: String, taxYear: String, benefitId: String)
     }
+
 }

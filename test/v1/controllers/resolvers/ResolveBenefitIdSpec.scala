@@ -35,7 +35,7 @@ class ResolveBenefitIdSpec extends UnitSpec {
     "return an error" when {
       "given an invalid benefit ID" in {
         val invalidBenefitId = ""
-        val result           =  ResolveBenefitId(invalidBenefitId)
+        val result           = ResolveBenefitId(invalidBenefitId)
         result shouldBe Invalid(List(BenefitIdFormatError))
       }
     }

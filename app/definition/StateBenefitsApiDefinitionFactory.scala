@@ -48,5 +48,4 @@ class StateBenefitsApiDefinitionFactory @Inject() (protected val appConfig: Shar
       )
     )
 
-
 }

@@ -87,7 +87,8 @@ class Def1_DeleteBenefitValidatorSpec extends UnitSpec with MockStateBenefitsApp
 
     "return multiple errors" when {
       "passed multiple invalid fields" in new AppConfigTest {
-        val result: Either[ErrorWrapper, DeleteBenefitRequestData] = validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id").validateAndWrapResult()
+        val result: Either[ErrorWrapper, DeleteBenefitRequestData] =
+          validator("not-a-nino", "not-a-tax-year", "not-a-benefit-id").validateAndWrapResult()
 
         result shouldBe Left(
           ErrorWrapper(
@@ -99,4 +100,5 @@ class Def1_DeleteBenefitValidatorSpec extends UnitSpec with MockStateBenefitsApp
       }
     }
   }
+
 }

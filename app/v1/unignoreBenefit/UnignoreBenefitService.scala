@@ -27,7 +27,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UnignoreBenefitService @Inject()(connector: UnignoreBenefitConnector) extends BaseService {
+class UnignoreBenefitService @Inject() (connector: UnignoreBenefitConnector) extends BaseService {
 
   def unignoreBenefit(request: UnignoreBenefitRequestData)(implicit ctx: RequestContext, ec: ExecutionContext): Future[ServiceOutcome[Unit]] = {
     connector.unignoreBenefit(request).map(_.leftMap(mapDownstreamErrors(downstreamErrorMap)))

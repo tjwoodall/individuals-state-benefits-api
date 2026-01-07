@@ -83,7 +83,7 @@ class Def1_CreateBenefitValidatorSpec extends UnitSpec with JsonErrorValidators 
       }
 
       "passed an empty JSON body" in new AppConfigTest {
-        val invalidBody: JsObject = JsObject.empty
+        val invalidBody: JsObject                                  = JsObject.empty
         val result: Either[ErrorWrapper, CreateBenefitRequestData] = validator(validNino, validTaxYear, invalidBody).validateAndWrapResult()
         result shouldBe Left(ErrorWrapper(correlationId, RuleIncorrectOrEmptyBodyError))
       }
@@ -183,4 +183,5 @@ class Def1_CreateBenefitValidatorSpec extends UnitSpec with JsonErrorValidators 
       }
     }
   }
+
 }

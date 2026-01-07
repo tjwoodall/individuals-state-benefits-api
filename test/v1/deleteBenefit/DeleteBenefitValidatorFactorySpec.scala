@@ -44,4 +44,5 @@ class DeleteBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsA
     }
 
   }
+
 }

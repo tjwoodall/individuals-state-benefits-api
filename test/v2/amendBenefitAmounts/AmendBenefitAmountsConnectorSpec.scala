@@ -37,7 +37,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
   private val body = Def1_AmendBenefitAmountsRequestBody(999.99, Some(123.13))
 
   private val preTysTaxYear = TaxYear.fromMtd("2020-21")
-  private val tysTaxYear = TaxYear.fromMtd("2023-24")
+  private val tysTaxYear    = TaxYear.fromMtd("2023-24")
 
   "AmendBenefitAmountsConnector" should {
     "return the expected response for a non-TYS request" when {
@@ -90,9 +90,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
     val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockSharedAppConfig)
 
-    protected def stubTysHttpResponse(
-                                       isHipEnabled: Boolean,
-                                       outcome: DownstreamOutcome[Any]): CallHandler[Future[DownstreamOutcome[Any]]]#Derived = {
+    protected def stubTysHttpResponse(isHipEnabled: Boolean, outcome: DownstreamOutcome[Any]): CallHandler[Future[DownstreamOutcome[Any]]]#Derived = {
 
       val url: URL = if (isHipEnabled) {
         url"$baseUrl/itsa/income-tax/v1/${taxYear.asTysDownstream}/income/state-benefits/$nino/$benefitId"

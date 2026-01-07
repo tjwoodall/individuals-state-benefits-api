@@ -19,7 +19,7 @@ package v2.amendBenefit.model.request
 import shared.models.domain.{Nino, TaxYear}
 import v2.models.domain.BenefitId
 
-trait AmendBenefitRequestData{
+trait AmendBenefitRequestData {
   val nino: Nino
   val taxYear: TaxYear
   val benefitId: BenefitId

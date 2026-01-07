@@ -55,7 +55,7 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willPutEmpty(
-          url = url"$baseUrl/itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}",
+          url = url"$baseUrl/itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}"
         ).returns(Future.successful(outcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.ignoreBenefit(request))

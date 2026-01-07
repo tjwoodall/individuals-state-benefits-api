@@ -56,7 +56,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
 
         willDelete(
-          url = url"$baseUrl/itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=25-26",
+          url = url"$baseUrl/itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=25-26"
         ).returns(Future.successful(outcome))
 
         val result: DownstreamOutcome[Unit] = await(connector.unignoreBenefit(request))

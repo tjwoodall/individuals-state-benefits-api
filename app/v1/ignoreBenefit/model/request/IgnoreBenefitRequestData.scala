@@ -19,7 +19,7 @@ package v1.ignoreBenefit.model.request
 import shared.models.domain.{Nino, TaxYear}
 import v1.models.domain.BenefitId
 
-trait IgnoreBenefitRequestData{
+trait IgnoreBenefitRequestData {
   def nino: Nino
   def taxYear: TaxYear
   def benefitId: BenefitId

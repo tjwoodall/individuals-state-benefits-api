@@ -588,4 +588,5 @@ object ListBenefitsFixture {
     stateBenefits = Some(Seq(stateBenefits)),
     customerAddedStateBenefits = Some(Seq(customerAddedStateBenefits))
   )
+
 }
