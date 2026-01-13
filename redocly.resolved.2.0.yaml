@@ -1,0 +1,1797 @@
+openapi: 3.0.3
+info:
+  version: '2.0'
+  title: Individuals State Benefits (MTD)
+  description: |
+    The following endpoints are stateful in the Sandbox:
+
+    - [Create State Benefit](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D/post)
+    - [Amend State Benefit](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D/put)
+    - [Delete State Benefit](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D/delete)
+    - [List State Benefits](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D/get)
+    - [Amend State Benefit Amounts](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D~1amounts/put)
+    - [Delete State Benefit Amounts](#/paths/~1individuals~1state-benefits~1%7Bnino%7D~1%7BtaxYear%7D~1%7BbenefitId%7D~1amounts/delete)
+      
+    # Send fraud prevention data
+    HMRC monitors transactions to help protect your customers' confidential data from criminals and fraudsters. 
+
+    <div class="govuk-warning-text warning-icon-fix">
+      <span class="govuk-warning-text__icon warning-icon-ui-fix" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        You are required by law to submit header data for this API. This includes all associated APIs and endpoints.
+      </strong>
+    </div>
+
+    [Check the data you need to send](/guides/fraud-prevention/). You can also use the [Test API](/api-documentation/docs/api/service/txm-fph-validator-api/2.0) during initial development and as part of your quality assurance checks.
+
+    # Mapping APIs to Self Assessment tax return forms
+    Some parameters in this API map to box numbers in one or more Self Assessment tax return forms. To learn more and to download this mapping information as a CSV file, go to [income-tax-mtd-changelog/mapping](https://github.com/hmrc/income-tax-mtd-changelog?tab=readme-ov-file#mapping-apis-to-self-assessment-tax-return-forms) on GitHub.
+
+    # Changelog
+    You can find the changelog in the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/#readme) on GitHub.
+
+    # Support
+
+    * Direct reports of bugs or errors in Production or Sandbox code, or queries about HMRC business functionality (such as how a specific field is used by HMRC or why it is needed) to the [Software Development Support Team (SDST)](https://developer.service.hmrc.gov.uk/developer/support).
+    * Send queries or feedback related to the design of the APIs (including recommended changes) using the [income-tax-mtd-changelog](https://github.com/hmrc/income-tax-mtd-changelog/issues) GitHub page.
+    * <a href="/contact/report-technical-problem?newTab=true&service=api-documentation-frontend" target="_blank">Is this page not working properly? (opens in new tab)</a>
+servers:
+  - url: https://test-api.service.hmrc.gov.uk
+    description: Sandbox
+  - url: https://api.service.hmrc.gov.uk
+    description: Production
+paths:
+  /individuals/state-benefits/{nino}/{taxYear}:
+    post:
+      summary: Create State Benefit
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint allows a developer to create any missing state benefits.
+
+        A National Insurance number, tax year, benefit type and start date must be provided.
+
+        This endpoint can only be used for a tax year that has ended.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                       |
+        |----------------------------------|------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates a list of all state benefit types.                                                   |
+        | BENEFIT_TYPE_EXISTS              | Simulates the scenario where a benefit of this type already exists.                            |
+        | END_DATE_BEFORE_TAX_YEAR_START   | Simulates the scenario where the end date provided is before the start date.                   |
+        | START_DATE_AFTER_TAX_YEAR_END    | Simulates the scenario where the start date provided is after the tax year ended.              |
+        | TAX_YEAR_NOT_ENDED               | Simulates the scenario where the tax year provided has not ended.                              |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
+        | STATEFUL                         | Performs a stateful create.                                                                    |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: &ref_14
+            type: string
+            example: TC663795B
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: &ref_15
+            type: string
+            example: 2020-21
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: &ref_16
+            type: string
+            enum:
+              - application/vnd.hmrc.2.0+json
+          required: true
+        - name: Content-Type
+          in: header
+          description: |
+            Specifies the format of the request body, which must be JSON.
+          schema: &ref_17
+            type: string
+            enum:
+              - application/json
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: &ref_18
+            type: string
+            example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: &ref_19
+            type: string
+            example: '-'
+          required: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $schema: http://json-schema.org/draft-04/schema#
+              title: Create State Benefit Request
+              description: Create State Benefit Request
+              type: object
+              properties:
+                benefitType:
+                  description: The type of benefit claimed
+                  type: string
+                  enum:
+                    - incapacityBenefit
+                    - statePension
+                    - statePensionLumpSum
+                    - employmentSupportAllowance
+                    - jobSeekersAllowance
+                    - bereavementAllowance
+                    - otherStateBenefits
+                startDate:
+                  description: The date the benefit started in the format YYYY-MM-DD
+                  type: string
+                  example: '2029-04-06'
+                endDate:
+                  description: The date the benefit ended in the format YYYY-MM-DD
+                  type: string
+                  example: '2020-01-01'
+              required:
+                - benefitType
+                - startDate
+            examples:
+              example-1:
+                description: Default Example
+                value:
+                  benefitType: incapacityBenefit
+                  startDate: '2020-08-03'
+                  endDate: '2020-12-03'
+      responses:
+        '200':
+          description: Success
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: &ref_0
+                type: string
+                example: c75f40a6-a3df-4429-a697-471eeec46435
+              required: true
+          content:
+            application/json:
+              schema:
+                $schema: http://json-schema.org/draft-04/schema#
+                title: Create State Benefit Response
+                description: Create State Benefit Response
+                type: object
+                properties:
+                  benefitId:
+                    description: Unique identifier of the benefit type
+                    pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                    type: string
+                    example: 123e4567-e89b-12d3-a456-426614174000
+                required:
+                  - benefitId
+              examples:
+                example-response:
+                  description: Example Response
+                  value:
+                    benefitId: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: &ref_1
+                  code:
+                    description: The error code
+                    type: string
+                  message:
+                    description: The error message
+                    type: string
+                required: &ref_2
+                  - code
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: &ref_8
+                    code: FORMAT_NINO
+                    message: The provided NINO is invalid
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: &ref_9
+                    code: FORMAT_TAX_YEAR
+                    message: The provided tax year is invalid
+                FORMAT_START_DATE:
+                  description: The format of the supplied start date is not valid.
+                  value: &ref_21
+                    code: FORMAT_START_DATE
+                    message: The provided start date is invalid
+                FORMAT_END_DATE:
+                  description: The format of the supplied end date is not valid.
+                  value: &ref_22
+                    code: FORMAT_END_DATE
+                    message: The provided end date is invalid
+                FORMAT_BENEFIT_TYPE:
+                  description: The format or value of benefit type is not valid.
+                  value:
+                    code: FORMAT_BENEFIT_TYPE
+                    message: The provided benefit type is invalid
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: &ref_10
+                    code: RULE_TAX_YEAR_RANGE_INVALID
+                    message: Tax year range invalid. A tax year range of one year is required
+                RULE_TAX_YEAR_NOT_ENDED:
+                  description: The submission has been made before the tax year it relates to has ended.
+                  value: &ref_30
+                    code: RULE_TAX_YEAR_NOT_ENDED
+                    message: Tax year not ended
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: &ref_11
+                    code: RULE_TAX_YEAR_NOT_SUPPORTED
+                    message: The tax year specified does not lie within the supported range
+                RULE_END_DATE_BEFORE_START_DATE:
+                  description: The end date is earlier than the start date.
+                  value: &ref_23
+                    code: RULE_END_DATE_BEFORE_START_DATE
+                    message: The end date cannot be earlier than the start date
+                RULE_START_DATE_AFTER_TAX_YEAR_END:
+                  description: The benefit is listed as starting after the tax year ended.
+                  value: &ref_24
+                    code: RULE_START_DATE_AFTER_TAX_YEAR_END
+                    message: The start date cannot be later than the tax year end
+                RULE_END_DATE_BEFORE_TAX_YEAR_START:
+                  description: The benefit is listed as ending before the tax year began.
+                  value: &ref_25
+                    code: RULE_END_DATE_BEFORE_TAX_YEAR_START
+                    message: The end date cannot be before the tax year starts
+                RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
+                  description: An empty or non-matching body was submitted.
+                  value: &ref_26
+                    code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
+                    message: An empty or non-matching body was submitted
+                RULE_BENEFIT_TYPE_EXISTS:
+                  description: The request cannot be made as there is an existing benefit of this type.
+                  value:
+                    code: RULE_BENEFIT_TYPE_EXISTS
+                    message: A benefit of this type has already been created
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: &ref_12
+                    code: RULE_INCORRECT_GOV_TEST_SCENARIO
+                    message: The supplied Gov-Test-Scenario is not valid
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: &ref_27
+                    code: RULE_OUTSIDE_AMENDMENT_WINDOW
+                    message: You are outside the amendment window
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: &ref_13
+                    code: CLIENT_OR_AGENT_NOT_AUTHORISED
+                    message: The client or agent is not authorised
+    get:
+      summary: List State Benefits
+      security:
+        - User-Restricted:
+            - read:self-assessment
+      parameters:
+        - $ref: ./common/queryParameters.yaml#/components/parameters/benefitId
+      description: |
+        This endpoint allows you to retrieve a list of all state benefits.
+
+        A National Insurance number and a tax year that ended must be provided.
+
+        Any HMRC held benefit amounts that have been amended, will result in a duplicate benefit with the same benefit ID, within the `customerAddedStateBenefits` array.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario)    | Scenario                                                                        |
+        |-------------------------------------|---------------------------------------------------------------------------------|
+        | N/A - DEFAULT                       | Simulates a list of all state benefit types.                                    |
+        | HMRC_AMENDED_AMOUNTS                | Simulates the response where HMRC held state benefit amounts have been amended. |
+        | NOT_FOUND                           | Simulates the scenario where no data is found.                                  |
+        | DYNAMIC                             | The following response parameters will be based on the data submitted in the request:<br> • SubmittedOn<br> • BenefitID<br> • startDate<br> • endDate |
+        | STATEFUL                            | Performs a stateful list.                                                       |
+      responses:
+        '200':
+          description: Success
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                $schema: http://json-schema.org/draft-07/schema#
+                title: Get State Benefits
+                description: View a list of State Benefits & Pensions associated with the customer, the list may contain Benefits that the customer has added via their third party software, these are clearly marked.
+                type: object
+                properties:
+                  stateBenefits:
+                    type: array
+                    additionalProperties: false
+                    minItems: 1
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required: &ref_4
+                        - benefitType
+                        - benefitId
+                        - startDate
+                      properties: &ref_5
+                        benefitType:
+                          description: The type of benefit claimed.
+                          type: string
+                          enum: &ref_3
+                            - incapacityBenefit
+                            - statePension
+                            - statePensionLumpSum
+                            - employmentSupportAllowance
+                            - jobSeekersAllowance
+                            - bereavementAllowance
+                            - otherStateBenefits
+                        dateIgnored:
+                          type: string
+                          format: date-time
+                          description: An ISO-8601 compliant date-time representing when the customer requested the data to be ignored.
+                          example: '2021-04-04T01:01:01Z'
+                        submittedOn:
+                          type: string
+                          format: date-time
+                          description: An ISO-8601 compliant date-time representing when incapacity benefit was submitted.
+                          example: '2021-04-04T01:01:01Z'
+                        benefitId:
+                          description: Unique identifier of the benefit.
+                          type: string
+                          format: uuid
+                          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                        startDate:
+                          type: string
+                          format: date
+                          description: The date the benefit started in the format YYYY-MM-DD.
+                          example: '2021-04-06'
+                        endDate:
+                          type: string
+                          format: date
+                          description: The date the benefit ended in the format YYYY-MM-DD.
+                          example: '2021-04-06'
+                        amount:
+                          description: The total amount of benefit received. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                          type: number
+                          multipleOf: 0.01
+                          minimum: 0
+                          maximum: 99999999999.99
+                          example: '1999.99'
+                        taxPaid:
+                          description: The amount of tax paid on the benefit. The value must be between -99999999999.99 and 99999999999.99 up to 2 decimal places. Only employmentSupportAllowance and jobSeekersAllowance will return negative values.
+                          type: number
+                          multipleOf: 0.01
+                          minimum: -99999999999.99
+                          maximum: 99999999999.99
+                          example: '1999.99'
+                  customerAddedStateBenefits:
+                    type: array
+                    additionalProperties: false
+                    minItems: 1
+                    items:
+                      type: object
+                      additionalProperties: false
+                      required: &ref_6
+                        - benefitType
+                        - benefitId
+                        - startDate
+                      properties: &ref_7
+                        benefitType:
+                          description: The type of benefit claimed.
+                          type: string
+                          enum: *ref_3
+                        submittedOn:
+                          type: string
+                          format: date-time
+                          description: An ISO-8601 compliant date-time representing when incapacity benefit was submitted.
+                          example: '2021-04-04T01:01:01Z'
+                        benefitId:
+                          description: Unique identifier of the benefit.
+                          type: string
+                          format: uuid
+                          pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                        startDate:
+                          type: string
+                          format: date
+                          description: The date the benefit started in the format YYYY-MM-DD.
+                          example: '2021-04-06'
+                        endDate:
+                          type: string
+                          format: date
+                          description: The date the benefit ended in the format YYYY-MM-DD.
+                          example: '2021-04-06'
+                        amount:
+                          description: The total amount of benefit received. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                          type: number
+                          multipleOf: 0.01
+                          minimum: 0
+                          maximum: 99999999999.99
+                          example: '1999.99'
+                        taxPaid:
+                          description: The amount of tax paid on the benefit. The value must be between -99999999999.99 and 99999999999.99 up to 2 decimal places. Only employmentSupportAllowance and jobSeekersAllowance will return negative values.
+                          type: number
+                          multipleOf: 0.01
+                          minimum: -99999999999.99
+                          maximum: 99999999999.99
+                          example: '1999.99'
+                definitions:
+                  stateBenefit:
+                    type: object
+                    additionalProperties: false
+                    required: *ref_4
+                    properties: *ref_5
+                  customerAddedStateBenefit:
+                    type: object
+                    additionalProperties: false
+                    required: *ref_6
+                    properties: *ref_7
+                  benefitType:
+                    description: The type of benefit claimed.
+                    type: string
+                    enum: *ref_3
+                  benefitId:
+                    description: Unique identifier of the benefit.
+                    type: string
+                    format: uuid
+                    pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+                  startDate:
+                    type: string
+                    format: date
+                    description: The date the benefit started in the format YYYY-MM-DD.
+                    example: '2021-04-06'
+                  endDate:
+                    type: string
+                    format: date
+                    description: The date the benefit ended in the format YYYY-MM-DD.
+                    example: '2021-04-06'
+                  dateIgnored:
+                    type: string
+                    format: date-time
+                    description: An ISO-8601 compliant date-time representing when the customer requested the data to be ignored.
+                    example: '2021-04-04T01:01:01Z'
+                  submittedOn:
+                    type: string
+                    format: date-time
+                    description: An ISO-8601 compliant date-time representing when incapacity benefit was submitted.
+                    example: '2021-04-04T01:01:01Z'
+                  amount:
+                    description: The total amount of benefit received. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                    type: number
+                    multipleOf: 0.01
+                    minimum: 0
+                    maximum: 99999999999.99
+                    example: '1999.99'
+                  taxPaid:
+                    description: The amount of tax paid on the benefit. The value must be between -99999999999.99 and 99999999999.99 up to 2 decimal places. Only employmentSupportAllowance and jobSeekersAllowance will return negative values.
+                    type: number
+                    multipleOf: 0.01
+                    minimum: -99999999999.99
+                    maximum: 99999999999.99
+                    example: '1999.99'
+              examples:
+                full-list:
+                  description: Full list
+                  value:
+                    stateBenefits:
+                      - benefitType: incapacityBenefit
+                        dateIgnored: '2019-04-04T01:01:01.000Z'
+                        benefitId: 9d51a3eb-e374-5349-aa02-96db92561138
+                        startDate: '2020-01-01'
+                        endDate: '2020-04-01'
+                        amount: 34345.12
+                        taxPaid: 345.34
+                      - benefitType: otherStateBenefits
+                        benefitId: 9d51a3eb-e374-5349-aa02-96db92561124
+                        startDate: '2020-01-01'
+                        endDate: '2020-10-29'
+                        amount: 512.56
+                        taxPaid: 342.78
+                    customerAddedStateBenefits:
+                      - benefitType: statePensionLumpSum
+                        submittedOn: '2019-04-04T01:01:01.000Z'
+                        benefitId: cf87eb89-3d07-1496-89da-cf16d45c934b
+                        startDate: '2019-11-01'
+                        amount: 203.9
+                        taxPaid: 112.12
+                individual-benefit:
+                  description: Single benefit returned by using query parameter
+                  value:
+                    stateBenefits:
+                      - benefitType: statePensionLumpSum
+                        benefitId: e4bf331e-0e55-297f-9a74-c766674775d4
+                        startDate: '2019-09-01'
+                        endDate: '2019-09-02'
+                        amount: 345.55
+                        taxPaid: 78.88
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: *ref_8
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: *ref_9
+                FORMAT_BENEFIT_ID:
+                  description: The format of the supplied benefit ID field is not valid.
+                  value: &ref_20
+                    code: FORMAT_BENEFIT_ID
+                    message: The provided benefit ID is invalid
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: *ref_12
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: The supplied income source could not be found.
+                  value: &ref_28
+                    code: MATCHING_RESOURCE_NOT_FOUND
+                    message: Matching resource not found
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}:
+    put:
+      summary: Amend State Benefit
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint enables you to amend benefits financial data.
+
+        A National Insurance number, tax year and benefit ID must be provided.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario)  | Scenario                                                                                            |
+        |-----------------------------------|-----------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                     | Simulate success response.                                                                          |
+        | HMRC_HELD                         | Simulates the scenario in which a benefit is HMRC held and therefore cannot be modified or deleted. |
+        | START_DATE_AFTER_TAX_YEAR_END     | Simulates the scenario where the start date provided is after the tax year ended.                   |
+        | END_DATE_BEFORE_TAX_YEAR_START    | Simulates the scenario where the end date provided is before the start date.                        |
+        | NOT_FOUND                         | Simulates the scenario where no data is found.                                                      |
+        | OUTSIDE_AMENDMENT_WINDOW          | Simulates the scenario where request cannot be completed as it is outside the amendment window.     |
+        | STATEFUL                          | Performs a stateful update.                                                                         |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_14
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: *ref_15
+          required: true
+        - name: benefitId
+          in: path
+          description: |
+            Unique identifier of the benefit type.
+          schema: &ref_29
+            type: string
+            pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+            example: 123e4567-e89b-12d3-a456-426614174000
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_16
+          required: true
+        - name: Content-Type
+          in: header
+          description: |
+            Specifies the format of the request body, which must be JSON.
+          schema: *ref_17
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: *ref_18
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_19
+          required: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $schema: http://json-schema.org/draft-04/schema#
+              title: Amend State Benefit Request
+              description: Amend State Benefit Request
+              type: object
+              properties:
+                startDate:
+                  description: The date the benefit started in the format YYYY-MM-DD
+                  type: string
+                  example: '2029-04-06'
+                endDate:
+                  description: The date the benefit ended in the format YYYY-MM-DD
+                  type: string
+                  example: '2020-01-01'
+              required:
+                - startDate
+            examples:
+              example-1:
+                description: Default Example
+                value:
+                  startDate: '2020-08-03'
+                  endDate: '2020-12-03'
+      responses:
+        '204':
+          description: Success (No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content: {}
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: *ref_8
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: *ref_9
+                FORMAT_BENEFIT_ID:
+                  description: The format of the supplied benefit ID field is not valid.
+                  value: *ref_20
+                FORMAT_START_DATE:
+                  description: The format of the supplied start date is not valid.
+                  value: *ref_21
+                FORMAT_END_DATE:
+                  description: The format of the supplied end date is not valid.
+                  value: *ref_22
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_END_DATE_BEFORE_START_DATE:
+                  description: The end date is earlier than the start date.
+                  value: *ref_23
+                RULE_START_DATE_AFTER_TAX_YEAR_END:
+                  description: The benefit is listed as starting after the tax year ended.
+                  value: *ref_24
+                RULE_END_DATE_BEFORE_TAX_YEAR_START:
+                  description: The benefit is listed as ending before the tax year began.
+                  value: *ref_25
+                RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
+                  description: An empty or non-matching body was submitted.
+                  value: *ref_26
+                RULE_UPDATE_FORBIDDEN:
+                  description: The update for a HMRC held benefit is not permitted.
+                  value:
+                    code: RULE_UPDATE_FORBIDDEN
+                    message: The update for a HMRC held benefit is not permitted
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: *ref_12
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: *ref_27
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: The supplied income source could not be found.
+                  value: *ref_28
+    delete:
+      summary: Delete State Benefit
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint allows a developer to delete customer submitted state benefits.
+        If the customer attempts to delete a pre-populated state benefit then the operation will fail with a forbidden response.
+
+        A National Insurance number, tax year and benefit ID must be provided.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                       |
+        |----------------------------------|------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response.                                                                    |
+        | HMRC_HELD                        | Simulates the scenario in which a deletion of an HMRC held state benefit is not permitted.     |
+        | NOT_FOUND                        | Simulates the scenario where no data is found.                                                 |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
+        | STATEFUL                         | Performs a stateful delete.                                                                    |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_14
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: *ref_15
+          required: true
+        - name: benefitId
+          in: path
+          description: |
+            Unique identifier of the benefit type.
+          schema: *ref_29
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_16
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: *ref_18
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_19
+          required: false
+      responses:
+        '204':
+          description: Success (No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content: {}
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: *ref_8
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: *ref_9
+                FORMAT_BENEFIT_ID:
+                  description: The format of the supplied benefit ID field is not valid.
+                  value: *ref_20
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_DELETE_FORBIDDEN:
+                  description: A deletion for a HMRC held state benefit is not permitted.
+                  value:
+                    code: RULE_DELETE_FORBIDDEN
+                    message: A deletion of a HMRC held state benefit is not permitted
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: *ref_12
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: *ref_27
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: The supplied income source could not be found.
+                  value: *ref_28
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/amounts:
+    put:
+      summary: Amend State Benefit Amounts
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint enables you to amend benefits financial data. A National Insurance number, tax year and benefit ID must be provided.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                                                      |
+        |----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulate success response.                                                                                                    |
+        | NOT_FOUND                        | Simulates the scenario where no data is found.                                                                                |
+        | TAX_YEAR_NOT_ENDED               | Simulates the error returned when a benefit that is not employmentSupportAllowance or jobSeekersAllowance is amended in year. |
+        | TAX_DEDUCTION_NOT_ALLOWED        | Simulates the scenario where tax deduction is not allowed against the type of benefit associated with the benefitId           |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.                               |
+        | STATEFUL                         | Performs a stateful update.                                                                                                   |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_14
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: *ref_15
+          required: true
+        - name: benefitId
+          in: path
+          description: |
+            Unique identifier of the benefit type.
+          schema: *ref_29
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_16
+          required: true
+        - name: Content-Type
+          in: header
+          description: |
+            Specifies the format of the request body, which must be JSON.
+          schema: *ref_17
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: *ref_18
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_19
+          required: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $schema: http://json-schema.org/draft-04/schema#
+              title: Amend State Benefit Amounts Request
+              description: Amend State Benefit Amounts Request
+              type: object
+              properties:
+                amount:
+                  description: The total amount of the state benefit. The value must be between 0 and 99999999999.99 up to 2 decimal places.
+                  type: number
+                  minimum: 0
+                  maximum: 99999999999.99
+                  example: '800.45'
+                taxPaid:
+                  description: The amount of tax to be paid on state benefit. The value must be between -99999999999.99 and 99999999999.99 up to 2 decimal places.
+                  type: number
+                  minimum: -99999999999.99
+                  maximum: 99999999999.99
+                  example: '1200.42'
+              required:
+                - amount
+            examples:
+              example-1:
+                description: Default Example
+                value:
+                  amount: 400.56
+                  taxPaid: 824.98
+      responses:
+        '204':
+          description: Success (No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content: {}
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: *ref_8
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: *ref_9
+                FORMAT_BENEFIT_ID:
+                  description: The format of the supplied benefit ID field is not valid.
+                  value: *ref_20
+                FORMAT_VALUE:
+                  description: One or more values have been added with the incorrect format.
+                  value:
+                    code: FORMAT_VALUE
+                    message: The field should be between 0 and 99999999999.99
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_TAX_YEAR_NOT_ENDED:
+                  description: The submission has been made before the tax year it relates to has ended.
+                  value: *ref_30
+                RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
+                  description: An empty or non-matching body was submitted.
+                  value: *ref_26
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: *ref_12
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: *ref_27
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: The supplied income source could not be found.
+                  value: *ref_28
+        '422':
+          description: Unprocessible Entity
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                RULE_TAX_DEDUCTION_NOT_ALLOWED:
+                  description: A tax deduction is not allowed against this benefit.
+                  value:
+                    code: RULE_TAX_DEDUCTION_NOT_ALLOWED
+                    message: A tax deduction is not allowed against this benefit
+    delete:
+      summary: Delete State Benefit Amounts
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint allows a developer to delete state benefit amount values supplied by the customer.
+        A National Insurance number, tax year and benefit ID must be provided.
+
+        Where the benefit ID relates to a HMRC held state benefit, any duplicate benefit with amended amounts will be removed from the `customerAddedStateBenefits` array.
+
+        Where the benefit ID relates to a customer created state benefit, the amount values will be cleared, but the benefit will remain.
+
+        This endpoint can only be used within the current tax year for `employmentSupportAllowance` and `jobSeekersAllowance` benefit types.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                       |
+        |----------------------------------|------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response.                                                                    |
+        | NOT_FOUND                        | Simulates the scenario where no data is found.                                                 |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
+        | STATEFUL                         | Performs a stateful delete.                                                                    |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_14
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: *ref_15
+          required: true
+        - name: benefitId
+          in: path
+          description: |
+            Unique identifier of the benefit type.
+          schema: *ref_29
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_16
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: *ref_18
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_19
+          required: false
+      responses:
+        '204':
+          description: Success (No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content: {}
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: *ref_8
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: *ref_9
+                FORMAT_BENEFIT_ID:
+                  description: The format of the supplied benefit ID field is not valid.
+                  value: *ref_20
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: *ref_12
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: *ref_27
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: The supplied income source could not be found.
+                  value: *ref_28
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/ignore:
+    post:
+      summary: Ignore State Benefit
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint enables you to mark a state benefit as ignored.
+        Customer-added benefits can’t be ignored, only deleted. A National Insurance number, tax year and benefit ID must be provided.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                       |
+        |----------------------------------|------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response.                                                                    |
+        | IGNORE_FORBIDDEN                 | Simulates the scenario in which a benefit is customer added and therefore cannot be ignored.   |
+        | NOT_FOUND                        | Simulates the scenario where no data is found.                                                 |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
+        | TAX_YEAR_NOT_ENDED               | Simulates the scenario where the tax year provided has not ended.                              |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_14
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: *ref_15
+          required: true
+        - name: benefitId
+          in: path
+          description: |
+            Unique identifier of the benefit type.
+          schema: *ref_29
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_16
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: *ref_18
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_19
+          required: false
+      responses:
+        '204':
+          description: Success (No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content: {}
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: *ref_8
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: *ref_9
+                FORMAT_BENEFIT_ID:
+                  description: The format of the supplied benefit ID field is not valid.
+                  value: *ref_20
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_TAX_YEAR_NOT_ENDED:
+                  description: The submission has been made before the tax year it relates to has ended.
+                  value: *ref_30
+                RULE_IGNORE_FORBIDDEN:
+                  description: A customer added state benefit cannot be ignored.
+                  value:
+                    code: RULE_IGNORE_FORBIDDEN
+                    message: A customer added state benefit cannot be ignored
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: *ref_12
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: *ref_27
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: The supplied income source could not be found.
+                  value: *ref_28
+  /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/unignore:
+    post:
+      summary: Unignore State Benefit
+      security:
+        - User-Restricted:
+            - write:self-assessment
+      description: |
+        This endpoint enables you to mark a state benefit as unignored.
+        Customer-added benefits can’t be unignored, only deleted.
+        A National Insurance number, tax year and benefit ID must be provided.
+
+        ### Test data
+        Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
+
+        | Header Value (Gov-Test-Scenario) | Scenario                                                                                          |
+        |----------------------------------|---------------------------------------------------------------------------------------------------|
+        | N/A - DEFAULT                    | Simulates success response.                                                                       |
+        | UNIGNORE_FORBIDDEN               | Simulates the scenario in which a benefit is customer added and therefore cannot be unignored.    |
+        | NOT_FOUND                        | Simulates the scenario where no data is found.                                                    |
+        | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.   |
+        | TAX_YEAR_NOT_ENDED               | Simulates the scenario where the tax year provided has not ended.                                 |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_14
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: *ref_15
+          required: true
+        - name: benefitId
+          in: path
+          description: |
+            Unique identifier of the benefit type.
+          schema: *ref_29
+          required: true
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_16
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
+          schema: *ref_18
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_19
+          required: false
+      responses:
+        '204':
+          description: Success (No Content)
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content: {}
+        '400':
+          description: Bad request
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                FORMAT_NINO:
+                  description: The format of the supplied NINO field is not valid.
+                  value: *ref_8
+                FORMAT_TAX_YEAR:
+                  description: The format of the supplied tax year field is not valid.
+                  value: *ref_9
+                FORMAT_BENEFIT_ID:
+                  description: The format of the supplied benefit ID field is not valid.
+                  value: *ref_20
+                RULE_TAX_YEAR_RANGE_INVALID:
+                  description: Tax year range invalid. A tax year range of one year is required.
+                  value: *ref_10
+                RULE_TAX_YEAR_NOT_SUPPORTED:
+                  description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
+                  value: *ref_11
+                RULE_TAX_YEAR_NOT_ENDED:
+                  description: The submission has been made before the tax year it relates to has ended.
+                  value: *ref_30
+                RULE_UNIGNORE_FORBIDDEN:
+                  description: A customer added state benefit cannot be unignored.
+                  value:
+                    code: RULE_UNIGNORE_FORBIDDEN
+                    message: A customer added state benefit cannot be unignored
+                RULE_INCORRECT_GOV_TEST_SCENARIO:
+                  description: |
+                    The request did not match any available sandbox data. 
+                    Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
+                    This error will only be returned in the sandbox environment.
+                  value: *ref_12
+                RULE_OUTSIDE_AMENDMENT_WINDOW:
+                  description: |
+                    The request cannot be completed as you are outside the amendment window.
+                  value: *ref_27
+        '403':
+          description: Forbidden
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                CLIENT_OR_AGENT_NOT_AUTHORISED:
+                  description: |
+                    The client or agent is not authorised. This is because:
+                    the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
+                    or the client has not authorised the agent to act on their behalf.
+                  value: *ref_13
+        '404':
+          description: Not Found
+          headers:
+            X-CorrelationId:
+              in: header
+              type: string
+              description: |
+                Unique ID for operation tracking
+                String, 36 characters.
+              schema: *ref_0
+              required: true
+          content:
+            application/json:
+              schema:
+                description: Error Response
+                type: object
+                properties: *ref_1
+                required: *ref_2
+              examples:
+                MATCHING_RESOURCE_NOT_FOUND:
+                  description: The supplied income source could not be found.
+                  value: *ref_28
+components:
+  securitySchemes:
+    User-Restricted:
+      type: oauth2
+      description: HMRC supports OAuth 2.0 for authenticating [User-restricted](https://developer.service.hmrc.gov.uk/api-documentation/docs/authorisation/user-restricted-endpoints) API requests
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.service.hmrc.gov.uk/oauth/authorize
+          tokenUrl: https://api.service.hmrc.gov.uk/oauth/token
+          refreshUrl: https://api.service.hmrc.gov.uk/oauth/refresh
+          scopes:
+            write:self-assessment: Grant write access
+            read:self-assessment: Grant read access
