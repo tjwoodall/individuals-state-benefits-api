@@ -1,6 +1,0 @@
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "Ignore or Unignore State Benefit Request",
-  "description": "Ignore or Unignore State Benefit Request",
-  "type": "object"
-}

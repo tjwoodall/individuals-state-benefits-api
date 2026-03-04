@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import shared.config.MockSharedAppConfig
 import shared.definition.APIStatus.BETA
 import shared.definition.{APIDefinition, APIVersion, Definition}
 import shared.mocks.MockHttpClient
-import shared.routing.{Version1, Version2}
+import shared.routing.Version2
 import shared.utils.UnitSpec
 
 class StateBenefitsApiDefinitionFactorySpec extends UnitSpec with MockHttpClient with MockSharedAppConfig {
@@ -31,10 +31,6 @@ class StateBenefitsApiDefinitionFactorySpec extends UnitSpec with MockHttpClient
     "called" should {
       "return a valid Definition case class" in {
         MockedSharedAppConfig.apiGatewayContext.anyNumberOfTimes() returns "individuals/state-benefits"
-        MockedSharedAppConfig.apiStatus(Version1) returns "BETA"
-        MockedSharedAppConfig.endpointsEnabled(Version1) returns true
-        MockedSharedAppConfig.deprecationFor(Version1).returns(NotDeprecated.valid).anyNumberOfTimes()
-
         MockedSharedAppConfig.apiStatus(Version2) returns "BETA"
         MockedSharedAppConfig.endpointsEnabled(Version2) returns true
         MockedSharedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
@@ -49,11 +45,6 @@ class StateBenefitsApiDefinitionFactorySpec extends UnitSpec with MockHttpClient
               context = "individuals/state-benefits",
               categories = Seq("INCOME_TAX_MTD"),
               versions = Seq(
-                APIVersion(
-                  version = Version1,
-                  status = BETA,
-                  endpointsEnabled = true
-                ),
                 APIVersion(
                   version = Version2,
                   status = BETA,
