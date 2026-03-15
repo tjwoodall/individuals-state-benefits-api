@@ -2,7 +2,7 @@ summary: List State Benefits
 description: |
   This endpoint allows you to retrieve a list of all state benefits.
   
-  A National Insurance number and a tax year that ended must be provided.
+  A National Insurance number and tax year must be provided.
   
   Any HMRC held benefit amounts that have been amended, will result in a duplicate benefit with the same benefit ID, within the `customerAddedStateBenefits` array.
   
