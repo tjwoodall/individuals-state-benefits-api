@@ -44,10 +44,10 @@ servers:
 paths:
   /individuals/state-benefits/{nino}/{taxYear}:
     post:
-      summary: Create State Benefit
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Create State Benefit
       description: |
         This endpoint allows a developer to create any missing state benefits.
 
@@ -72,7 +72,7 @@ paths:
           in: path
           description: |
             National Insurance number, in the format `AA999999A`
-          schema: &ref_14
+          schema: &ref_6
             type: string
             example: TC663795B
           required: true
@@ -80,7 +80,7 @@ paths:
           in: path
           description: |
             The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
-          schema: &ref_15
+          schema: &ref_7
             type: string
             example: 2020-21
           required: true
@@ -88,7 +88,7 @@ paths:
           in: header
           description: |
             Specifies the response format and the version of the API to be used.
-          schema: &ref_16
+          schema: &ref_8
             type: string
             enum:
               - application/vnd.hmrc.2.0+json
@@ -97,7 +97,7 @@ paths:
           in: header
           description: |
             Specifies the format of the request body, which must be JSON.
-          schema: &ref_17
+          schema: &ref_21
             type: string
             enum:
               - application/json
@@ -106,7 +106,7 @@ paths:
           in: header
           description: |
             An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
-          schema: &ref_18
+          schema: &ref_22
             type: string
             example: Bearer bb7fed3fe10dd235a2ccda3d50fb
           required: true
@@ -114,7 +114,7 @@ paths:
           in: header
           description: |
             Only in sandbox environment. See Test Data table for all header values.
-          schema: &ref_19
+          schema: &ref_9
             type: string
             example: '-'
           required: false
@@ -149,13 +149,10 @@ paths:
               required:
                 - benefitType
                 - startDate
-            examples:
-              example-1:
-                description: Default Example
-                value:
-                  benefitType: incapacityBenefit
-                  startDate: '2020-08-03'
-                  endDate: '2020-12-03'
+            example:
+              benefitType: incapacityBenefit
+              startDate: '2020-08-03'
+              endDate: '2020-12-03'
       responses:
         '200':
           description: Success
@@ -170,6 +167,33 @@ paths:
                 type: string
                 example: c75f40a6-a3df-4429-a697-471eeec46435
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: &ref_1
+                type: string
+                example: Sun, 01 Jan 2023 23:59:59 GMT
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: &ref_2
+                type: string
+                example: Sun, 02 Jul 2023 23:59:59 GMT
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: &ref_3
+                type: string
+                example: https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individuals-state-benefits-api
+              required: false
           content:
             application/json:
               schema:
@@ -185,11 +209,8 @@ paths:
                     example: 123e4567-e89b-12d3-a456-426614174000
                 required:
                   - benefitId
-              examples:
-                example-response:
-                  description: Example Response
-                  value:
-                    benefitId: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
+              example:
+                benefitId: a1e8057e-fbbc-47a8-a8b4-78d9f015c253
         '400':
           description: Bad request
           headers:
@@ -201,39 +222,60 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: &ref_1
+                properties: &ref_4
                   code:
                     description: The error code
                     type: string
                   message:
                     description: The error message
                     type: string
-                required: &ref_2
+                required: &ref_5
                   - code
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: &ref_8
+                  value: &ref_15
                     code: FORMAT_NINO
                     message: The provided NINO is invalid
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: &ref_9
+                  value: &ref_16
                     code: FORMAT_TAX_YEAR
                     message: The provided tax year is invalid
                 FORMAT_START_DATE:
                   description: The format of the supplied start date is not valid.
-                  value: &ref_21
+                  value: &ref_24
                     code: FORMAT_START_DATE
                     message: The provided start date is invalid
                 FORMAT_END_DATE:
                   description: The format of the supplied end date is not valid.
-                  value: &ref_22
+                  value: &ref_25
                     code: FORMAT_END_DATE
                     message: The provided end date is invalid
                 FORMAT_BENEFIT_TYPE:
@@ -243,37 +285,37 @@ paths:
                     message: The provided benefit type is invalid
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: &ref_10
+                  value: &ref_17
                     code: RULE_TAX_YEAR_RANGE_INVALID
                     message: Tax year range invalid. A tax year range of one year is required
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: &ref_30
+                  value: &ref_33
                     code: RULE_TAX_YEAR_NOT_ENDED
                     message: Tax year not ended
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: &ref_11
+                  value: &ref_18
                     code: RULE_TAX_YEAR_NOT_SUPPORTED
                     message: The tax year specified does not lie within the supported range
                 RULE_END_DATE_BEFORE_START_DATE:
                   description: The end date is earlier than the start date.
-                  value: &ref_23
+                  value: &ref_26
                     code: RULE_END_DATE_BEFORE_START_DATE
                     message: The end date cannot be earlier than the start date
                 RULE_START_DATE_AFTER_TAX_YEAR_END:
                   description: The benefit is listed as starting after the tax year ended.
-                  value: &ref_24
+                  value: &ref_27
                     code: RULE_START_DATE_AFTER_TAX_YEAR_END
                     message: The start date cannot be later than the tax year end
                 RULE_END_DATE_BEFORE_TAX_YEAR_START:
                   description: The benefit is listed as ending before the tax year began.
-                  value: &ref_25
+                  value: &ref_28
                     code: RULE_END_DATE_BEFORE_TAX_YEAR_START
                     message: The end date cannot be before the tax year starts
                 RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
                   description: An empty or non-matching body was submitted.
-                  value: &ref_26
+                  value: &ref_29
                     code: RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED
                     message: An empty or non-matching body was submitted
                 RULE_BENEFIT_TYPE_EXISTS:
@@ -286,13 +328,13 @@ paths:
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: &ref_12
+                  value: &ref_19
                     code: RULE_INCORRECT_GOV_TEST_SCENARIO
                     message: The supplied Gov-Test-Scenario is not valid
                 RULE_OUTSIDE_AMENDMENT_WINDOW:
                   description: |
                     The request cannot be completed as you are outside the amendment window.
-                  value: &ref_27
+                  value: &ref_30
                     code: RULE_OUTSIDE_AMENDMENT_WINDOW
                     message: You are outside the amendment window
         '403':
@@ -306,29 +348,48 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: &ref_13
+                  value: &ref_20
                     code: CLIENT_OR_AGENT_NOT_AUTHORISED
                     message: The client or agent is not authorised
     get:
-      summary: List State Benefits
       security:
         - User-Restricted:
             - read:self-assessment
-      parameters:
-        - $ref: ./common/queryParameters.yaml#/components/parameters/benefitId
+      summary: List State Benefits
       description: |
         This endpoint allows you to retrieve a list of all state benefits.
 
@@ -346,6 +407,48 @@ paths:
         | NOT_FOUND                           | Simulates the scenario where no data is found.                                  |
         | DYNAMIC                             | The following response parameters will be based on the data submitted in the request:<br> • SubmittedOn<br> • BenefitID<br> • startDate<br> • endDate |
         | STATEFUL                            | Performs a stateful list.                                                       |
+      parameters:
+        - name: nino
+          in: path
+          description: |
+            National Insurance number, in the format `AA999999A`
+          schema: *ref_6
+          required: true
+        - name: taxYear
+          in: path
+          description: |
+            The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
+          schema: *ref_7
+          required: true
+        - in: query
+          name: benefitId
+          description: |
+            Unique identifier of the benefit.
+          schema:
+            type: string
+            pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
+            example: f0d83ac0-a10a-4d57-9e41-6d033832779f
+          required: false
+        - name: Accept
+          in: header
+          description: |
+            Specifies the response format and the version of the API to be used.
+          schema: *ref_8
+          required: true
+        - name: Authorization
+          in: header
+          description: |
+            An OAuth 2.0 Bearer Token with the *read:self-assessment* scope.
+          schema:
+            type: string
+            example: Bearer bb7fed3fe10dd235a2ccda3d50fb
+          required: true
+        - name: Gov-Test-Scenario
+          in: header
+          description: |
+            Only in sandbox environment. See Test Data table for all header values.
+          schema: *ref_9
+          required: false
       responses:
         '200':
           description: Success
@@ -358,6 +461,27 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
@@ -373,15 +497,15 @@ paths:
                     items:
                       type: object
                       additionalProperties: false
-                      required: &ref_4
+                      required: &ref_11
                         - benefitType
                         - benefitId
                         - startDate
-                      properties: &ref_5
+                      properties: &ref_12
                         benefitType:
                           description: The type of benefit claimed.
                           type: string
-                          enum: &ref_3
+                          enum: &ref_10
                             - incapacityBenefit
                             - statePension
                             - statePensionLumpSum
@@ -435,15 +559,15 @@ paths:
                     items:
                       type: object
                       additionalProperties: false
-                      required: &ref_6
+                      required: &ref_13
                         - benefitType
                         - benefitId
                         - startDate
-                      properties: &ref_7
+                      properties: &ref_14
                         benefitType:
                           description: The type of benefit claimed.
                           type: string
-                          enum: *ref_3
+                          enum: *ref_10
                         submittedOn:
                           type: string
                           format: date-time
@@ -482,17 +606,17 @@ paths:
                   stateBenefit:
                     type: object
                     additionalProperties: false
-                    required: *ref_4
-                    properties: *ref_5
+                    required: *ref_11
+                    properties: *ref_12
                   customerAddedStateBenefit:
                     type: object
                     additionalProperties: false
-                    required: *ref_6
-                    properties: *ref_7
+                    required: *ref_13
+                    properties: *ref_14
                   benefitType:
                     description: The type of benefit claimed.
                     type: string
-                    enum: *ref_3
+                    enum: *ref_10
                   benefitId:
                     description: Unique identifier of the benefit.
                     type: string
@@ -536,37 +660,11 @@ paths:
                 full-list:
                   description: Full list
                   value:
-                    stateBenefits:
-                      - benefitType: incapacityBenefit
-                        dateIgnored: '2019-04-04T01:01:01.000Z'
-                        benefitId: 9d51a3eb-e374-5349-aa02-96db92561138
-                        startDate: '2020-01-01'
-                        endDate: '2020-04-01'
-                        amount: 34345.12
-                        taxPaid: 345.34
-                      - benefitType: otherStateBenefits
-                        benefitId: 9d51a3eb-e374-5349-aa02-96db92561124
-                        startDate: '2020-01-01'
-                        endDate: '2020-10-29'
-                        amount: 512.56
-                        taxPaid: 342.78
-                    customerAddedStateBenefits:
-                      - benefitType: statePensionLumpSum
-                        submittedOn: '2019-04-04T01:01:01.000Z'
-                        benefitId: cf87eb89-3d07-1496-89da-cf16d45c934b
-                        startDate: '2019-11-01'
-                        amount: 203.9
-                        taxPaid: 112.12
+                    $ref: ./examples/listStateBenefit/list_response.json
                 individual-benefit:
                   description: Single benefit returned by using query parameter
                   value:
-                    stateBenefits:
-                      - benefitType: statePensionLumpSum
-                        benefitId: e4bf331e-0e55-297f-9a74-c766674775d4
-                        startDate: '2019-09-01'
-                        endDate: '2019-09-02'
-                        amount: 345.55
-                        taxPaid: 78.88
+                    $ref: ./examples/listStateBenefit/single_response.json
         '400':
           description: Bad request
           headers:
@@ -578,37 +676,58 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: *ref_8
+                  value: *ref_15
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: *ref_9
+                  value: *ref_16
                 FORMAT_BENEFIT_ID:
                   description: The format of the supplied benefit ID field is not valid.
-                  value: &ref_20
+                  value: &ref_23
                     code: FORMAT_BENEFIT_ID
                     message: The provided benefit ID is invalid
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: *ref_10
+                  value: *ref_17
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: *ref_11
+                  value: *ref_18
                 RULE_INCORRECT_GOV_TEST_SCENARIO:
                   description: |
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: *ref_12
+                  value: *ref_19
         '403':
           description: Forbidden
           headers:
@@ -620,20 +739,41 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: *ref_13
+                  value: *ref_20
         '404':
           description: Not Found
           headers:
@@ -645,25 +785,46 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 MATCHING_RESOURCE_NOT_FOUND:
                   description: The supplied income source could not be found.
-                  value: &ref_28
+                  value: &ref_31
                     code: MATCHING_RESOURCE_NOT_FOUND
                     message: Matching resource not found
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}:
     put:
-      summary: Amend State Benefit
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Amend State Benefit
       description: |
         This endpoint enables you to amend benefits financial data.
 
@@ -686,19 +847,19 @@ paths:
           in: path
           description: |
             National Insurance number, in the format `AA999999A`
-          schema: *ref_14
+          schema: *ref_6
           required: true
         - name: taxYear
           in: path
           description: |
             The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
-          schema: *ref_15
+          schema: *ref_7
           required: true
         - name: benefitId
           in: path
           description: |
             Unique identifier of the benefit type.
-          schema: &ref_29
+          schema: &ref_32
             type: string
             pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$
             example: 123e4567-e89b-12d3-a456-426614174000
@@ -707,25 +868,25 @@ paths:
           in: header
           description: |
             Specifies the response format and the version of the API to be used.
-          schema: *ref_16
+          schema: *ref_8
           required: true
         - name: Content-Type
           in: header
           description: |
             Specifies the format of the request body, which must be JSON.
-          schema: *ref_17
+          schema: *ref_21
           required: true
         - name: Authorization
           in: header
           description: |
             An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
-          schema: *ref_18
+          schema: *ref_22
           required: true
         - name: Gov-Test-Scenario
           in: header
           description: |
             Only in sandbox environment. See Test Data table for all header values.
-          schema: *ref_19
+          schema: *ref_9
           required: false
       requestBody:
         content:
@@ -746,12 +907,9 @@ paths:
                   example: '2020-01-01'
               required:
                 - startDate
-            examples:
-              example-1:
-                description: Default Example
-                value:
-                  startDate: '2020-08-03'
-                  endDate: '2020-12-03'
+            example:
+              startDate: '2020-08-03'
+              endDate: '2020-12-03'
       responses:
         '204':
           description: Success (No Content)
@@ -764,7 +922,27 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
-          content: {}
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
         '400':
           description: Bad request
           headers:
@@ -776,47 +954,68 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: *ref_8
+                  value: *ref_15
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: *ref_9
+                  value: *ref_16
                 FORMAT_BENEFIT_ID:
                   description: The format of the supplied benefit ID field is not valid.
-                  value: *ref_20
+                  value: *ref_23
                 FORMAT_START_DATE:
                   description: The format of the supplied start date is not valid.
-                  value: *ref_21
+                  value: *ref_24
                 FORMAT_END_DATE:
                   description: The format of the supplied end date is not valid.
-                  value: *ref_22
+                  value: *ref_25
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: *ref_10
+                  value: *ref_17
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: *ref_11
+                  value: *ref_18
                 RULE_END_DATE_BEFORE_START_DATE:
                   description: The end date is earlier than the start date.
-                  value: *ref_23
+                  value: *ref_26
                 RULE_START_DATE_AFTER_TAX_YEAR_END:
                   description: The benefit is listed as starting after the tax year ended.
-                  value: *ref_24
+                  value: *ref_27
                 RULE_END_DATE_BEFORE_TAX_YEAR_START:
                   description: The benefit is listed as ending before the tax year began.
-                  value: *ref_25
+                  value: *ref_28
                 RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
                   description: An empty or non-matching body was submitted.
-                  value: *ref_26
+                  value: *ref_29
                 RULE_UPDATE_FORBIDDEN:
                   description: The update for a HMRC held benefit is not permitted.
                   value:
@@ -827,11 +1026,11 @@ paths:
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: *ref_12
+                  value: *ref_19
                 RULE_OUTSIDE_AMENDMENT_WINDOW:
                   description: |
                     The request cannot be completed as you are outside the amendment window.
-                  value: *ref_27
+                  value: *ref_30
         '403':
           description: Forbidden
           headers:
@@ -843,20 +1042,41 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: *ref_13
+                  value: *ref_20
         '404':
           description: Not Found
           headers:
@@ -868,22 +1088,43 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 MATCHING_RESOURCE_NOT_FOUND:
                   description: The supplied income source could not be found.
-                  value: *ref_28
+                  value: *ref_31
     delete:
-      summary: Delete State Benefit
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Delete State Benefit
       description: |
         This endpoint allows a developer to delete customer submitted state benefits.
         If the customer attempts to delete a pre-populated state benefit then the operation will fail with a forbidden response.
@@ -905,37 +1146,37 @@ paths:
           in: path
           description: |
             National Insurance number, in the format `AA999999A`
-          schema: *ref_14
+          schema: *ref_6
           required: true
         - name: taxYear
           in: path
           description: |
             The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
-          schema: *ref_15
+          schema: *ref_7
           required: true
         - name: benefitId
           in: path
           description: |
             Unique identifier of the benefit type.
-          schema: *ref_29
+          schema: *ref_32
           required: true
         - name: Accept
           in: header
           description: |
             Specifies the response format and the version of the API to be used.
-          schema: *ref_16
+          schema: *ref_8
           required: true
         - name: Authorization
           in: header
           description: |
             An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
-          schema: *ref_18
+          schema: *ref_22
           required: true
         - name: Gov-Test-Scenario
           in: header
           description: |
             Only in sandbox environment. See Test Data table for all header values.
-          schema: *ref_19
+          schema: *ref_9
           required: false
       responses:
         '204':
@@ -949,7 +1190,27 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
-          content: {}
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
         '400':
           description: Bad request
           headers:
@@ -961,29 +1222,50 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: *ref_8
+                  value: *ref_15
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: *ref_9
+                  value: *ref_16
                 FORMAT_BENEFIT_ID:
                   description: The format of the supplied benefit ID field is not valid.
-                  value: *ref_20
+                  value: *ref_23
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: *ref_10
+                  value: *ref_17
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: *ref_11
+                  value: *ref_18
                 RULE_DELETE_FORBIDDEN:
                   description: A deletion for a HMRC held state benefit is not permitted.
                   value:
@@ -994,11 +1276,11 @@ paths:
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: *ref_12
+                  value: *ref_19
                 RULE_OUTSIDE_AMENDMENT_WINDOW:
                   description: |
                     The request cannot be completed as you are outside the amendment window.
-                  value: *ref_27
+                  value: *ref_30
         '403':
           description: Forbidden
           headers:
@@ -1010,20 +1292,41 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: *ref_13
+                  value: *ref_20
         '404':
           description: Not Found
           headers:
@@ -1035,23 +1338,44 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 MATCHING_RESOURCE_NOT_FOUND:
                   description: The supplied income source could not be found.
-                  value: *ref_28
+                  value: *ref_31
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/amounts:
     put:
-      summary: Amend State Benefit Amounts
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Amend State Benefit Amounts
       description: |
         This endpoint enables you to amend benefits financial data. A National Insurance number, tax year and benefit ID must be provided.
 
@@ -1072,43 +1396,43 @@ paths:
           in: path
           description: |
             National Insurance number, in the format `AA999999A`
-          schema: *ref_14
+          schema: *ref_6
           required: true
         - name: taxYear
           in: path
           description: |
             The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
-          schema: *ref_15
+          schema: *ref_7
           required: true
         - name: benefitId
           in: path
           description: |
             Unique identifier of the benefit type.
-          schema: *ref_29
+          schema: *ref_32
           required: true
         - name: Accept
           in: header
           description: |
             Specifies the response format and the version of the API to be used.
-          schema: *ref_16
+          schema: *ref_8
           required: true
         - name: Content-Type
           in: header
           description: |
             Specifies the format of the request body, which must be JSON.
-          schema: *ref_17
+          schema: *ref_21
           required: true
         - name: Authorization
           in: header
           description: |
             An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
-          schema: *ref_18
+          schema: *ref_22
           required: true
         - name: Gov-Test-Scenario
           in: header
           description: |
             Only in sandbox environment. See Test Data table for all header values.
-          schema: *ref_19
+          schema: *ref_9
           required: false
       requestBody:
         content:
@@ -1133,12 +1457,9 @@ paths:
                   example: '1200.42'
               required:
                 - amount
-            examples:
-              example-1:
-                description: Default Example
-                value:
-                  amount: 400.56
-                  taxPaid: 824.98
+            example:
+              amount: 400.56
+              taxPaid: 824.98
       responses:
         '204':
           description: Success (No Content)
@@ -1151,7 +1472,27 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
-          content: {}
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
         '400':
           description: Bad request
           headers:
@@ -1163,23 +1504,44 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: *ref_8
+                  value: *ref_15
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: *ref_9
+                  value: *ref_16
                 FORMAT_BENEFIT_ID:
                   description: The format of the supplied benefit ID field is not valid.
-                  value: *ref_20
+                  value: *ref_23
                 FORMAT_VALUE:
                   description: One or more values have been added with the incorrect format.
                   value:
@@ -1187,26 +1549,26 @@ paths:
                     message: The field should be between 0 and 99999999999.99
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: *ref_10
+                  value: *ref_17
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: *ref_11
+                  value: *ref_18
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: *ref_30
+                  value: *ref_33
                 RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
                   description: An empty or non-matching body was submitted.
-                  value: *ref_26
+                  value: *ref_29
                 RULE_INCORRECT_GOV_TEST_SCENARIO:
                   description: |
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: *ref_12
+                  value: *ref_19
                 RULE_OUTSIDE_AMENDMENT_WINDOW:
                   description: |
                     The request cannot be completed as you are outside the amendment window.
-                  value: *ref_27
+                  value: *ref_30
         '403':
           description: Forbidden
           headers:
@@ -1218,20 +1580,41 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: *ref_13
+                  value: *ref_20
         '404':
           description: Not Found
           headers:
@@ -1243,17 +1626,38 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 MATCHING_RESOURCE_NOT_FOUND:
                   description: The supplied income source could not be found.
-                  value: *ref_28
+                  value: *ref_31
         '422':
           description: Unprocessible Entity
           headers:
@@ -1265,13 +1669,34 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 RULE_TAX_DEDUCTION_NOT_ALLOWED:
                   description: A tax deduction is not allowed against this benefit.
@@ -1279,10 +1704,10 @@ paths:
                     code: RULE_TAX_DEDUCTION_NOT_ALLOWED
                     message: A tax deduction is not allowed against this benefit
     delete:
-      summary: Delete State Benefit Amounts
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Delete State Benefit Amounts
       description: |
         This endpoint allows a developer to delete state benefit amount values supplied by the customer.
         A National Insurance number, tax year and benefit ID must be provided.
@@ -1307,37 +1732,37 @@ paths:
           in: path
           description: |
             National Insurance number, in the format `AA999999A`
-          schema: *ref_14
+          schema: *ref_6
           required: true
         - name: taxYear
           in: path
           description: |
             The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
-          schema: *ref_15
+          schema: *ref_7
           required: true
         - name: benefitId
           in: path
           description: |
             Unique identifier of the benefit type.
-          schema: *ref_29
+          schema: *ref_32
           required: true
         - name: Accept
           in: header
           description: |
             Specifies the response format and the version of the API to be used.
-          schema: *ref_16
+          schema: *ref_8
           required: true
         - name: Authorization
           in: header
           description: |
             An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
-          schema: *ref_18
+          schema: *ref_22
           required: true
         - name: Gov-Test-Scenario
           in: header
           description: |
             Only in sandbox environment. See Test Data table for all header values.
-          schema: *ref_19
+          schema: *ref_9
           required: false
       responses:
         '204':
@@ -1351,7 +1776,27 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
-          content: {}
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
         '400':
           description: Bad request
           headers:
@@ -1363,39 +1808,60 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: *ref_8
+                  value: *ref_15
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: *ref_9
+                  value: *ref_16
                 FORMAT_BENEFIT_ID:
                   description: The format of the supplied benefit ID field is not valid.
-                  value: *ref_20
+                  value: *ref_23
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: *ref_10
+                  value: *ref_17
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: *ref_11
+                  value: *ref_18
                 RULE_INCORRECT_GOV_TEST_SCENARIO:
                   description: |
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: *ref_12
+                  value: *ref_19
                 RULE_OUTSIDE_AMENDMENT_WINDOW:
                   description: |
                     The request cannot be completed as you are outside the amendment window.
-                  value: *ref_27
+                  value: *ref_30
         '403':
           description: Forbidden
           headers:
@@ -1407,20 +1873,41 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: *ref_13
+                  value: *ref_20
         '404':
           description: Not Found
           headers:
@@ -1432,23 +1919,44 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 MATCHING_RESOURCE_NOT_FOUND:
                   description: The supplied income source could not be found.
-                  value: *ref_28
+                  value: *ref_31
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/ignore:
     post:
-      summary: Ignore State Benefit
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Ignore State Benefit
       description: |
         This endpoint enables you to mark a state benefit as ignored.
         Customer-added benefits can’t be ignored, only deleted. A National Insurance number, tax year and benefit ID must be provided.
@@ -1468,37 +1976,37 @@ paths:
           in: path
           description: |
             National Insurance number, in the format `AA999999A`
-          schema: *ref_14
+          schema: *ref_6
           required: true
         - name: taxYear
           in: path
           description: |
             The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
-          schema: *ref_15
+          schema: *ref_7
           required: true
         - name: benefitId
           in: path
           description: |
             Unique identifier of the benefit type.
-          schema: *ref_29
+          schema: *ref_32
           required: true
         - name: Accept
           in: header
           description: |
             Specifies the response format and the version of the API to be used.
-          schema: *ref_16
+          schema: *ref_8
           required: true
         - name: Authorization
           in: header
           description: |
             An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
-          schema: *ref_18
+          schema: *ref_22
           required: true
         - name: Gov-Test-Scenario
           in: header
           description: |
             Only in sandbox environment. See Test Data table for all header values.
-          schema: *ref_19
+          schema: *ref_9
           required: false
       responses:
         '204':
@@ -1512,7 +2020,27 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
-          content: {}
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
         '400':
           description: Bad request
           headers:
@@ -1524,32 +2052,53 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: *ref_8
+                  value: *ref_15
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: *ref_9
+                  value: *ref_16
                 FORMAT_BENEFIT_ID:
                   description: The format of the supplied benefit ID field is not valid.
-                  value: *ref_20
+                  value: *ref_23
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: *ref_10
+                  value: *ref_17
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: *ref_11
+                  value: *ref_18
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: *ref_30
+                  value: *ref_33
                 RULE_IGNORE_FORBIDDEN:
                   description: A customer added state benefit cannot be ignored.
                   value:
@@ -1560,11 +2109,11 @@ paths:
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: *ref_12
+                  value: *ref_19
                 RULE_OUTSIDE_AMENDMENT_WINDOW:
                   description: |
                     The request cannot be completed as you are outside the amendment window.
-                  value: *ref_27
+                  value: *ref_30
         '403':
           description: Forbidden
           headers:
@@ -1576,20 +2125,41 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: *ref_13
+                  value: *ref_20
         '404':
           description: Not Found
           headers:
@@ -1601,23 +2171,44 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 MATCHING_RESOURCE_NOT_FOUND:
                   description: The supplied income source could not be found.
-                  value: *ref_28
+                  value: *ref_31
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/unignore:
     post:
-      summary: Unignore State Benefit
       security:
         - User-Restricted:
             - write:self-assessment
+      summary: Unignore State Benefit
       description: |
         This endpoint enables you to mark a state benefit as unignored.
         Customer-added benefits can’t be unignored, only deleted.
@@ -1638,37 +2229,37 @@ paths:
           in: path
           description: |
             National Insurance number, in the format `AA999999A`
-          schema: *ref_14
+          schema: *ref_6
           required: true
         - name: taxYear
           in: path
           description: |
             The tax year the data applies to, for example, 2020-21. The start year and end year must not span two tax years. The minimum tax year is 2020-21. No gaps are allowed, for example, 2020-22 is not valid. (The minimum tax year in Sandbox is 2019-20.)
-          schema: *ref_15
+          schema: *ref_7
           required: true
         - name: benefitId
           in: path
           description: |
             Unique identifier of the benefit type.
-          schema: *ref_29
+          schema: *ref_32
           required: true
         - name: Accept
           in: header
           description: |
             Specifies the response format and the version of the API to be used.
-          schema: *ref_16
+          schema: *ref_8
           required: true
         - name: Authorization
           in: header
           description: |
             An OAuth 2.0 Bearer Token with the *write:self-assessment* scope.
-          schema: *ref_18
+          schema: *ref_22
           required: true
         - name: Gov-Test-Scenario
           in: header
           description: |
             Only in sandbox environment. See Test Data table for all header values.
-          schema: *ref_19
+          schema: *ref_9
           required: false
       responses:
         '204':
@@ -1682,7 +2273,27 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
-          content: {}
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
         '400':
           description: Bad request
           headers:
@@ -1694,32 +2305,53 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 FORMAT_NINO:
                   description: The format of the supplied NINO field is not valid.
-                  value: *ref_8
+                  value: *ref_15
                 FORMAT_TAX_YEAR:
                   description: The format of the supplied tax year field is not valid.
-                  value: *ref_9
+                  value: *ref_16
                 FORMAT_BENEFIT_ID:
                   description: The format of the supplied benefit ID field is not valid.
-                  value: *ref_20
+                  value: *ref_23
                 RULE_TAX_YEAR_RANGE_INVALID:
                   description: Tax year range invalid. A tax year range of one year is required.
-                  value: *ref_10
+                  value: *ref_17
                 RULE_TAX_YEAR_NOT_SUPPORTED:
                   description: The specified tax year is not supported. Either the tax year specified is before the minimum tax year value, or it is after the maximum tax year value.
-                  value: *ref_11
+                  value: *ref_18
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: *ref_30
+                  value: *ref_33
                 RULE_UNIGNORE_FORBIDDEN:
                   description: A customer added state benefit cannot be unignored.
                   value:
@@ -1730,11 +2362,11 @@ paths:
                     The request did not match any available sandbox data. 
                     Check that the supplied Gov-Test-Scenario is correct for this endpoint version. 
                     This error will only be returned in the sandbox environment.
-                  value: *ref_12
+                  value: *ref_19
                 RULE_OUTSIDE_AMENDMENT_WINDOW:
                   description: |
                     The request cannot be completed as you are outside the amendment window.
-                  value: *ref_27
+                  value: *ref_30
         '403':
           description: Forbidden
           headers:
@@ -1746,20 +2378,41 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 CLIENT_OR_AGENT_NOT_AUTHORISED:
                   description: |
                     The client or agent is not authorised. This is because:
                     the client is not subscribed to MTD, the agent is not subscribed to Agent Services,
                     or the client has not authorised the agent to act on their behalf.
-                  value: *ref_13
+                  value: *ref_20
         '404':
           description: Not Found
           headers:
@@ -1771,17 +2424,38 @@ paths:
                 String, 36 characters.
               schema: *ref_0
               required: true
+            Deprecation:
+              name: Deprecation
+              in: header
+              description: |
+                The deprecation date/time for this endpoint.
+              schema: *ref_1
+              required: false
+            Sunset:
+              name: Sunset
+              in: header
+              description: |
+                The earliest date/time this endpoint will become unavailable after deprecation.
+              schema: *ref_2
+              required: false
+            Link:
+              name: Link
+              in: header
+              description: |
+                URL of the documentation for the API.
+              schema: *ref_3
+              required: false
           content:
             application/json:
               schema:
                 description: Error Response
                 type: object
-                properties: *ref_1
-                required: *ref_2
+                properties: *ref_4
+                required: *ref_5
               examples:
                 MATCHING_RESOURCE_NOT_FOUND:
                   description: The supplied income source could not be found.
-                  value: *ref_28
+                  value: *ref_31
 components:
   securitySchemes:
     User-Restricted:
