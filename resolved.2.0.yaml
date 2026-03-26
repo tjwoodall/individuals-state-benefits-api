@@ -38,71 +38,42 @@ servers:
 paths:
   /individuals/state-benefits/{nino}/{taxYear}:
     get:
-      summary: List State Benefits
-      parameters:
-      - name: benefitId
-        in: query
-        description: |
-          Unique identifier of the benefit.
-        required: false
-        schema:
-          pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-          type: string
-          example: f0d83ac0-a10a-4d57-9e41-6d033832779f
       security:
       - User-Restricted:
         - read:self-assessment
     post:
-      summary: Create State Benefit
       security:
       - User-Restricted:
         - write:self-assessment
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}:
     put:
-      summary: Amend State Benefit
       security:
       - User-Restricted:
         - write:self-assessment
     delete:
-      summary: Delete State Benefit
       security:
       - User-Restricted:
         - write:self-assessment
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/amounts:
     put:
-      summary: Amend State Benefit Amounts
       security:
       - User-Restricted:
         - write:self-assessment
     delete:
-      summary: Delete State Benefit Amounts
       security:
       - User-Restricted:
         - write:self-assessment
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/ignore:
     post:
-      summary: Ignore State Benefit
       security:
       - User-Restricted:
         - write:self-assessment
   /individuals/state-benefits/{nino}/{taxYear}/{benefitId}/unignore:
     post:
-      summary: Unignore State Benefit
       security:
       - User-Restricted:
         - write:self-assessment
 components:
-  parameters:
-    benefitId:
-      name: benefitId
-      in: query
-      description: |
-        Unique identifier of the benefit.
-      required: false
-      schema:
-        pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-        type: string
-        example: f0d83ac0-a10a-4d57-9e41-6d033832779f
   securitySchemes:
     User-Restricted:
       type: oauth2
