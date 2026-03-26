@@ -18,8 +18,6 @@ description: |
   | TAX_YEAR_NOT_ENDED               | Simulates the scenario where the tax year provided has not ended.                              |
   | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.|
   | STATEFUL                         | Performs a stateful create.                                                                    |
-  
-
 
 parameters:
   - $ref: './common/pathParameters.yaml#/components/parameters/nino'
@@ -38,11 +36,8 @@ requestBody:
     application/json:
       schema:
         $ref: './schemas/create_benefit_request.json'
-      examples:
-        example-1:
-          description: Default Example
-          value:
-            $ref: './examples/createBenefit/request.json'
+      example:
+        $ref: './examples/createBenefit/request.json'
 
 responses:
   "200":
@@ -50,21 +45,30 @@ responses:
     headers:
       X-CorrelationId:
         $ref: './common/headers.yaml#/components/parameters/correlationId'
+      Deprecation:
+        $ref: "./common/headers.yaml#/components/parameters/deprecationHeader"
+      Sunset:
+        $ref: "./common/headers.yaml#/components/parameters/sunsetHeader"
+      Link:
+        $ref: "./common/headers.yaml#/components/parameters/linkHeader"
     content:
       application/json:
         schema:
           $ref: './schemas/create_benefit_response.json'
-        examples:
-          example-response:
-            description: Example Response
-            value:
-              $ref: './examples/createBenefit/response.json'
+        example:
+          $ref: './examples/createBenefit/response.json'
 
   "400":
     description: Bad request
     headers:
       X-CorrelationId:
         $ref: './common/headers.yaml#/components/parameters/correlationId'
+      Deprecation:
+        $ref: "./common/headers.yaml#/components/parameters/deprecationHeader"
+      Sunset:
+        $ref: "./common/headers.yaml#/components/parameters/sunsetHeader"
+      Link:
+        $ref: "./common/headers.yaml#/components/parameters/linkHeader"
     content:
       application/json:
         schema:
@@ -106,6 +110,12 @@ responses:
     headers:
       X-CorrelationId:
         $ref: './common/headers.yaml#/components/parameters/correlationId'
+      Deprecation:
+        $ref: "./common/headers.yaml#/components/parameters/deprecationHeader"
+      Sunset:
+        $ref: "./common/headers.yaml#/components/parameters/sunsetHeader"
+      Link:
+        $ref: "./common/headers.yaml#/components/parameters/linkHeader"
     content:
       application/json:
         schema:
