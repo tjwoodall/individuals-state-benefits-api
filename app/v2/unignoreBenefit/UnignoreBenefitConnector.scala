@@ -16,7 +16,7 @@
 
 package v2.unignoreBenefit
 
-import shared.config.{ConfigFeatureSwitches, SharedAppConfig}
+import shared.config.SharedAppConfig
 import shared.connectors.DownstreamUri.*
 import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
 import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamUri}
@@ -38,11 +38,7 @@ class UnignoreBenefitConnector @Inject() (val http: HttpClientV2, val appConfig:
     import request.*
 
     val downstreamUri: DownstreamUri[Unit] =
-      if (ConfigFeatureSwitches().isEnabled("ifs_hip_migration_1945")) {
-        HipUri[Unit](s"itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}")
-      } else {
-        IfsUri[Unit](s"income-tax/${taxYear.asTysDownstream}/state-benefits/$nino/ignore/$benefitId")
-      }
+      HipUri[Unit](s"itsd/income/ignore/state-benefits/$nino/$benefitId?taxYear=${taxYear.asTysDownstream}")
 
     delete(downstreamUri)
   }

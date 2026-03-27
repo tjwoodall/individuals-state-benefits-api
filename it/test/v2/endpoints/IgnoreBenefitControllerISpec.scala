@@ -16,7 +16,7 @@
 
 package v2.endpoints
 
-import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow, RuleUnignoreForbiddenError}
+import common.errors.{BenefitIdFormatError, RuleIgnoreForbiddenError, RuleOutsideAmendmentWindow}
 import play.api.http.HeaderNames.ACCEPT
 import play.api.http.Status.*
 import play.api.libs.json.{JsObject, Json}
@@ -27,17 +27,14 @@ import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
-class UnignoreBenefitControllerIfsISpec extends IntegrationBaseSpec {
+class IgnoreBenefitControllerISpec extends IntegrationBaseSpec {
 
-  override def servicesConfig: Map[String, Any] =
-    Map("feature-switch.ifs_hip_migration_1945.enabled" -> false) ++ super.servicesConfig
-
-  "Calling the 'unignore benefit' endpoint" should {
-    "return a 2004 status code" when {
+  "Calling the 'ignore benefit' endpoint" should {
+    "return a 204 status code" when {
       "any valid request is made" in new Test {
 
         override def setupStubs(): Unit = {
-          DownstreamStub.onSuccess(DownstreamStub.DELETE, downstreamUri, NO_CONTENT)
+          DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, downstreamQueryParams, CREATED, Json.obj())
         }
 
         val response: WSResponse = await(request().post(JsObject.empty))
@@ -81,7 +78,7 @@ class UnignoreBenefitControllerIfsISpec extends IntegrationBaseSpec {
           s"downstream returns an $downstreamCode error and status $downstreamStatus" in new Test {
 
             override def setupStubs(): Unit = {
-              DownstreamStub.onError(DownstreamStub.DELETE, downstreamUri, downstreamStatus, errorBody(downstreamCode))
+              DownstreamStub.onError(DownstreamStub.PUT, downstreamUri, downstreamQueryParams, downstreamStatus, errorBody(downstreamCode))
             }
 
             val response: WSResponse = await(request().post(JsObject.empty))
@@ -94,10 +91,11 @@ class UnignoreBenefitControllerIfsISpec extends IntegrationBaseSpec {
           (BAD_REQUEST, "INVALID_TAXABLE_ENTITY_ID", BAD_REQUEST, NinoFormatError),
           (BAD_REQUEST, "INVALID_TAX_YEAR", BAD_REQUEST, TaxYearFormatError),
           (BAD_REQUEST, "INVALID_BENEFIT_ID", BAD_REQUEST, BenefitIdFormatError),
-          (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError),
           (BAD_REQUEST, "INVALID_CORRELATIONID", INTERNAL_SERVER_ERROR, InternalError),
-          (FORBIDDEN, "CUSTOMER_ADDED", BAD_REQUEST, RuleUnignoreForbiddenError),
-          (UNPROCESSABLE_ENTITY, "BEFORE_TAX_YEAR_ENDED", BAD_REQUEST, RuleTaxYearNotEndedError),
+          (BAD_REQUEST, "INVALID_PAYLOAD", INTERNAL_SERVER_ERROR, InternalError),
+          (BAD_REQUEST, "UNMATCHED_STUB_ERROR", BAD_REQUEST, RuleIncorrectGovTestScenarioError),
+          (FORBIDDEN, "IGNORE_FORBIDDEN", BAD_REQUEST, RuleIgnoreForbiddenError),
+          (UNPROCESSABLE_ENTITY, "NOT_SUPPORTED_TAX_YEAR", BAD_REQUEST, RuleTaxYearNotEndedError),
           (NOT_FOUND, "NO_DATA_FOUND", NOT_FOUND, NotFoundError),
           (UNPROCESSABLE_ENTITY, "OUTSIDE_AMENDMENT_WINDOW", BAD_REQUEST, RuleOutsideAmendmentWindow),
           (INTERNAL_SERVER_ERROR, "SERVER_ERROR", INTERNAL_SERVER_ERROR, InternalError),
@@ -119,10 +117,13 @@ class UnignoreBenefitControllerIfsISpec extends IntegrationBaseSpec {
     val nino: String      = "AA123456A"
     val benefitId: String = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-    val taxYear: String = "2019-20"
+    def taxYear: String = "2019-20"
 
-    lazy val mtdUri: String   = s"/$nino/$taxYear/$benefitId/unignore"
-    val downstreamUri: String = s"/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
+    def downstreamUri: String = s"/itsd/income/ignore/state-benefits/$nino/$benefitId"
+
+    def downstreamQueryParams: Map[String, String] = Map("taxYear" -> "19-20")
+
+    def mtdUri: String = s"/$nino/$taxYear/$benefitId/ignore"
 
     def setupStubs(): Unit = {}
 
@@ -143,7 +144,7 @@ class UnignoreBenefitControllerIfsISpec extends IntegrationBaseSpec {
       s"""
          |{
          |   "code": "$code",
-         |   "reason": "downstream error message"
+         |   "reason": "downstream message"
          |}
             """.stripMargin
 

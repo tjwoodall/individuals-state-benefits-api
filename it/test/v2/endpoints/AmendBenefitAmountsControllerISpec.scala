@@ -27,10 +27,7 @@ import shared.models.errors.*
 import shared.services.{AuditStub, AuthStub, DownstreamStub, MtdIdLookupStub}
 import shared.support.IntegrationBaseSpec
 
-class AmendBenefitAmountsControllerIfsISpec extends IntegrationBaseSpec {
-
-  override def servicesConfig: Map[String, Any] =
-    Map("feature-switch.ifs_hip_migration_1937.enabled" -> false) ++ super.servicesConfig
+class AmendBenefitAmountsControllerISpec extends IntegrationBaseSpec {
 
   "Calling the 'amend benefit amounts' endpoint" should {
     "return a 204 status code" when {
@@ -44,7 +41,7 @@ class AmendBenefitAmountsControllerIfsISpec extends IntegrationBaseSpec {
         response.status shouldBe NO_CONTENT
       }
 
-      "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysIfsTest {
+      "any valid request with a Tax Year Specific (TYS) tax year is made" in new TysTest {
 
         override def setupStubs(): Unit = {
           DownstreamStub.onSuccess(DownstreamStub.PUT, downstreamUri, NO_CONTENT)
@@ -260,10 +257,10 @@ class AmendBenefitAmountsControllerIfsISpec extends IntegrationBaseSpec {
     def downstreamUri: String = s"/income-tax/income/state-benefits/$nino/2019-20/$benefitId"
   }
 
-  private trait TysIfsTest extends Test {
+  private trait TysTest extends Test {
     def taxYear: String = "2023-24"
 
-    def downstreamUri: String = s"/income-tax/23-24/income/state-benefits/$nino/$benefitId"
+    def downstreamUri: String = s"/itsa/income-tax/v1/23-24/income/state-benefits/$nino/$benefitId"
   }
 
 }

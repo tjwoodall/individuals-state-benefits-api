@@ -16,7 +16,6 @@
 
 package v2.unignoreBenefit
 
-import play.api.Configuration
 import shared.connectors.{ConnectorSpec, DownstreamOutcome}
 import shared.models.domain.{Nino, TaxYear}
 import shared.models.outcomes.ResponseWrapper
@@ -34,23 +33,7 @@ class UnignoreBenefitConnectorSpec extends ConnectorSpec {
 
   "UnignoreBenefitConnector" should {
     "return the expected response for a request" when {
-      "a valid request is made to IF" in new IfsTest with Test {
-        MockedSharedAppConfig.featureSwitchConfig returns Configuration("ifs_hip_migration_1945.enabled" -> false)
-        def taxYear: TaxYear = TaxYear.fromMtd("2019-20")
-
-        val expectedOutcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
-
-        willDelete(
-          url = url"$baseUrl/income-tax/19-20/state-benefits/$nino/ignore/$benefitId"
-        ).returns(Future.successful(expectedOutcome))
-
-        val result: DownstreamOutcome[Unit] = await(connector.unignoreBenefit(request))
-
-        result shouldBe expectedOutcome
-      }
-      "a valid request is made to HIP" in new HipTest with Test {
-        MockedSharedAppConfig.featureSwitchConfig returns Configuration("ifs_hip_migration_1945.enabled" -> true)
-
+      "a valid request is made" in new HipTest with Test {
         def taxYear: TaxYear = TaxYear.fromMtd("2025-26")
 
         private val outcome: Right[Nothing, ResponseWrapper[Unit]] = Right(ResponseWrapper(correlationId, ()))
