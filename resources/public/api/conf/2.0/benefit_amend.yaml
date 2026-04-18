@@ -1,6 +1,6 @@
 summary: Amend State Benefit
 description: |
-  This endpoint enables you to amend benefits financial data.
+  This endpoint allows a developer to amend the dates of a previously created state benefit.
   
   A National Insurance number, tax year and benefit ID must be provided.
   
