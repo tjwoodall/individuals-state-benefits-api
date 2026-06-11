@@ -118,8 +118,8 @@ class UnignoreBenefitControllerISpec extends IntegrationBaseSpec {
 
     val taxYear: String = "2019-20"
 
-    lazy val mtdUri: String = s"/$nino/$taxYear/$benefitId/unignore"
-    val downstreamUri: String = s"/itsd/income/ignore/state-benefits/$nino/$benefitId"
+    lazy val mtdUri: String                        = s"/$nino/$taxYear/$benefitId/unignore"
+    val downstreamUri: String                      = s"/itsd/income/ignore/state-benefits/$nino/$benefitId"
     val downstreamQueryParams: Map[String, String] = Map("taxYear" -> "19-20")
 
     def setupStubs(): Unit = {}
