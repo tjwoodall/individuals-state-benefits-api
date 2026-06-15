@@ -16,16 +16,16 @@
 
 package v2.amendBenefit
 
+import api.config.MockAppConfig
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.TaxYear
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.MockAuditService
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import shared.config.MockSharedAppConfig
-import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import shared.models.domain.TaxYear
-import shared.models.errors.*
-import shared.models.outcomes.ResponseWrapper
-import shared.services.MockAuditService
 import v2.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v2.models.domain.BenefitId
 
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class AmendBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with MockSharedAppConfig
+    with MockAppConfig
     with MockAmendBenefitService
     with MockAmendBenefitValidatorFactory
     with MockAuditService {
@@ -103,11 +103,11 @@ class AmendBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
-    MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     protected def callController(): Future[Result] = controller.amendBenefit(validNino, taxYear, benefitId)(fakeRequest.withBody(requestBodyJson))
 

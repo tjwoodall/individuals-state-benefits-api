@@ -16,13 +16,13 @@
 
 package v2.createBenefit.def1
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.models.utils.JsonErrorValidators
+import api.utils.UnitSpec
 import common.errors.BenefitTypeFormatError
 import config.MockStateBenefitsAppConfig
 import play.api.libs.json.*
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors.*
-import shared.models.utils.JsonErrorValidators
-import shared.utils.UnitSpec
 import v2.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 import v2.createBenefit.model.request.CreateBenefitRequestData
 

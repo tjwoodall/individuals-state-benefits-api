@@ -16,8 +16,8 @@
 
 package v2.createBenefit
 
+import api.controllers.validators.Validator
 import config.StateBenefitsAppConfig
-import shared.controllers.validators.Validator
 import play.api.libs.json.JsValue
 import v2.createBenefit.def1.Def1_CreateBenefitValidator
 import v2.createBenefit.model.request.CreateBenefitRequestData

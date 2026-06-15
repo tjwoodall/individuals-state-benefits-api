@@ -16,9 +16,9 @@
 
 package v2.amendBenefitAmounts.def1.model.request
 
+import api.models.utils.JsonErrorValidators
+import api.utils.UnitSpec
 import play.api.libs.json.*
-import shared.models.utils.JsonErrorValidators
-import shared.utils.UnitSpec
 
 class Def1_AmendBenefitAmountsRequestBodySpec extends UnitSpec with JsonErrorValidators {
 

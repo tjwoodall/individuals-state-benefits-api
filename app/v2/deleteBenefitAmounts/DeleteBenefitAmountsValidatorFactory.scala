@@ -16,8 +16,8 @@
 
 package v2.deleteBenefitAmounts
 
+import api.controllers.validators.Validator
 import config.StateBenefitsAppConfig
-import shared.controllers.validators.Validator
 import v2.deleteBenefitAmounts.def1.Def1_DeleteBenefitAmountsValidator
 import v2.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
 

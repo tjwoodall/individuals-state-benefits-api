@@ -16,8 +16,8 @@
 
 package common.errors
 
+import api.models.errors.MtdError
 import play.api.http.Status.*
-import shared.models.errors.MtdError
 
 object BenefitIdFormatError extends MtdError("FORMAT_BENEFIT_ID", "The provided benefit ID is invalid", BAD_REQUEST)
 

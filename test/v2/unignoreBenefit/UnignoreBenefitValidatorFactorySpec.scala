@@ -16,9 +16,9 @@
 
 package v2.unignoreBenefit
 
+import api.controllers.validators.Validator
+import api.utils.UnitSpec
 import config.MockStateBenefitsAppConfig
-import shared.controllers.validators.Validator
-import shared.utils.UnitSpec
 import v2.unignoreBenefit.def1.Def1_UnignoreBenefitValidator
 import v2.unignoreBenefit.model.request.UnignoreBenefitRequestData
 

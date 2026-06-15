@@ -16,7 +16,7 @@
 
 package v2.deleteBenefitAmounts.def1.model.request
 
-import shared.models.domain.{Nino, TaxYear}
+import api.models.domain.{Nino, TaxYear}
 import v2.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData
 import v2.models.domain.BenefitId
 

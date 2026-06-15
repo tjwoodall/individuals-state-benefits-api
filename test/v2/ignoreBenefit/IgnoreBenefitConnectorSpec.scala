@@ -16,9 +16,9 @@
 
 package v2.ignoreBenefit
 
-import shared.connectors.{ConnectorSpec, DownstreamOutcome}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.outcomes.ResponseWrapper
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import uk.gov.hmrc.http.StringContextOps
 import v2.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v2.models.domain.BenefitId
@@ -51,7 +51,7 @@ class IgnoreBenefitConnectorSpec extends ConnectorSpec {
     self: ConnectorTest =>
     val request: Def1_IgnoreBenefitRequestData = Def1_IgnoreBenefitRequestData(Nino(nino), taxYear, BenefitId(benefitId))
 
-    val connector: IgnoreBenefitConnector = new IgnoreBenefitConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)
+    val connector: IgnoreBenefitConnector = new IgnoreBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
   }
 

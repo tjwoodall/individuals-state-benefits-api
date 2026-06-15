@@ -16,7 +16,7 @@
 
 package v2.unignoreBenefit.def1.model.request
 
-import shared.models.domain.{Nino, TaxYear}
+import api.models.domain.{Nino, TaxYear}
 import v2.models.domain.BenefitId
 import v2.unignoreBenefit.model.request.UnignoreBenefitRequestData
 

@@ -16,13 +16,13 @@
 
 package v2.amendBenefit.def1
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.models.utils.JsonErrorValidators
+import api.utils.UnitSpec
 import common.errors.BenefitIdFormatError
 import config.MockStateBenefitsAppConfig
 import play.api.libs.json.{JsObject, JsValue, Json}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors.*
-import shared.models.utils.JsonErrorValidators
-import shared.utils.UnitSpec
 import v2.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v2.amendBenefit.model.request.AmendBenefitRequestData
 import v2.models.domain.BenefitId

@@ -16,11 +16,11 @@
 
 package v2.createBenefit
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.{ServiceOutcome, ServiceSpec}
 import common.errors.*
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors.*
-import shared.models.outcomes.ResponseWrapper
-import shared.services.{ServiceOutcome, ServiceSpec}
 import v2.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 import v2.createBenefit.model.response.CreateBenefitResponse
 import v2.models.domain.BenefitType

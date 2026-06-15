@@ -16,10 +16,10 @@
 
 package v2.amendBenefitAmounts
 
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import org.scalamock.handlers.CallHandler
-import shared.connectors.{ConnectorSpec, DownstreamOutcome}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.outcomes.ResponseWrapper
 import uk.gov.hmrc.http.StringContextOps
 import v2.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v2.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
@@ -74,7 +74,7 @@ class AmendBenefitAmountsConnectorSpec extends ConnectorSpec {
 
     val request: AmendBenefitAmountsRequestData = Def1_AmendBenefitAmountsRequestData(Nino(nino), taxYear, BenefitId(benefitId), body)
 
-    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockSharedAppConfig)
+    val connector: AmendBenefitAmountsConnector = new AmendBenefitAmountsConnector(mockHttpClient, mockAppConfig)
 
     protected def stubTysHttpResponse(isHipEnabled: Boolean, outcome: DownstreamOutcome[Any]): CallHandler[Future[DownstreamOutcome[Any]]]#Derived = {
 

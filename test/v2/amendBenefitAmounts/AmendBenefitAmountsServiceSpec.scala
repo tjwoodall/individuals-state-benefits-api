@@ -16,11 +16,11 @@
 
 package v2.amendBenefitAmounts
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.{ServiceOutcome, ServiceSpec}
 import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors.*
-import shared.models.outcomes.ResponseWrapper
-import shared.services.{ServiceOutcome, ServiceSpec}
 import v2.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v2.models.domain.BenefitId
 

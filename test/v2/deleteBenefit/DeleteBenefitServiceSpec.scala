@@ -16,11 +16,11 @@
 
 package v2.deleteBenefit
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.{ServiceOutcome, ServiceSpec}
 import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError, RuleOutsideAmendmentWindow}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors.*
-import shared.models.outcomes.ResponseWrapper
-import shared.services.{ServiceOutcome, ServiceSpec}
 import v2.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 import v2.models.domain.BenefitId
 

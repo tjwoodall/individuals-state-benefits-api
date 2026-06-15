@@ -16,8 +16,8 @@
 
 package v2.amendBenefitAmounts.model.request
 
+import api.utils.JsonWritesUtil
 import play.api.libs.json.OWrites
-import shared.utils.JsonWritesUtil
 import v2.amendBenefitAmounts.def1.model.request.Def1_AmendBenefitAmountsRequestBody
 
 trait AmendBenefitAmountsRequestBody

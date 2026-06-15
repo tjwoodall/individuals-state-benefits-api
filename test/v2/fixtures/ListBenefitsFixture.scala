@@ -16,8 +16,8 @@
 
 package v2.fixtures
 
+import api.models.domain.{Nino, TaxYear, Timestamp}
 import play.api.libs.json.{JsValue, Json}
-import shared.models.domain.{Nino, TaxYear, Timestamp}
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 import v2.models.domain.BenefitId

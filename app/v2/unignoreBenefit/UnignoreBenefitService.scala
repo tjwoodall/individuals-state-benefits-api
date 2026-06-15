@@ -16,11 +16,11 @@
 
 package v2.unignoreBenefit
 
+import api.controllers.RequestContext
+import api.models.errors.*
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits.*
 import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow, RuleUnignoreForbiddenError}
-import shared.controllers.RequestContext
-import shared.models.errors.*
-import shared.services.{BaseService, ServiceOutcome}
 import v2.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 import javax.inject.{Inject, Singleton}

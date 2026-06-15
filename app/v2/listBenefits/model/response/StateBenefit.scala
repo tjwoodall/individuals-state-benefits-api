@@ -16,8 +16,8 @@
 
 package v2.listBenefits.model.response
 
+import api.models.domain.Timestamp
 import play.api.libs.json.{Json, OFormat}
-import shared.models.domain.Timestamp
 
 sealed trait StateBenefit {
   def benefitId: String

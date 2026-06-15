@@ -16,11 +16,11 @@
 
 package v2.amendBenefit
 
-import shared.services.{BaseService, ServiceOutcome}
+import api.controllers.RequestContext
+import api.models.errors.*
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits.*
 import common.errors.*
-import shared.controllers.RequestContext
-import shared.models.errors.*
 import v2.amendBenefit.model.request.AmendBenefitRequestData
 
 import javax.inject.{Inject, Singleton}

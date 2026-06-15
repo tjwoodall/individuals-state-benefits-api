@@ -16,10 +16,10 @@
 
 package v2.controllers.resolvers
 
+import api.controllers.validators.resolvers.{ResolveStringPattern, ResolverSupport}
+import api.models.errors.MtdError
 import cats.data.Validated
 import common.errors.BenefitIdFormatError
-import shared.controllers.validators.resolvers.{ResolveStringPattern, ResolverSupport}
-import shared.models.errors.MtdError
 import v2.models.domain.BenefitId
 
 object ResolveBenefitId extends ResolverSupport {

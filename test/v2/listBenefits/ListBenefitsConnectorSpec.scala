@@ -16,11 +16,11 @@
 
 package v2.listBenefits
 
-import shared.config.MockSharedAppConfig
-import shared.connectors.{ConnectorSpec, DownstreamOutcome}
-import shared.mocks.MockHttpClient
-import shared.models.domain.{Nino, TaxYear, Timestamp}
-import shared.models.outcomes.ResponseWrapper
+import api.config.MockAppConfig
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.mocks.MockHttpClient
+import api.models.domain.{Nino, TaxYear, Timestamp}
+import api.models.outcomes.ResponseWrapper
 import uk.gov.hmrc.http.StringContextOps
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
@@ -112,9 +112,9 @@ class ListBenefitsConnectorSpec extends ConnectorSpec {
     }
   }
 
-  trait Test extends MockHttpClient with MockSharedAppConfig {
+  trait Test extends MockHttpClient with MockAppConfig {
 
-    val connector: ListBenefitsConnector = new ListBenefitsConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)
+    val connector: ListBenefitsConnector = new ListBenefitsConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
     val ifsRequestHeaders: Seq[(String, String)] = List(
       "Environment"   -> "release6-environment",

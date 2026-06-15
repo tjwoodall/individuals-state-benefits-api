@@ -16,12 +16,12 @@
 
 package v2.amendBenefit
 
-import shared.controllers.validators.Validator
+import api.controllers.validators.Validator
+import api.utils.UnitSpec
+import config.MockStateBenefitsAppConfig
 import play.api.libs.json.Json
-import shared.utils.UnitSpec
 import v2.amendBenefit.def1.Def1_AmendBenefitValidator
 import v2.amendBenefit.model.request.AmendBenefitRequestData
-import config.MockStateBenefitsAppConfig
 
 class AmendBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsAppConfig {
 

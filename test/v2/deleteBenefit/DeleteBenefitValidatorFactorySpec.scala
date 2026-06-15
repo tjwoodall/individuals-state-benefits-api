@@ -16,9 +16,9 @@
 
 package v2.deleteBenefit
 
+import api.controllers.validators.Validator
+import api.utils.UnitSpec
 import config.MockStateBenefitsAppConfig
-import shared.controllers.validators.Validator
-import shared.utils.UnitSpec
 import v2.deleteBenefit.def1.Def1_DeleteBenefitValidator
 import v2.deleteBenefit.model.request.DeleteBenefitRequestData
 

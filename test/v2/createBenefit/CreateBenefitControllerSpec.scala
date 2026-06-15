@@ -16,16 +16,16 @@
 
 package v2.createBenefit
 
+import api.config.MockAppConfig
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
+import api.models.domain.TaxYear
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.MockAuditService
 import play.api.Configuration
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
-import shared.config.MockSharedAppConfig
-import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import shared.models.audit.{AuditEvent, AuditResponse, GenericAuditDetail}
-import shared.models.domain.TaxYear
-import shared.models.errors.*
-import shared.models.outcomes.ResponseWrapper
-import shared.services.MockAuditService
 import v2.createBenefit.def1.model.request.{Def1_CreateBenefitRequestBody, Def1_CreateBenefitRequestData}
 import v2.createBenefit.model.response.CreateBenefitResponse
 import v2.models.domain.BenefitType
@@ -36,7 +36,7 @@ import scala.concurrent.Future
 class CreateBenefitControllerSpec
     extends ControllerBaseSpec
     with ControllerTestRunner
-    with MockSharedAppConfig
+    with MockAppConfig
     with MockCreateBenefitService
     with MockAuditService
     with MockCreateBenefitValidatorFactory {
@@ -127,11 +127,11 @@ class CreateBenefitControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
-    MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
 
     protected def callController(): Future[Result] = controller.createStateBenefit(validNino, taxYear)(fakePostRequest(requestBodyJson))
 

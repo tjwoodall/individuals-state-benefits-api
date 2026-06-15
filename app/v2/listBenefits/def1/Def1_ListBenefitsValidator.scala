@@ -16,14 +16,14 @@
 
 package v2.listBenefits.def1
 
+import api.controllers.validators.Validator
+import api.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum, ResolverSupport}
+import api.models.domain.TaxYear
+import api.models.errors.MtdError
 import cats.data.Validated
 import cats.data.Validated.*
 import cats.implicits.*
 import config.StateBenefitsAppConfig
-import shared.controllers.validators.Validator
-import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum, ResolverSupport}
-import shared.models.domain.TaxYear
-import shared.models.errors.MtdError
 import v2.controllers.resolvers.ResolveBenefitId
 import v2.listBenefits.model.request.ListBenefitsRequestData
 

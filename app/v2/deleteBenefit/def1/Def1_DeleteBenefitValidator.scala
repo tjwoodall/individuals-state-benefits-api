@@ -16,13 +16,13 @@
 
 package v2.deleteBenefit.def1
 
+import api.controllers.validators.Validator
+import api.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum}
+import api.models.domain.TaxYear
+import api.models.errors.MtdError
 import cats.data.Validated
 import cats.implicits.catsSyntaxTuple3Semigroupal
 import config.StateBenefitsAppConfig
-import shared.controllers.validators.Validator
-import shared.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum}
-import shared.models.domain.TaxYear
-import shared.models.errors.MtdError
 import v2.controllers.resolvers.ResolveBenefitId
 import v2.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 import v2.deleteBenefit.model.request.DeleteBenefitRequestData

@@ -16,8 +16,8 @@
 
 package v2.listBenefits
 
+import api.controllers.validators.Validator
 import config.StateBenefitsAppConfig
-import shared.controllers.validators.Validator
 import v2.listBenefits.def1.Def1_ListBenefitsValidator
 import v2.listBenefits.model.request.ListBenefitsRequestData
 

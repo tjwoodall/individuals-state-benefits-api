@@ -16,9 +16,9 @@
 
 package v2.listBenefits
 
-import shared.connectors.DownstreamUri.*
-import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome}
-import shared.config.SharedAppConfig
+import api.config.AppConfig
+import api.connectors.DownstreamUri.*
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome}
 import play.api.http.Status
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -29,14 +29,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ListBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: SharedAppConfig) extends BaseDownstreamConnector {
+class ListBenefitsConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def listBenefits(request: ListBenefitsRequestData)(implicit
       hc: HeaderCarrier,
       ec: ExecutionContext,
       correlationId: String): Future[DownstreamOutcome[ListBenefitsResponse[HMRCStateBenefit, CustomerStateBenefit]]] = {
 
-    import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
+    import api.connectors.httpparsers.StandardDownstreamHttpParser.*
     implicit val successCode: SuccessCode = SuccessCode(Status.OK)
 
     import request.*

@@ -16,7 +16,7 @@
 
 package v2.createBenefit.model.request
 
-import shared.models.domain.{Nino, TaxYear}
+import api.models.domain.{Nino, TaxYear}
 
 trait CreateBenefitRequestData {
   val nino: Nino

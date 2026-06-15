@@ -16,11 +16,11 @@
 
 package v2.deleteBenefit
 
+import api.controllers.RequestContext
+import api.models.errors.*
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits.*
 import common.errors.{BenefitIdFormatError, RuleDeleteForbiddenError, RuleOutsideAmendmentWindow}
-import shared.controllers.RequestContext
-import shared.models.errors.*
-import shared.services.{BaseService, ServiceOutcome}
 import v2.deleteBenefit.model.request.DeleteBenefitRequestData
 
 import javax.inject.{Inject, Singleton}

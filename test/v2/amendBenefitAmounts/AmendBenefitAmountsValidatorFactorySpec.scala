@@ -16,11 +16,11 @@
 
 package v2.amendBenefitAmounts
 
+import api.controllers.validators.Validator
+import api.models.utils.JsonErrorValidators
+import api.utils.UnitSpec
 import config.MockStateBenefitsAppConfig
 import play.api.libs.json.Json
-import shared.controllers.validators.Validator
-import shared.models.utils.JsonErrorValidators
-import shared.utils.UnitSpec
 import v2.amendBenefitAmounts.def1.Def1_AmendBenefitAmountsValidator
 import v2.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
 

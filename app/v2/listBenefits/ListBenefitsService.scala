@@ -16,9 +16,9 @@
 
 package v2.listBenefits
 
-import shared.controllers.RequestContext
-import shared.models.errors.*
-import shared.services.{BaseService, ServiceOutcome}
+import api.controllers.RequestContext
+import api.models.errors.*
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits.*
 import common.errors.BenefitIdFormatError
 import v2.listBenefits.model.request.ListBenefitsRequestData

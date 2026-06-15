@@ -16,9 +16,9 @@
 
 package v2.controllers.resolvers
 
+import api.utils.UnitSpec
 import cats.data.Validated.{Invalid, Valid}
 import common.errors.BenefitIdFormatError
-import shared.utils.UnitSpec
 import v2.models.domain.BenefitId
 
 class ResolveBenefitIdSpec extends UnitSpec {

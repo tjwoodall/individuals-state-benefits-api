@@ -16,9 +16,9 @@
 
 package v2.deleteBenefit
 
-import shared.connectors.{ConnectorSpec, DownstreamOutcome}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.outcomes.ResponseWrapper
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import uk.gov.hmrc.http.StringContextOps
 import v2.deleteBenefit.def1.model.request.Def1_DeleteBenefitRequestData
 import v2.models.domain.BenefitId
@@ -53,7 +53,7 @@ class DeleteBenefitConnectorSpec extends ConnectorSpec {
 
     protected val request: Def1_DeleteBenefitRequestData = Def1_DeleteBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId))
 
-    val connector: DeleteBenefitConnector = new DeleteBenefitConnector(http = mockHttpClient, appConfig = mockSharedAppConfig)
+    val connector: DeleteBenefitConnector = new DeleteBenefitConnector(http = mockHttpClient, appConfig = mockAppConfig)
 
   }
 

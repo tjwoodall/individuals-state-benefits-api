@@ -16,16 +16,16 @@
 
 package routing
 
+import api.config.AppConfig
+import api.routing.Version2
+import api.utils.UnitSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import shared.utils.UnitSpec
-import shared.config.SharedAppConfig
 import play.api.routing.Router
-import shared.routing.Version2
 
 class StateBenefitsVersionRoutingMapSpec extends UnitSpec with GuiceOneAppPerSuite {
-  val appConfig: SharedAppConfig = mock[SharedAppConfig]
-  val defaultRouter: Router      = mock[Router]
-  val v2Routes: v2.Routes        = app.injector.instanceOf[v2.Routes]
+  val appConfig: AppConfig  = mock[AppConfig]
+  val defaultRouter: Router = mock[Router]
+  val v2Routes: v2.Routes   = app.injector.instanceOf[v2.Routes]
 
   "StateBenefitsVersionRoutingMap" when {
     "map is accessed" should {

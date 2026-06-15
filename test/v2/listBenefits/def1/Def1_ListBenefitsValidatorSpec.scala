@@ -16,11 +16,11 @@
 
 package v2.listBenefits.def1
 
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.utils.UnitSpec
 import common.errors.BenefitIdFormatError
 import config.MockStateBenefitsAppConfig
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors.*
-import shared.utils.UnitSpec
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.models.domain.BenefitId
 

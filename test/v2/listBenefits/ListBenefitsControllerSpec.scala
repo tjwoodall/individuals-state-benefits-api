@@ -16,14 +16,14 @@
 
 package v2.listBenefits
 
+import api.controllers.{ControllerBaseSpec, ControllerTestRunner}
+import api.models.domain.{Nino, TaxYear}
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.MockAuditService
 import play.api.Configuration
 import play.api.libs.json.JsObject
 import play.api.mvc.Result
-import shared.controllers.{ControllerBaseSpec, ControllerTestRunner}
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.errors.*
-import shared.models.outcomes.ResponseWrapper
-import shared.services.MockAuditService
 import v2.fixtures.ListBenefitsFixture.*
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.models.domain.BenefitId
@@ -146,11 +146,11 @@ class ListBenefitsControllerSpec
       idGenerator = mockIdGenerator
     )
 
-    MockedSharedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
+    MockedAppConfig.featureSwitchConfig.anyNumberOfTimes() returns Configuration(
       "supporting-agents-access-control.enabled" -> true
     )
 
-    MockedSharedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
+    MockedAppConfig.endpointAllowsSupportingAgents(controller.endpointName).anyNumberOfTimes() returns false
     protected def callController(): Future[Result] = controller.listBenefits(nino, taxYear, Some(benefitId))(fakeGetRequest)
 
   }

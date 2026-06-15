@@ -16,11 +16,11 @@
 
 package v2.amendBenefit
 
-import shared.config.MockSharedAppConfig
-import shared.connectors.{ConnectorSpec, DownstreamOutcome}
-import shared.mocks.MockHttpClient
-import shared.models.domain.{Nino, TaxYear}
-import shared.models.outcomes.ResponseWrapper
+import api.config.MockAppConfig
+import api.connectors.{ConnectorSpec, DownstreamOutcome}
+import api.mocks.MockHttpClient
+import api.models.domain.{Nino, TaxYear}
+import api.models.outcomes.ResponseWrapper
 import uk.gov.hmrc.http.StringContextOps
 import v2.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v2.models.domain.BenefitId
@@ -37,11 +37,11 @@ class AmendBenefitConnectorSpec extends ConnectorSpec {
 
   private val request = Def1_AmendBenefitRequestData(Nino(nino), TaxYear.fromMtd(taxYear), BenefitId(benefitId), amendBenefitRequestBody)
 
-  trait Test extends MockHttpClient with MockSharedAppConfig {
+  trait Test extends MockHttpClient with MockAppConfig {
 
     val connector: AmendBenefitConnector = new AmendBenefitConnector(
       http = mockHttpClient,
-      appConfig = mockSharedAppConfig
+      appConfig = mockAppConfig
     )
 
   }

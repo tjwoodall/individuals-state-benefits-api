@@ -16,9 +16,9 @@
 
 package v2.listBenefits.model.response
 
-import shared.models.domain.Timestamp
+import api.models.domain.Timestamp
+import api.utils.UnitSpec
 import play.api.libs.json.{JsValue, Json}
-import shared.utils.UnitSpec
 import v2.fixtures.ListBenefitsFixture.*
 
 class ListBenefitsResponseSpec extends UnitSpec {

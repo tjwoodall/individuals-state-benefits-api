@@ -16,11 +16,11 @@
 
 package v2.listBenefits
 
+import api.models.domain.{Nino, TaxYear, Timestamp}
+import api.models.errors.*
+import api.models.outcomes.ResponseWrapper
+import api.services.{ServiceOutcome, ServiceSpec}
 import common.errors.BenefitIdFormatError
-import shared.models.domain.{Nino, TaxYear, Timestamp}
-import shared.models.errors.*
-import shared.models.outcomes.ResponseWrapper
-import shared.services.{ServiceOutcome, ServiceSpec}
 import v2.listBenefits.model.request.ListBenefitsRequestData
 import v2.listBenefits.model.response.{CustomerStateBenefit, HMRCStateBenefit, ListBenefitsResponse}
 import v2.models.domain.BenefitId

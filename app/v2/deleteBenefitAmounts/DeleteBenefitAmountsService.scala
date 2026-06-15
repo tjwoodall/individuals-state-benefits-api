@@ -16,9 +16,9 @@
 
 package v2.deleteBenefitAmounts
 
-import shared.controllers.RequestContext
-import shared.models.errors.*
-import shared.services.{BaseService, ServiceOutcome}
+import api.controllers.RequestContext
+import api.models.errors.*
+import api.services.{BaseService, ServiceOutcome}
 import cats.implicits.*
 import common.errors.{BenefitIdFormatError, RuleOutsideAmendmentWindow}
 import v2.deleteBenefitAmounts.model.request.DeleteBenefitAmountsRequestData

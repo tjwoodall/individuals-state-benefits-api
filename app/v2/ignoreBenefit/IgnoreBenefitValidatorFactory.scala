@@ -16,8 +16,8 @@
 
 package v2.ignoreBenefit
 
+import api.controllers.validators.Validator
 import config.StateBenefitsAppConfig
-import shared.controllers.validators.Validator
 import v2.ignoreBenefit.def1.Def1_IgnoreBenefitValidator
 import v2.ignoreBenefit.model.request.IgnoreBenefitRequestData
 

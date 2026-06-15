@@ -16,10 +16,10 @@
 
 package v2.createBenefit
 
+import api.connectors.DownstreamOutcome
 import org.scalamock.handlers.CallHandler
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.TestSuite
-import shared.connectors.DownstreamOutcome
 import uk.gov.hmrc.http.HeaderCarrier
 import v2.createBenefit.model.request.CreateBenefitRequestData
 import v2.createBenefit.model.response.CreateBenefitResponse

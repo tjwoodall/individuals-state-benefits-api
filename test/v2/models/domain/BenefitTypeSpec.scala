@@ -16,8 +16,8 @@
 
 package v2.models.domain
 
+import api.utils.UnitSpec
 import play.api.libs.json.{JsString, Json}
-import shared.utils.UnitSpec
 
 class BenefitTypeSpec extends UnitSpec {
 

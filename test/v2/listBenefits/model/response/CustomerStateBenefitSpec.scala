@@ -16,10 +16,10 @@
 
 package v2.listBenefits.model.response
 
+import api.models.domain.Timestamp
+import api.models.utils.JsonErrorValidators
+import api.utils.UnitSpec
 import play.api.libs.json.{JsObject, JsValue, Json}
-import shared.models.domain.Timestamp
-import shared.models.utils.JsonErrorValidators
-import shared.utils.UnitSpec
 
 class CustomerStateBenefitSpec extends UnitSpec with JsonErrorValidators {
 

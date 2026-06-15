@@ -16,10 +16,10 @@
 
 package v2.amendBenefitAmounts
 
-import shared.config.SharedAppConfig
-import shared.connectors.DownstreamUri.*
-import shared.connectors.httpparsers.StandardDownstreamHttpParser.*
-import shared.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamStrategy, DownstreamUri}
+import api.config.AppConfig
+import api.connectors.DownstreamUri.*
+import api.connectors.httpparsers.StandardDownstreamHttpParser.*
+import api.connectors.{BaseDownstreamConnector, DownstreamOutcome, DownstreamStrategy, DownstreamUri}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.client.HttpClientV2
 import v2.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
@@ -28,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AmendBenefitAmountsConnector @Inject() (val http: HttpClientV2, val appConfig: SharedAppConfig) extends BaseDownstreamConnector {
+class AmendBenefitAmountsConnector @Inject() (val http: HttpClientV2, val appConfig: AppConfig) extends BaseDownstreamConnector {
 
   def amendBenefitAmounts(request: AmendBenefitAmountsRequestData)(implicit
       hc: HeaderCarrier,
