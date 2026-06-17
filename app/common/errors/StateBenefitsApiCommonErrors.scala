@@ -23,8 +23,6 @@ object BenefitIdFormatError extends MtdError("FORMAT_BENEFIT_ID", "The provided 
 
 object BenefitTypeFormatError extends MtdError("FORMAT_BENEFIT_TYPE", "The provided benefit type is invalid", BAD_REQUEST)
 
-object BusinessIdFormatError extends MtdError("FORMAT_BUSINESS_ID", "The Business ID format is invalid", BAD_REQUEST)
-
 object RuleStartDateAfterTaxYearEndError
     extends MtdError("RULE_START_DATE_AFTER_TAX_YEAR_END", "The start date cannot be later than the tax year end", BAD_REQUEST)
 

@@ -35,12 +35,6 @@ object EndDateFormatError extends MtdError("FORMAT_END_DATE", "The provided End 
 
 object DateFormatError extends MtdError(code = "FORMAT_DATE", message = "The supplied date format is not valid", BAD_REQUEST)
 
-object BusinessIdFormatError extends MtdError("FORMAT_BUSINESS_ID", "The Business ID format is invalid", BAD_REQUEST)
-
-object PaymentIdFormatError extends MtdError(code = "FORMAT_PAYMENT_ID", message = "The payment ID format is invalid", BAD_REQUEST)
-
-object TransactionIdFormatError extends MtdError(code = "FORMAT_TRANSACTION_ID", message = "The transaction ID format is invalid", BAD_REQUEST)
-
 object IdFormatError extends MtdError(code = "FORMAT_ID", message = "The ID format is invalid", BAD_REQUEST)
 
 object ValueFormatError extends MtdError("FORMAT_VALUE", "The value must be between 0 and 99999999999.99", BAD_REQUEST) {
@@ -52,8 +46,6 @@ object ValueFormatError extends MtdError("FORMAT_VALUE", "The value must be betw
     ValueFormatError.copy(paths = Some(Seq(path)), message = s"The value must be $min or more")
 
 }
-
-object CalculationIdFormatError extends MtdError("FORMAT_CALCULATION_ID", "The provided calculation ID is invalid", BAD_REQUEST)
 
 object StringFormatError extends MtdError(code = "FORMAT_STRING", message = "The supplied string format is not valid", BAD_REQUEST)
 
@@ -93,9 +85,6 @@ object InvalidAcceptHeaderError extends MtdError("ACCEPT_HEADER_INVALID", "The a
 object UnsupportedVersionError extends MtdError("NOT_FOUND", "The requested resource could not be found", NOT_FOUND)
 
 // Common rule errors
-object RuleRequestCannotBeFulfilledError
-    extends MtdError("RULE_REQUEST_CANNOT_BE_FULFILLED", "Custom (will vary in production depending on the actual error)", 422)
-
 object RuleTaxYearNotSupportedError
     extends MtdError("RULE_TAX_YEAR_NOT_SUPPORTED", "The tax year specified does not lie within the supported range", BAD_REQUEST)
 
@@ -126,8 +115,6 @@ object RangeToDateBeforeFromDateError
 object RuleDateRangeInvalidError extends MtdError(code = "RULE_DATE_RANGE_INVALID", message = "The specified date range is invalid", BAD_REQUEST)
 
 object RuleInvalidDateRangeError extends MtdError(code = "RULE_INVALID_DATE_RANGE", message = "The provided date range is invalid", BAD_REQUEST)
-
-object NoTransactionDetailsFoundError extends MtdError(code = "NO_DETAILS_FOUND", message = "No transaction details found", BAD_REQUEST)
 
 object RuleEndBeforeStartDateError
     extends MtdError("RULE_END_DATE_BEFORE_START_DATE", "The supplied accounting period end date is before the start date", BAD_REQUEST)

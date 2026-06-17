@@ -21,8 +21,8 @@ For certain scenarios, a request may not be made for a tax year which has not ye
 ## Requirements
 
 - Scala 3.x.x
-- Java 11
-- sbt 1.9.x
+- Java 21
+- sbt 1.10.x
 - [Service Manager V2](https://github.com/hmrc/sm2)
 
 ## Development Setup

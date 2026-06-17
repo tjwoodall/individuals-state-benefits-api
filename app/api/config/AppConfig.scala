@@ -64,9 +64,6 @@ class AppConfig @Inject() (val config: ServicesConfig, protected[config] val con
 
   def apiVersionReleasedInProduction(version: String): Boolean = config.getBoolean(s"api.$version.endpoints.api-released-in-production")
 
-  def allowRequestCannotBeFulfilledHeader(version: Version): Boolean =
-    config.getBoolean(s"api.$version.endpoints.allow-request-cannot-be-fulfilled-header")
-
   def endpointReleasedInProduction(version: String, name: String): Boolean = {
     val versionReleasedInProd = apiVersionReleasedInProduction(version)
     val path                  = s"api.$version.endpoints.released-in-production.$name"
@@ -114,16 +111,19 @@ class AppConfig @Inject() (val config: ServicesConfig, protected[config] val con
     if (isApiDeprecated) {
       (deprecatedOn, sunsetDate, isSunsetEnabled) match {
         case (Some(dO), Some(sD), true) =>
-          if (sD.isAfter(dO))
+          if (sD.isAfter(dO)) {
             Deprecated(dO, Some(sD)).valid
-          else
+          } else {
             s"sunsetDate must be later than deprecatedOn date for a deprecated version $version".invalid
+          }
         case (Some(dO), None, true) => Deprecated(dO, Some(dO.plusMonths(6))).valid
         case (Some(dO), _, false)   => Deprecated(dO, None).valid
         case _                      => s"deprecatedOn date is required for a deprecated version $version".invalid
       }
 
-    } else NotDeprecated.valid
+    } else {
+      NotDeprecated.valid
+    }
 
   }
 
