@@ -1,4 +1,4 @@
-individuals-state-benefits-api
+Individuals State Benefits API
 ========================
 
 [![Apache-2.0 license](http://img.shields.io/badge/license-Apache-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
@@ -20,16 +20,20 @@ For certain scenarios, a request may not be made for a tax year which has not ye
 
 ## Requirements
 
-- Scala 3.x.x
+- Scala 3.5.x
 - Java 21
 - sbt 1.10.x
-- [Service Manager V2](https://github.com/hmrc/sm2)
+- [Service manager V2](https://github.com/hmrc/sm2)
 
 ## Development Setup
 
 Run the microservice from the console using: `sbt run` (starts on port 7789 by default)
 
-Start the service manager profile: `sm2 --start MTDFB_INDIVIDUALS_STATE_BENEFITS`
+Start the service manager profile:
+
+```bash
+sm2 -start MTDFB_INDIVIDUALS_STATE_BENEFITS
+```
 
 ## Run Tests
 
@@ -37,17 +41,25 @@ Run unit tests: `sbt test`
 
 Run integration tests: `sbt it/test`
 
-## To view the OAS
+## View OpenAPI Specification (OAS) documentation
 
-To view documentation locally, ensure the Individuals State Benefits API is running, and run api-documentation-frontend:
+To view the OpenAPI documentation locally, ensure the API is running.
 
+Start the `api-documentation-frontend` and `api-definition` services using the Service Manager profile:
+
+```bash
+sm2 -start DEVHUB_PREVIEW_OPENAPI
 ```
-./run_local_with_dependencies.sh
+
+Then navigate to the preview page:
+
+```text
+http://localhost:9680/api-documentation/docs/openapi/preview
 ```
 
-Then go to http://localhost:9680/api-documentation/docs/openapi/preview and use the appropriate port and version:
+Enter the specification URL using the appropriate port and API version:
 
-```
+```text
 http://localhost:7789/api/conf/2.0/application.yaml
 ```
 
@@ -61,10 +73,8 @@ You can create a GitHub issue [here](https://github.com/hmrc/income-tax-mtd-chan
 
 ## API Reference / Documentation
 
-Available on
-the [HMRC Developer Hub](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individuals-state-benefits-api)
+Available on the [HMRC Developer Hub](https://developer.service.hmrc.gov.uk/api-documentation/docs/api/service/individuals-state-benefits-api)
 
 ## License
 
-This code is open source software licensed under
-the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html")
+This code is open source software licensed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html)
