@@ -17,14 +17,13 @@
 package v2.ignoreBenefit.def1
 
 import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{ResolveNino, ResolveTaxYearMinimum}
+import api.controllers.validators.resolvers.{ResolveBenefitId, ResolveNino, ResolveTaxYearMinimum}
 import api.models.domain.TaxYear
 import api.models.errors.MtdError
 import cats.data.Validated
 import cats.data.Validated.*
 import cats.implicits.*
 import config.StateBenefitsAppConfig
-import v2.controllers.resolvers.ResolveBenefitId
 import v2.ignoreBenefit.def1.model.request.Def1_IgnoreBenefitRequestData
 import v2.ignoreBenefit.model.request.IgnoreBenefitRequestData
 

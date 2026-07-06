@@ -17,7 +17,7 @@
 package v2.amendBenefitAmounts.def1
 
 import api.controllers.validators.Validator
-import api.controllers.validators.resolvers.{ResolveNino, ResolveNonEmptyJsonObject, ResolveParsedNumber, ResolveTaxYearMinimum}
+import api.controllers.validators.resolvers.{ResolveBenefitId, ResolveNino, ResolveNonEmptyJsonObject, ResolveParsedNumber, ResolveTaxYearMinimum}
 import api.models.domain.TaxYear
 import api.models.errors.MtdError
 import cats.data.Validated
@@ -27,7 +27,6 @@ import config.StateBenefitsAppConfig
 import play.api.libs.json.JsValue
 import v2.amendBenefitAmounts.def1.model.request.{Def1_AmendBenefitAmountsRequestBody, Def1_AmendBenefitAmountsRequestData}
 import v2.amendBenefitAmounts.model.request.AmendBenefitAmountsRequestData
-import v2.controllers.resolvers.ResolveBenefitId
 
 import javax.inject.Singleton
 

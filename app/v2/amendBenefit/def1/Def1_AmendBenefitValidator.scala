@@ -26,7 +26,6 @@ import config.StateBenefitsAppConfig
 import play.api.libs.json.JsValue
 import v2.amendBenefit.def1.model.request.{Def1_AmendBenefitRequestBody, Def1_AmendBenefitRequestData}
 import v2.amendBenefit.model.request.AmendBenefitRequestData
-import v2.controllers.resolvers.ResolveBenefitId
 
 import javax.inject.Singleton
 

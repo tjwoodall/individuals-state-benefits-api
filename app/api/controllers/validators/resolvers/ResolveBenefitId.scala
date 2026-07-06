@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package v2.controllers.resolvers
+package api.controllers.validators.resolvers
 
-import api.controllers.validators.resolvers.{ResolveStringPattern, ResolverSupport}
 import api.models.errors.MtdError
 import cats.data.Validated
 import common.errors.BenefitIdFormatError

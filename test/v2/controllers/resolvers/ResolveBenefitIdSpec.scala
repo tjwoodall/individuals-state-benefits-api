@@ -16,6 +16,7 @@
 
 package v2.controllers.resolvers
 
+import api.controllers.validators.resolvers.ResolveBenefitId
 import api.utils.UnitSpec
 import cats.data.Validated.{Invalid, Valid}
 import common.errors.BenefitIdFormatError
