@@ -4,7 +4,7 @@ description: |
   
   A National Insurance number, tax year, benefit type and start date must be provided.
 
-  This endpoint can only be used for a tax year that has ended.
+  **This endpoint can only be used for a tax year that has ended.**
 
   ### Test data
   Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
