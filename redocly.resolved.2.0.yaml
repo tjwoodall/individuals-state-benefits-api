@@ -53,7 +53,7 @@ paths:
 
         A National Insurance number, tax year, benefit type and start date must be provided.
 
-        This endpoint can only be used for a tax year that has ended.
+        **This endpoint can only be used for a tax year that has ended.**
 
         ### Test data
         Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
@@ -1383,6 +1383,7 @@ paths:
       summary: Amend State Benefit Amounts
       description: |
         This endpoint enables you to amend benefits financial data. A National Insurance number, tax year and benefit ID must be provided.
+        **This endpoint can only be used after the tax year has ended.**
 
         ### Test data
         Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
@@ -1966,6 +1967,7 @@ paths:
       description: |
         This endpoint enables you to mark a state benefit as ignored.
         Customer-added benefits can’t be ignored, only deleted. A National Insurance number, tax year and benefit ID must be provided.
+        **This endpoint can only be used after the tax year has ended.**
 
         ### Test data
         Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
@@ -2219,6 +2221,7 @@ paths:
         This endpoint enables you to mark a state benefit as unignored.
         Customer-added benefits can’t be unignored, only deleted.
         A National Insurance number, tax year and benefit ID must be provided.
+        **This endpoint can only be used after the tax year has ended.**
 
         ### Test data
         Scenario simulation using Gov-Test-Scenario headers is only available in the sandbox environment.
