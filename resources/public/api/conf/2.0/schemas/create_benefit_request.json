@@ -5,7 +5,7 @@
   "type": "object",
   "properties": {
     "benefitType": {
-      "description": "The type of benefit claimed",
+      "description": "The type of benefit claimed. Multiple claims of the same benefit type are permitted within a tax year for `jobSeekersAllowance`, `employmentSupportAllowance`, and `incapacityBenefit` only.",
       "type": "string",
       "enum": [
         "incapacityBenefit",
