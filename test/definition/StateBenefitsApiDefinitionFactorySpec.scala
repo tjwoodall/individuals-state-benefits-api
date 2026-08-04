@@ -18,6 +18,7 @@ package definition
 
 import api.config.Deprecation.NotDeprecated
 import api.config.MockAppConfig
+import api.definition.APIAccessType.{CONTROLLED, PUBLIC}
 import api.definition.APIStatus.BETA
 import api.definition.{APIAccessType, APIDefinition, APIVersion, Definition}
 import api.routing.Version2
@@ -26,56 +27,35 @@ import cats.implicits.catsSyntaxValidatedId
 
 class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
 
-  "definition" when {
-    "called" should {
-      "return a valid Definition case class" in new Test {
-        MockedAppConfig.apiStatus(Version2) returns "BETA"
-        MockedAppConfig.endpointsEnabled(Version2) returns true
-        MockedAppConfig.controlledAccessEnabled returns false
-        MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+  "calling definition" when {
+    List((PUBLIC, false), (CONTROLLED, true)).foreach { (accessType, controlledAccessEnabled) =>
+      s"the controlled access flag is set to $controlledAccessEnabled" should {
+        s"return a valid Definition case class with the access type set to $accessType" in new Test {
+          MockedAppConfig.apiStatus(Version2) returns "BETA"
+          MockedAppConfig.endpointsEnabled(Version2) returns true
+          MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
 
-        apiDefinitionFactory.definition shouldBe
-          Definition(
-            api = APIDefinition(
-              name = "Individuals State Benefits (MTD)",
-              description = "An API for providing individual state benefit data",
-              context = "individuals/state-benefits",
-              categories = Seq("INCOME_TAX_MTD"),
-              versions = Seq(
-                APIVersion(
-                  version = Version2,
-                  status = BETA,
-                  access = APIAccessType.PUBLIC,
-                  endpointsEnabled = true
-                )
-              ),
-              requiresTrust = None
+          MockedAppConfig.controlledAccessEnabled returns controlledAccessEnabled
+
+          apiDefinitionFactory.definition shouldBe
+            Definition(
+              api = APIDefinition(
+                name = "Individuals State Benefits (MTD)",
+                description = "An API for providing individual state benefit data",
+                context = "individuals/state-benefits",
+                categories = Seq("INCOME_TAX_MTD"),
+                versions = Seq(
+                  APIVersion(
+                    version = Version2,
+                    status = BETA,
+                    access = accessType,
+                    endpointsEnabled = true
+                  )
+                ),
+                requiresTrust = None
+              )
             )
-          )
-      }
-    }
-
-    "the controlled access flag is enabled" should {
-      "set the access type to CONTROLLED" in new Test {
-        MockedAppConfig.apiStatus(Version2) returns "BETA"
-        MockedAppConfig.endpointsEnabled(Version2) returns true
-        MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
-
-        MockedAppConfig.controlledAccessEnabled returns true
-
-        apiDefinitionFactory.definition.api.versions.head.access shouldBe APIAccessType.CONTROLLED
-      }
-    }
-
-    "the controlled access flag is disabled" should {
-      "set the access type to PUBLIC" in new Test {
-        MockedAppConfig.apiStatus(Version2) returns "BETA"
-        MockedAppConfig.endpointsEnabled(Version2) returns true
-        MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
-
-        MockedAppConfig.controlledAccessEnabled returns false
-
-        apiDefinitionFactory.definition.api.versions.head.access shouldBe APIAccessType.PUBLIC
+        }
       }
     }
   }
