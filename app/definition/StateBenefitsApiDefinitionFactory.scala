@@ -17,6 +17,7 @@
 package definition
 
 import api.config.AppConfig
+import api.definition.APIAccessType.{CONTROLLED, PUBLIC}
 import api.definition.{APIDefinition, APIVersion, ApiDefinitionFactory, Definition}
 import api.routing.Version2
 
@@ -25,7 +26,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class StateBenefitsApiDefinitionFactory @Inject() (protected val appConfig: AppConfig) extends ApiDefinitionFactory {
 
-  val definition: Definition =
+  lazy val definition: Definition =
     Definition(
       api = APIDefinition(
         name = "Individuals State Benefits (MTD)",
@@ -36,6 +37,7 @@ class StateBenefitsApiDefinitionFactory @Inject() (protected val appConfig: AppC
           APIVersion(
             version = Version2,
             status = buildAPIStatus(Version2),
+            access = if (appConfig.controlledAccessEnabled) CONTROLLED else PUBLIC,
             endpointsEnabled = appConfig.endpointsEnabled(Version2)
           )
         ),

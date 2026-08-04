@@ -19,23 +19,20 @@ package definition
 import api.config.Deprecation.NotDeprecated
 import api.config.MockAppConfig
 import api.definition.APIStatus.BETA
-import api.definition.{APIDefinition, APIVersion, Definition}
-import api.mocks.MockHttpClient
+import api.definition.{APIAccessType, APIDefinition, APIVersion, Definition}
 import api.routing.Version2
 import api.utils.UnitSpec
 import cats.implicits.catsSyntaxValidatedId
 
-class StateBenefitsApiDefinitionFactorySpec extends UnitSpec with MockHttpClient with MockAppConfig {
+class StateBenefitsApiDefinitionFactorySpec extends UnitSpec {
 
   "definition" when {
     "called" should {
-      "return a valid Definition case class" in {
-        MockedAppConfig.apiGatewayContext.anyNumberOfTimes() returns "individuals/state-benefits"
+      "return a valid Definition case class" in new Test {
         MockedAppConfig.apiStatus(Version2) returns "BETA"
         MockedAppConfig.endpointsEnabled(Version2) returns true
+        MockedAppConfig.controlledAccessEnabled returns false
         MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
-
-        val apiDefinitionFactory = new StateBenefitsApiDefinitionFactory(mockAppConfig)
 
         apiDefinitionFactory.definition shouldBe
           Definition(
@@ -48,6 +45,7 @@ class StateBenefitsApiDefinitionFactorySpec extends UnitSpec with MockHttpClient
                 APIVersion(
                   version = Version2,
                   status = BETA,
+                  access = APIAccessType.PUBLIC,
                   endpointsEnabled = true
                 )
               ),
@@ -56,6 +54,36 @@ class StateBenefitsApiDefinitionFactorySpec extends UnitSpec with MockHttpClient
           )
       }
     }
+
+    "the controlled access flag is enabled" should {
+      "set the access type to CONTROLLED" in new Test {
+        MockedAppConfig.apiStatus(Version2) returns "BETA"
+        MockedAppConfig.endpointsEnabled(Version2) returns true
+        MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+
+        MockedAppConfig.controlledAccessEnabled returns true
+
+        apiDefinitionFactory.definition.api.versions.head.access shouldBe APIAccessType.CONTROLLED
+      }
+    }
+
+    "the controlled access flag is disabled" should {
+      "set the access type to PUBLIC" in new Test {
+        MockedAppConfig.apiStatus(Version2) returns "BETA"
+        MockedAppConfig.endpointsEnabled(Version2) returns true
+        MockedAppConfig.deprecationFor(Version2).returns(NotDeprecated.valid).anyNumberOfTimes()
+
+        MockedAppConfig.controlledAccessEnabled returns false
+
+        apiDefinitionFactory.definition.api.versions.head.access shouldBe APIAccessType.PUBLIC
+      }
+    }
+  }
+
+  trait Test extends MockAppConfig {
+    MockedAppConfig.apiGatewayContext.anyNumberOfTimes() returns "individuals/state-benefits"
+
+    val apiDefinitionFactory = new StateBenefitsApiDefinitionFactory(mockAppConfig)
   }
 
 }

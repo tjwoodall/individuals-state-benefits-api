@@ -72,12 +72,21 @@ class ApiDefinitionFactorySpec extends UnitSpec {
     "APIVersion Json.format" should {
 
       "round-trip successfully" in {
+        val json = Json.parse("""
+          {
+            "version": "2.0",
+            "status": "BETA",
+            "access": "PUBLIC",
+            "endpointsEnabled": true
+          }
+        """)
+
         val model = APIVersion(
           version = Version2,
           status = APIStatus.BETA,
+          access = APIAccessType.PUBLIC,
           endpointsEnabled = true
         )
-        val json = Json.toJson(model)
 
         json.as[APIVersion] shouldBe model
       }
@@ -91,14 +100,15 @@ class ApiDefinitionFactorySpec extends UnitSpec {
     val apiDefinitionFactory: ApiDefinitionFactory = new ApiDefinitionFactory {
       protected val appConfig: AppConfig = mockAppConfig
 
-      val definition: Definition = Definition(
+      lazy val definition: Definition = Definition(
         APIDefinition(
           "test API definition",
           "description",
           "context",
           List("category"),
-          List(APIVersion(Version2, APIStatus.BETA, endpointsEnabled = true)),
-          None)
+          List(APIVersion(Version2, APIStatus.BETA, APIAccessType.PUBLIC, endpointsEnabled = true)),
+          None
+        )
       )
 
     }
