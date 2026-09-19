@@ -38,8 +38,7 @@ responses:
         examples:
           example-response:
             description: Example Response
-            value:
-              $ref: './examples/ignoreBenefit/response.json'
+            externalValue: './examples/ignoreBenefit/response.json'
 
   "400":
     description: Bad request

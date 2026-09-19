@@ -41,12 +41,10 @@ responses:
         examples:
           full-list:
             description: Full list
-            value:
-              $ref: './examples/listStateBenefit/list_response.json'
+            externalValue: './examples/listStateBenefit/list_response.json'
           individual-benefit:
             description: Single benefit returned by using query parameter
-            value:
-              $ref: './examples/listStateBenefit/single_response.json'
+            externalValue: './examples/listStateBenefit/single_response.json'
 
   "400":
     description: Bad request
