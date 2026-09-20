@@ -1,6 +1,0 @@
-post:
-  $ref: "./benefit_ignore.yaml"
-  summary: Ignore State Benefit
-  security:
-    - User-Restricted:
-        - write:self-assessment
