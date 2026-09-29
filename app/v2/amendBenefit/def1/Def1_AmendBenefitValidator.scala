@@ -58,7 +58,7 @@ class Def1_AmendBenefitValidator(nino: String, taxYear: String, benefitId: Strin
 
     val validatedDates: Validated[Seq[MtdError], Unit] = endDate match {
       case Some(endDate) => validateDateRange(taxYear, startDate, endDate)
-      case None => validateStartDate(taxYear, startDate)
+      case None          => validateStartDate(taxYear, startDate)
     }
 
     validatedDates.map(_ => parsed)

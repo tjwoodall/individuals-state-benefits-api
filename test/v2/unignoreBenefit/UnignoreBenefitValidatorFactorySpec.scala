@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,29 +18,39 @@ package v2.unignoreBenefit
 
 import api.controllers.validators.Validator
 import api.utils.UnitSpec
+import api.models.errors.*
 import config.MockStateBenefitsAppConfig
 import v2.unignoreBenefit.def1.Def1_UnignoreBenefitValidator
 import v2.unignoreBenefit.model.request.UnignoreBenefitRequestData
 
 class UnignoreBenefitValidatorFactorySpec extends UnitSpec with MockStateBenefitsAppConfig {
 
-  private val validNino      = "AA123456B"
-  private val validTaxYear   = "2021-22"
-  private val invalidTaxYear = "2021"
-  private val validBenefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private val validNino                      = "AA123456B"
+  private val validTaxYear                   = "2021-22"
+  private val invalidTaxYear                 = "2021"
+  private val validBenefitId                 = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
+  private implicit val correlationId: String = "a1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
   private val validatorFactory = new UnignoreBenefitValidatorFactory
 
   "validator" should {
     "return the Def1 validator" when {
       "given a valid request" in new AppConfigTest {
-        val result: Validator[UnignoreBenefitRequestData] = validatorFactory.validator(validNino, validTaxYear, validBenefitId)
+        val result: Validator[UnignoreBenefitRequestData] = validatorFactory.validator(validNino, validTaxYear, validBenefitId, true)
         result shouldBe a[Def1_UnignoreBenefitValidator]
       }
 
       "given an invalid taxYear" in new AppConfigTest {
-        val result: Validator[UnignoreBenefitRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId)
+        val result: Validator[UnignoreBenefitRequestData] = validatorFactory.validator(validNino, invalidTaxYear, validBenefitId, true)
         result shouldBe a[Def1_UnignoreBenefitValidator]
+      }
+    }
+
+    "return RuleTaxYearNotEndedError error" when {
+      "a supplied date range is for a tax year that has not ended and temporal validation is enabled" in new AppConfigTest {
+        val result: Either[ErrorWrapper, UnignoreBenefitRequestData] =
+          validatorFactory.validator(validNino, "2026-27", validBenefitId, true).validateAndWrapResult()
+        result shouldBe Left(ErrorWrapper(correlationId, RuleTaxYearNotEndedError))
       }
     }
 

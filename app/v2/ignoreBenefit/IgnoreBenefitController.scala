@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package v2.ignoreBenefit
 
-import api.config.AppConfig
+import api.config.{AppConfig, ConfigFeatureSwitches}
 import api.controllers.*
 import api.routing.Version
 import api.services.{AuditService, EnrolmentsAuthService, MtdIdLookupService}
@@ -48,7 +48,8 @@ class IgnoreBenefitController @Inject() (val authService: EnrolmentsAuthService,
     authorisedAction(nino).async { implicit request =>
       implicit val ctx: RequestContext = RequestContext.from(idGenerator, endpointLogContext)
 
-      val validator = validatorFactory.validator(nino, taxYear, benefitId)
+      val validator =
+        validatorFactory.validator(nino, taxYear, benefitId, temporalValidationEnabled = ConfigFeatureSwitches().isTemporalValidationEnabled)
 
       val requestHandler = RequestHandler
         .withValidator(validator)

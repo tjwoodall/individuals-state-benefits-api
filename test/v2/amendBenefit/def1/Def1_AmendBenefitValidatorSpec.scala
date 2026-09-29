@@ -35,8 +35,8 @@ class Def1_AmendBenefitValidatorSpec extends UnitSpec with JsonErrorValidators w
   private val validTaxYear   = "2023-24"
   private val validBenefitId = "b1e8057e-fbbc-47a8-a8b4-78d9f015c253"
 
-  private val startDate    = "2023-04-06"
-  private val endDate      = "2024-01-01"
+  private val startDate = "2023-04-06"
+  private val endDate   = "2024-01-01"
 
   private def validBody(startDate: String = startDate, endDate: String = endDate) = Json.parse(
     s"""

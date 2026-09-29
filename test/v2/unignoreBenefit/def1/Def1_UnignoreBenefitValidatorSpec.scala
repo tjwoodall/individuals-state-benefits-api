@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class Def1_UnignoreBenefitValidatorSpec extends UnitSpec with MockStateBenefitsA
   private val parsedTaxYear   = TaxYear.fromMtd(validTaxYear)
   private val parsedBenefitId = BenefitId(validBenefitId)
 
-  private def validator(nino: String, taxYear: String, benefitId: String) = new Def1_UnignoreBenefitValidator(nino, taxYear, benefitId)
+  private def validator(nino: String, taxYear: String, benefitId: String) = new Def1_UnignoreBenefitValidator(nino, taxYear, benefitId, false)
 
   "validator" should {
     "return the parsed domain object" when {

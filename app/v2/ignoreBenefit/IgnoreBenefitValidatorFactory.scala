@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class IgnoreBenefitValidatorFactory @Inject() (implicit stateBenefitsAppConfig: StateBenefitsAppConfig) {
 
-  def validator(nino: String, taxYear: String, benefitId: String): Validator[IgnoreBenefitRequestData] =
+  def validator(nino: String, taxYear: String, benefitId: String, temporalValidationEnabled: Boolean): Validator[IgnoreBenefitRequestData] =
     taxYear match {
-      case _ => new Def1_IgnoreBenefitValidator(nino: String, taxYear: String, benefitId: String)
+      case _ => new Def1_IgnoreBenefitValidator(nino: String, taxYear: String, benefitId: String, temporalValidationEnabled)
     }
 
 }

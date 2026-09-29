@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ trait MockUnignoreBenefitValidatorFactory extends TestSuite with MockFactory {
   object MockedIgnoreBenefitValidatorFactory {
 
     def validator(): CallHandler[Validator[UnignoreBenefitRequestData]] =
-      (mockUnignoreBenefitValidatorFactory.validator(_: String, _: String, _: String)).expects(*, *, *)
+      (mockUnignoreBenefitValidatorFactory.validator(_: String, _: String, _: String, _: Boolean)).expects(*, *, *, *)
 
   }
 

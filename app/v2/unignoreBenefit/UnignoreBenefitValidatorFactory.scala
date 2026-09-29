@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,12 +27,12 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class UnignoreBenefitValidatorFactory @Inject() (implicit stateBenefitsAppConfig: StateBenefitsAppConfig) {
 
-  def validator(nino: String, taxYear: String, benefitId: String): Validator[UnignoreBenefitRequestData] = {
+  def validator(nino: String, taxYear: String, benefitId: String, temporalValidationEnabled: Boolean): Validator[UnignoreBenefitRequestData] = {
 
     val schema = UnignoreBenefitSchema.schemaFor(Some(taxYear))
 
     schema match {
-      case Def1 => new Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String)
+      case Def1 => new Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String, temporalValidationEnabled)
     }
   }
 

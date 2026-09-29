@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,12 @@ import v2.unignoreBenefit.model.request.UnignoreBenefitRequestData
 import javax.inject.Singleton
 
 @Singleton
-class Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String)(implicit stateBenefitsAppConfig: StateBenefitsAppConfig)
+class Def1_UnignoreBenefitValidator(nino: String, taxYear: String, benefitId: String, temporalValidationEnabled: Boolean)(implicit
+    stateBenefitsAppConfig: StateBenefitsAppConfig)
     extends Validator[UnignoreBenefitRequestData] {
 
-  private val resolveTaxYear: ResolveTaxYearMinimum = ResolveTaxYearMinimum(TaxYear.ending(stateBenefitsAppConfig.minimumPermittedTaxYear))
+  private val resolveTaxYear: ResolveTaxYearMinimum =
+    ResolveTaxYearMinimum(TaxYear.ending(stateBenefitsAppConfig.minimumPermittedTaxYear), allowIncompleteTaxYear = !temporalValidationEnabled)
 
   def validate: Validated[Seq[MtdError], Def1_UnignoreBenefitRequestData] = {
     (
