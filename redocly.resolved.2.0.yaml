@@ -122,7 +122,7 @@ paths:
             allow in-year submissions for endpoints configured for end-of-year submissions. Not supplying the header or setting 
             it to `false` results in a `RULE_TAX_YEAR_NOT_ENDED` error for in-year submissions. In Production, the header is
             ignored and normal validations apply.
-          schema: &ref_34
+          schema: &ref_33
             type: boolean
             example: true
           required: false
@@ -301,7 +301,7 @@ paths:
                     message: Tax year range invalid. A tax year range of one year is required
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: &ref_33
+                  value: &ref_34
                     code: RULE_TAX_YEAR_NOT_ENDED
                     message: Tax year not ended
                 RULE_TAX_YEAR_NOT_SUPPORTED:
@@ -1398,7 +1398,6 @@ paths:
         |----------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
         | N/A - DEFAULT                    | Simulate success response.                                                                                                    |
         | NOT_FOUND                        | Simulates the scenario where no data is found.                                                                                |
-        | TAX_YEAR_NOT_ENDED               | Simulates the error returned when a benefit that is not employmentSupportAllowance or jobSeekersAllowance is amended in year. |
         | TAX_DEDUCTION_NOT_ALLOWED        | Simulates the scenario where tax deduction is not allowed against the type of benefit associated with the benefitId           |
         | OUTSIDE_AMENDMENT_WINDOW         | Simulates the scenario where request cannot be completed as it is outside the amendment window.                               |
         | STATEFUL                         | Performs a stateful update.                                                                                                   |
@@ -1444,6 +1443,15 @@ paths:
           description: |
             Only in sandbox environment. See Test Data table for all header values.
           schema: *ref_9
+          required: false
+        - name: suspend-temporal-validations
+          in: header
+          description: |
+            Only in the sandbox environment. When supplied and set to `true`, this header relaxes tax year validation rule to 
+            allow in-year submissions for endpoints configured for end-of-year submissions. Not supplying the header or setting 
+            it to `false` results in a `RULE_TAX_YEAR_NOT_ENDED` error for in-year submissions. In Production, the header is
+            ignored and normal validations apply.
+          schema: *ref_33
           required: false
       requestBody:
         content:
@@ -1568,7 +1576,7 @@ paths:
                   value: *ref_18
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: *ref_33
+                  value: *ref_34
                 RULE_INCORRECT_OR_EMPTY_BODY_SUBMITTED:
                   description: An empty or non-matching body was submitted.
                   value: *ref_29
@@ -2026,7 +2034,7 @@ paths:
             allow in-year submissions for endpoints configured for end-of-year submissions. Not supplying the header or setting 
             it to `false` results in a `RULE_TAX_YEAR_NOT_ENDED` error for in-year submissions. In Production, the header is
             ignored and normal validations apply.
-          schema: *ref_34
+          schema: *ref_33
           required: false
       responses:
         '204':
@@ -2118,7 +2126,7 @@ paths:
                   value: *ref_18
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: *ref_33
+                  value: *ref_34
                 RULE_IGNORE_FORBIDDEN:
                   description: A customer added state benefit cannot be ignored.
                   value:
@@ -2288,7 +2296,7 @@ paths:
             allow in-year submissions for endpoints configured for end-of-year submissions. Not supplying the header or setting 
             it to `false` results in a `RULE_TAX_YEAR_NOT_ENDED` error for in-year submissions. In Production, the header is
             ignored and normal validations apply.
-          schema: *ref_34
+          schema: *ref_33
           required: false
       responses:
         '204':
@@ -2380,7 +2388,7 @@ paths:
                   value: *ref_18
                 RULE_TAX_YEAR_NOT_ENDED:
                   description: The submission has been made before the tax year it relates to has ended.
-                  value: *ref_33
+                  value: *ref_34
                 RULE_UNIGNORE_FORBIDDEN:
                   description: A customer added state benefit cannot be unignored.
                   value:
